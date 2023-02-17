@@ -1,1 +1,1 @@
-# Team-Jjinsa-hyperlink-BE
+# Team-JJINSA-HyperLink-BE
