@@ -34,10 +34,10 @@ jobs:
           distribution: 'temurin'
           
       - name: application.yml 생성
-        run: touch ./src/main/resources/application.yml
+        run: touch src/main/resources/application.yml
       
       - name: application.yml 정
-        run: echo "${{secrets.APPLICATION}}" > ./src/main/resources/application.yml
+        run: echo "${{secrets.APPLICATION}}" > src/main/resources/application.yml
 
       - name: ./gradlew 권한 설정
         run: chmod +x ./gradlew
