@@ -13,8 +13,8 @@ env:
   DEPLOY_ZIP_FILE: hyperlink-deploy.zip
   S3_DEPLOY_BUCKET: hyperlink-deploy
   DEPLOY_GROUP_NAME: hyperlink-deploy-group
-  DEPLOY_APPLICATION_NAME: hyperlink-deploy-application
-
+  DEPLOY_APPLICATION_NAME: hyperlink-deploy
+  
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   # This workflow contains a single job called "build"
