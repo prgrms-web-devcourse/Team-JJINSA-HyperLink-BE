@@ -67,6 +67,6 @@ jobs:
           mv before-deploy/before-deploy.zip deploy/$DEPLOY_ZIP_FILE
       - name: S3 업로드
         run: aws s3 cp --region ap-northeast-2 ./deploy/$DEPLOY_ZIP_FILE s3://$S3_DEPLOY_BUCKET/server/build.zip
-     
-      - name: code deploy
-        run: aws deploy create-deployment --application-name $DEPLOY_APPLICATION_NAME --deployment-config-name CodeDeployDefault.OneAtATime --deployment-group-name $DEPLOY_GROUP_NAME --s3-location bucket=ci-cd-demo-bucket,bundleType=zip,key=server/build.zip
+# Application.yaml 업로드 방법 찾기 전까지 사용 불가.
+#      - name: code deploy
+#        run: aws deploy create-deployment --application-name $DEPLOY_APPLICATION_NAME --deployment-config-name CodeDeployDefault.OneAtATime --deployment-group-name $DEPLOY_GROUP_NAME --s3-location bucket=ci-cd-demo-bucket,bundleType=zip,key=server/build.zip
