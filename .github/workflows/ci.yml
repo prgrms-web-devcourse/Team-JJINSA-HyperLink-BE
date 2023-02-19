@@ -34,7 +34,10 @@ jobs:
           distribution: 'temurin'
           
       - name: application.yml 생성
-        run: touch src/main/resources/application.yml
+        run: |
+          cd src/main
+          mkdir resources
+          touch src/main/resources/application.yml
       
       - name: application.yml 정
         run: echo "${{secrets.APPLICATION}}" > src/main/resources/application.yml
