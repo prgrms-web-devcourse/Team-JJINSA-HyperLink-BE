@@ -5,9 +5,9 @@ name: hyperlink CI
 # events but only for the dev branch
 on:
   push:
-    branches: main
+    branches: develop/v0.*
   pull_request:
-    branches: main
+    branches: develop/v0.*
     
 env:
   DEPLOY_ZIP_FILE: hyperlink-deploy.zip
@@ -44,7 +44,7 @@ jobs:
         run: chmod +x ./gradlew
 
       - name: 빌드
-        run: ./gradlew build
+        run: SPRING_PROFILES_ACTIVE=[set1] ./gradlew clean build
 
       - name: aws 세팅
         uses: aws-actions/configure-aws-credentials@v1
