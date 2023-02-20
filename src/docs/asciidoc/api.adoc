@@ -1,0 +1,12 @@
+= Hyper Link
+backtony.github.io(Rest Docs)
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs // 문서에 표기되는 코드들의 하이라이팅을 highlightjs를 사용
+:toc: left
+:toclevels: 4
+:sectlinks:
+
+== Member
+=== 회원가입
+operation::test/testk[snippets='http-request,http-response,response-fields']
