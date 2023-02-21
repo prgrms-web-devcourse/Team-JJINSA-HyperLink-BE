@@ -85,4 +85,4 @@ done
 
 echo "> 스위칭"
 sleep 10
-~/app/switch.sh
+$BASE_PATH/switch.sh
