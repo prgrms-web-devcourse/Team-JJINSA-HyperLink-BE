@@ -5,9 +5,9 @@ name: hyperlink CI
 # events but only for the dev branch
 on:
   push:
-    branches: main
+    branches: develop/v0.*
   pull_request:
-    branches: main
+    branches: develop/v0.*
     
 env:
   DEPLOY_ZIP_FILE: hyperlink-deploy.zip
@@ -44,7 +44,7 @@ jobs:
         run: chmod +x ./gradlew
 
       - name: 빌드
-        run: ./gradlew build
+        run: SPRING_PROFILES_ACTIVE=[set1] ./gradlew clean build
 
       - name: aws 세팅
         uses: aws-actions/configure-aws-credentials@v1
@@ -64,6 +64,6 @@ jobs:
           mv before-deploy/before-deploy.zip deploy/$DEPLOY_ZIP_FILE
       - name: S3 업로드
         run: aws s3 cp --region ap-northeast-2 ./deploy/$DEPLOY_ZIP_FILE s3://$S3_DEPLOY_BUCKET/server/build.zip
-# Application.yaml 업로드 방법 찾기 전까지 사용 불가.
-#      - name: code deploy
-#        run: aws deploy create-deployment --application-name $DEPLOY_APPLICATION_NAME --deployment-config-name CodeDeployDefault.OneAtATime --deployment-group-name $DEPLOY_GROUP_NAME --s3-location bucket=ci-cd-demo-bucket,bundleType=zip,key=server/build.zip
+
+      - name: code deploy
+        run: aws deploy create-deployment --application-name $DEPLOY_APPLICATION_NAME --deployment-config-name CodeDeployDefault.OneAtATime --deployment-group-name $DEPLOY_GROUP_NAME --s3-location bucket=$S3_DEPLOY_BUCKET,bundleType=zip,key=server/build.zip

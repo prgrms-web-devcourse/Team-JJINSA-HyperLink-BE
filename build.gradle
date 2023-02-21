@@ -35,6 +35,9 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	runtimeOnly 'com.mysql:mysql-connector-j'
 
+	// actuator
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+
 	// flyway
 	implementation 'org.flywaydb:flyway-core'
 	implementation 'org.flywaydb:flyway-mysql'
@@ -82,6 +85,11 @@ build {
 	dependsOn copyDocument
 }
 
+
+jar {
+	enabled = false
+}
+
 jacocoTestReport {
 	reports {
 		xml.enabled false
@@ -106,3 +114,4 @@ jacocoTestCoverageVerification {
 		}
 	}
 }
+
