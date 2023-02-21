@@ -37,7 +37,7 @@ jobs:
         run: |
           touch src/main/resources/application.yml
 
-      - name: application.yml 설정
+      - name: application-prod.yml 설정
         run: echo "${{secrets.APPLICATIONPRODUCTION}}" > src/main/resources/application.yml
 
       - name: ./gradlew 권한 설정
