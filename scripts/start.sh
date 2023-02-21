@@ -3,7 +3,6 @@ BASE_PATH=/home/ec2-user/app
 
 cp $BASE_PATH/zip/*.jar $BASE_PATH/
 
-
 BUILD_PATH=$(ls $BASE_PATH/*.jar | tail -n 1)
 JAR_NAME=$(basename $BUILD_PATH)
 echo "> build 파일명: $JAR_NAME"
