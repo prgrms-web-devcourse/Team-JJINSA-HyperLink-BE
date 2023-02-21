@@ -85,4 +85,4 @@ done
 
 echo "> 스위칭"
 sleep 10
-$BASE_PATH/switch.sh
+$BASE_PATH/switch.sh > /dev/null 2> /dev/null < /dev/null &
