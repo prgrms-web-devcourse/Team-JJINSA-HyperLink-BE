@@ -15,3 +15,7 @@ hooks:
     - location: start.sh
       timeout: 300
       runas: root
+  ApplicationStart:
+    - location: switch.sh
+      timeout: 300
+      runas: root

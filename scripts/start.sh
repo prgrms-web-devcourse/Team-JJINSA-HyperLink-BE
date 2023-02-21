@@ -82,7 +82,3 @@ do
   echo "> Health check 연결 실패. 재시도..."
   sleep 10
 done
-
-echo "> 스위칭"
-sleep 10
-$BASE_PATH/switch.sh > /dev/null 2> /dev/null < /dev/null &
