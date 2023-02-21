@@ -5,11 +5,11 @@ import lombok.Getter;
 @Getter
 public enum MemberContentActionType {
 
-  LIKE(1), SUBSCRIPTION(2);
+  LIKE(1), BOOKMARK(2);
 
-  final int type;
+  final int typeNumber;
 
-  MemberContentActionType(int type) {
-    this.type = type;
+  MemberContentActionType(int typeNumber) {
+    this.typeNumber = typeNumber;
   }
 }

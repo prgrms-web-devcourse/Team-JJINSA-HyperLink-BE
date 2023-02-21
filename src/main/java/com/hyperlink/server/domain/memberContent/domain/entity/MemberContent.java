@@ -23,7 +23,16 @@ public class MemberContent extends BaseEntity {
   @Column(columnDefinition = "INT UNSIGNED", nullable = false)
   private Integer type;
 
-  public MemberContent(MemberContentActionType type) {
-    this.type = type.getType();
+  @Column
+  private Long memberId;
+
+  @Column
+  private Long contentId;
+
+
+  public MemberContent(Long memberId, Long contentId, MemberContentActionType type) {
+    this.memberId = memberId;
+    this.contentId = contentId;
+    this.type = type.getTypeNumber();
   }
 }
