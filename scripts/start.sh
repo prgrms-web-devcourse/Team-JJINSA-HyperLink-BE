@@ -82,4 +82,4 @@ do
   sleep 10
 done
 
-$BASE_PATH/switch.sh
+/home/ec2-user/app/switch.sh
