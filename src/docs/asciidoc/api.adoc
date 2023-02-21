@@ -9,4 +9,4 @@ backtony.github.io(Rest Docs)
 
 == Member
 === 회원가입
-// operation::test/testk[snippets='http-request,http-response,response-fields']
+operation::test/testk[snippets='http-request,http-response,response-fields']
