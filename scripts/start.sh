@@ -9,7 +9,6 @@ JAR_NAME=$(basename $BUILD_PATH)
 echo "> build 파일명: $JAR_NAME"
 
 echo "> build 파일 복사"
-sudo mkdir jar
 DEPLOY_PATH=$BASE_PATH/jar/
 
 sudo cp $JAR_NAME $DEPLOY_PATH
