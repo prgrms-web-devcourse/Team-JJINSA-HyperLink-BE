@@ -1,4 +1,4 @@
-package com.hyperlink.server.domain.creator.entity;
+package com.hyperlink.server.domain.creator.domain.entity;
 
 import com.hyperlink.server.domain.common.BaseEntity;
 import javax.persistence.Column;
@@ -24,7 +24,7 @@ public class Creator extends BaseEntity {
   private String name;
 
   @Column(nullable = false)
-  private String profile_img;
+  private String profileImgUrl;
 
   @Column(nullable = false)
   private String description;

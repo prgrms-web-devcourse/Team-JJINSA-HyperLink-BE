@@ -2,7 +2,7 @@ package com.hyperlink.server.domain.attentionCategory.domain.entity;
 
 import com.hyperlink.server.domain.category.domain.entity.Category;
 import com.hyperlink.server.domain.common.BaseEntity;
-import com.hyperlink.server.domain.member.entity.Member;
+import com.hyperlink.server.domain.member.domain.entity.Member;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;

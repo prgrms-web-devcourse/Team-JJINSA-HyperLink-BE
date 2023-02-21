@@ -1,7 +1,8 @@
-package com.hyperlink.server.domain.creatorCategory.entity;
+package com.hyperlink.server.domain.subscription.domain.entity;
 
-import com.hyperlink.server.domain.category.domain.entity.Category;
-import com.hyperlink.server.domain.creator.entity.Creator;
+import com.hyperlink.server.domain.common.BaseEntity;
+import com.hyperlink.server.domain.creator.domain.entity.Creator;
+import com.hyperlink.server.domain.member.domain.entity.Member;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -17,19 +18,18 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class CreatorCategory {
+public class Subscription extends BaseEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  @Column(name = "creator_category_id")
+  @Column(name = "subscription_id")
   private Long id;
+
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "member_id")
+  private Member member;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "creator_id")
   private Creator creator;
-
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "category_id")
-  private Category category;
-
 }

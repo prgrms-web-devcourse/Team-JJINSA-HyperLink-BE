@@ -1,7 +1,7 @@
-package com.hyperlink.server.domain.member.entity;
+package com.hyperlink.server.domain.member.domain.entity;
 
 import com.hyperlink.server.domain.common.BaseEntity;
-import com.hyperlink.server.domain.company.entity.Company;
+import com.hyperlink.server.domain.company.domain.entity.Company;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -10,8 +10,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.validation.constraints.Email;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -39,10 +37,10 @@ public class Member extends BaseEntity {
   private String careerYear;
 
   @Column(nullable = false)
-  private String profileImg;
+  private String profileImgUrl;
 
   @Column(columnDefinition = "INT UNSIGNED")
-  private Integer birth_year;
+  private Integer birthYear;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "company_id")

@@ -1,4 +1,4 @@
-package com.hyperlink.server.domain.memberContent.entity;
+package com.hyperlink.server.domain.memberContent.domain.entity;
 
 import lombok.Getter;
 
