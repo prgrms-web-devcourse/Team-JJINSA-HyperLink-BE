@@ -24,7 +24,7 @@ public class Creator extends BaseEntity {
   private String name;
 
   @Column(nullable = false)
-  private String profile_img;
+  private String profileImgUrl;
 
   @Column(nullable = false)
   private String description;

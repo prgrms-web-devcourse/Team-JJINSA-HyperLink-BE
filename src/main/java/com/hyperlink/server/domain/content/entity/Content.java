@@ -24,7 +24,7 @@ public class Content extends BaseEntity {
   private String title;
 
   @Column(nullable = false)
-  private String content_img;
+  private String contentImgUrl;
 
   @Column(nullable = false)
   private String link;

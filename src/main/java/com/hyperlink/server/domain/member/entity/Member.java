@@ -39,10 +39,10 @@ public class Member extends BaseEntity {
   private String careerYear;
 
   @Column(nullable = false)
-  private String profileImg;
+  private String profileImgUrl;
 
   @Column(columnDefinition = "INT UNSIGNED")
-  private Integer birth_year;
+  private Integer birthYear;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "company_id")

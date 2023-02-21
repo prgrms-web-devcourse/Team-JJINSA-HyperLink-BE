@@ -24,7 +24,7 @@ public class Company extends BaseEntity {
   private String emailAddress;
 
   @Column(nullable = false)
-  private String logoImageUrl;
+  private String logoImgUrl;
 
   @Column(length = 30, nullable = false)
   private String name;
