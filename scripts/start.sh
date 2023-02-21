@@ -51,7 +51,7 @@ else
 fi
 
 echo "> $IDLE_PROFILE 배포"
-sudo nohup java -jar -Dspring.profiles.active=$IDLE_PROFILE $IDLE_APPLICATION_PATH /dev/null 2> /dev/null < /dev/null &
+sudo nohup java -jar -Dspring.profiles.active=$IDLE_PROFILE $IDLE_APPLICATION_PATH &
 
 echo "> $IDLE_PROFILE 10초 후 Health check 시작"
 echo "> curl -s http://localhost:$IDLE_PORT/api/v1/actuator/health "
@@ -81,3 +81,5 @@ do
   echo "> Health check 연결 실패. 재시도..."
   sleep 10
 done
+
+$BASE_PATH/switch.sh
