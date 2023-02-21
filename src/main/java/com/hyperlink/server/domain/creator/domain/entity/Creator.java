@@ -1,4 +1,4 @@
-package com.hyperlink.server.domain.creator.entity;
+package com.hyperlink.server.domain.creator.domain.entity;
 
 import com.hyperlink.server.domain.common.BaseEntity;
 import javax.persistence.Column;

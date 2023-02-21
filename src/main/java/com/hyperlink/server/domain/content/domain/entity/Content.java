@@ -1,4 +1,4 @@
-package com.hyperlink.server.domain.memberContent.entity;
+package com.hyperlink.server.domain.content.domain.entity;
 
 import com.hyperlink.server.domain.common.BaseEntity;
 import javax.persistence.Column;
@@ -13,17 +13,19 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class MemberContent extends BaseEntity {
+public class Content extends BaseEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  @Column(name = "member_content_id")
+  @Column(name = "content_id")
   private Long id;
 
-  @Column(columnDefinition = "INT UNSIGNED", nullable = false)
-  private Integer type;
+  @Column(nullable = false)
+  private String title;
 
-  public MemberContent(MemberContentActionType type) {
-    this.type = type.getType();
-  }
+  @Column(nullable = false)
+  private String contentImgUrl;
+
+  @Column(nullable = false)
+  private String link;
 }
