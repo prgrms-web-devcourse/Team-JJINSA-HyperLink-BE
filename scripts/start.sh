@@ -84,4 +84,5 @@ do
   sleep 10
 done
 
-/home/ec2-user/app/switch.sh
+do
+  sh /home/ec2-user/app/switch.sh
