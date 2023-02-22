@@ -1,5 +1,7 @@
 #!/bin/bash
 BASE_PATH=/home/ec2-user/app
+CHECK_PROFILE=/api/v0.1/profile
+CHECK_HEALTH=/api/v0.1/actuator/health
 
 cp $BASE_PATH/zip/*.jar $BASE_PATH/
 
@@ -13,7 +15,7 @@ DEPLOY_PATH=$BASE_PATH/jar/
 sudo cp $JAR_NAME $DEPLOY_PATH
 
 echo "> 현재 구동중인 Set 확인"
-CURRENT_PROFILE=$(curl -s http://localhost/api/v1/profile)
+CURRENT_PROFILE=$(curl -s http://localhost$CHECK_PROFILE)
 echo "> $CURRENT_PROFILE"
 
 # 쉬고 있는 set 찾기: set1이 사용중이면 set2가 쉬고 있고, 반대면 set1이 쉬고 있음
@@ -54,12 +56,12 @@ echo "> $IDLE_PROFILE 배포"
 sudo nohup java -jar -Dspring.profiles.active=$IDLE_PROFILE $IDLE_APPLICATION_PATH &
 
 echo "> $IDLE_PROFILE 10초 후 Health check 시작"
-echo "> curl -s http://localhost:$IDLE_PORT/api/v1/actuator/health "
+echo "> curl -s http://localhost:$IDLE_PORT$CHECK_HEALTH "
 sleep 10
 
 for retry_count in {1..10}
 do
-  response=$(curl -s http://localhost:$IDLE_PORT/api/v1/actuator/health)
+  response=$(curl -s http://localhost:$IDLE_PORT$CHECK_HEALTH)
   up_count=$(echo $response | grep 'UP' | wc -l)
 
   if [ $up_count -ge 1 ]
