@@ -31,4 +31,9 @@ public class MemberContentService {
       throw new BookmarkNotFoundException();
     });
   }
+
+  public boolean isBookmarked(Long memberId, Long contentId) {
+    return memberContentRepository.findMemberContentByMemberIdAndContentIdAndType(
+        memberId, contentId, BOOKMARK.getTypeNumber()).isPresent();
+  }
 }
