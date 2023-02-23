@@ -38,7 +38,7 @@ jobs:
           touch src/main/resources/application.yml
 
       - name: application-prod.yml 설정
-        run: echo "${{secrets.APPLICATIONPRODUCTION}}" > src/main/resources/application.yml
+        run: echo "${{secrets.APPLICATIONPRODUCTION}}" | base64 --decode > src/main/resources/application.yml
 
       - name: ./gradlew 권한 설정
         run: chmod +x ./gradlew
