@@ -101,6 +101,7 @@ jacocoTestReport {
 		classDirectories.setFrom(files(classDirectories.files.collect {
 			fileTree(dir: it, exclude: [
 					"com/hyperlink/server/ServerApplication.*",
+					"com/hyperlink/server/global/profile/controller/ProfileController.*"
 			])
 		}))
 	}
