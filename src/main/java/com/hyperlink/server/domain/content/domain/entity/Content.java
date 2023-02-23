@@ -9,6 +9,7 @@ import javax.persistence.Id;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
 
 @Entity
 @Getter
@@ -28,4 +29,8 @@ public class Content extends BaseEntity {
 
   @Column(nullable = false)
   private String link;
+
+  @Column(columnDefinition = "INT UNSIGNED", nullable = false)
+  @ColumnDefault("0")
+  private int inquiry = 0;
 }
