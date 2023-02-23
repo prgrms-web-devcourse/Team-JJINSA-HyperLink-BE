@@ -39,8 +39,4 @@ public class Content extends BaseEntity {
     this.contentImgUrl = contentImgUrl;
     this.link = link;
   }
-
-  public synchronized void addInquiry() {
-    this.inquiry++;
-  }
 }
