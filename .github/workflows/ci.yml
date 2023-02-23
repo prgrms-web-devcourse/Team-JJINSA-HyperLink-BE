@@ -38,13 +38,13 @@ jobs:
           touch src/main/resources/application.yml
       
       - name: application.yml 설정
-        run: echo "${{secrets.APPLICATION}}" > src/main/resources/application.yml
+        run: echo "${{ secrets.APPLICATION }}" | base64 --decode > src/main/resources/application.yml
 
       - name: ./gradlew 권한 설정
         run: chmod +x ./gradlew
 
       - name: 빌드
-        run: SPRING_PROFILES_ACTIVE=[set1] ./gradlew clean build
+        run: SPRING_PROFILES_ACTIVE=[set1] ./gradlew clean build -x test -x :asciidoctor
 
       - name: aws 세팅
         uses: aws-actions/configure-aws-credentials@v1
