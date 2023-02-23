@@ -23,6 +23,7 @@ public class ContentService {
 
   @Transactional
   public int addInquiryAndGetCount(Long contentId) {
-    return contentRepository.updateInquiryCount(contentId);
+    contentRepository.updateInquiryCount(contentId);
+    return getInquiry(contentId);
   }
 }
