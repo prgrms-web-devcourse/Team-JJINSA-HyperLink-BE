@@ -7,6 +7,6 @@ backtony.github.io(Rest Docs)
 :toclevels: 4
 :sectlinks:
 
-== Member
-=== 회원가입
-operation::test/testk[snippets='http-request,http-response,response-fields']
+== Content
+=== 조회수 갱신
+operation::ContentControllerTest/addInquiryOfContent[snippets='http-request,http-response,response-fields']
