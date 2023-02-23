@@ -16,13 +16,12 @@ public class MemberContentService {
   private final MemberContentRepository memberContentRepository;
 
   public void createBookmark(Long memberId, Long contentId) {
-    memberContentRepository.findMemberContentByMemberIdAndContentIdAndType(memberId, contentId,
-        BOOKMARK.getTypeNumber()).ifPresentOrElse(memberContent -> {
+    if (isBookmarked(memberId, contentId)) {
       throw new BookmarkExistedException();
-    }, () -> {
+    } else {
       MemberContent memberContent = new MemberContent(memberId, contentId, BOOKMARK);
       memberContentRepository.save(memberContent);
-    });
+    }
   }
 
   public void deleteBookmark(Long memberId, Long contentId) {
@@ -32,7 +31,7 @@ public class MemberContentService {
     });
   }
 
-  public boolean isBookmarked(Long memberId, Long contentId) {
+  private boolean isBookmarked(Long memberId, Long contentId) {
     return memberContentRepository.findMemberContentByMemberIdAndContentIdAndType(
         memberId, contentId, BOOKMARK.getTypeNumber()).isPresent();
   }
