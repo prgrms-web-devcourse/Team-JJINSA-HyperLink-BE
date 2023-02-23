@@ -47,12 +47,6 @@ public class GlobalExceptionHandler {
     return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(errorResponse);
   }
 
-  @ExceptionHandler(MaxUploadSizeExceededException.class)
-  public ResponseEntity<ErrorResponse> handleFileSizeLimitedMethod() {
-    ErrorResponse errorResponse = new ErrorResponse("허용가능한 파일 사이즈를 초과하였습니다.");
-    return ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE).body(errorResponse);
-  }
-
   @ExceptionHandler(Exception.class)
   public ResponseEntity<ErrorResponse> handleUnexpectedException(final Exception e,
       final HttpServletRequest request) {
