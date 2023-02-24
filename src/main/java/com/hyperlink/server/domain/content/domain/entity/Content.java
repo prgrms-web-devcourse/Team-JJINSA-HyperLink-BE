@@ -28,4 +28,10 @@ public class Content extends BaseEntity {
 
   @Column(nullable = false)
   private String link;
+
+  public Content(String title, String contentImgUrl, String link) {
+    this.title = title;
+    this.contentImgUrl = contentImgUrl;
+    this.link = link;
+  }
 }
