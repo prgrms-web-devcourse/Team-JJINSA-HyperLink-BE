@@ -5,6 +5,7 @@ import com.hyperlink.server.domain.content.domain.entity.Content;
 import com.hyperlink.server.domain.content.exception.ContentNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -19,4 +20,9 @@ public class ContentService {
     return content.getInquiry();
   }
 
+  @Transactional
+  public int addInquiryAndGetCount(Long contentId) {
+    contentRepository.updateInquiryCount(contentId);
+    return getInquiry(contentId);
+  }
 }
