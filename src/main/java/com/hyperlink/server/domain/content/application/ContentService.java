@@ -14,9 +14,8 @@ public class ContentService {
   private final ContentRepository contentRepository;
 
   public int getInquiry(Long contentId) {
-    Content content = contentRepository.findById(contentId).orElseThrow(() -> {
-      throw new ContentNotFoundException();
-    });
+    Content content = contentRepository.findById(contentId).orElseThrow(
+        ContentNotFoundException::new);
 
     return content.getInquiry();
   }

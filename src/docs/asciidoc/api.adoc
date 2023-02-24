@@ -10,3 +10,7 @@ backtony.github.io(Rest Docs)
 == Content
 === 조회수 갱신
 operation::ContentControllerTest/addInquiryOfContent[snippets='http-request,http-response,response-fields']
+
+== MemberContent
+=== 북마크 추가/삭제
+operation::MemberContentController/includeCreateOrDeleteBookmark[snippets='http-request,http-response']
