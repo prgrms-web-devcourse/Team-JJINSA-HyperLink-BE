@@ -18,10 +18,9 @@ public class MemberContentService {
   public void createBookmark(Long memberId, Long contentId) {
     if (isBookmarked(memberId, contentId)) {
       throw new BookmarkExistedException();
-    } else {
-      MemberContent memberContent = new MemberContent(memberId, contentId, BOOKMARK);
-      memberContentRepository.save(memberContent);
     }
+    MemberContent memberContent = new MemberContent(memberId, contentId, BOOKMARK);
+    memberContentRepository.save(memberContent);
   }
 
   public void deleteBookmark(Long memberId, Long contentId) {
