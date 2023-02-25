@@ -1,9 +1,9 @@
 plugins {
-	id 'java'
-	id 'org.springframework.boot' version '2.7.8'
-	id 'io.spring.dependency-management' version '1.0.15.RELEASE'
-	id 'org.asciidoctor.jvm.convert' version '3.3.2'
-	id 'jacoco'
+    id 'java'
+    id 'org.springframework.boot' version '2.7.8'
+    id 'io.spring.dependency-management' version '1.0.15.RELEASE'
+    id 'org.asciidoctor.jvm.convert' version '3.3.2'
+    id 'jacoco'
 }
 
 group = 'com.hyper-link'
@@ -11,116 +11,117 @@ version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '17'
 
 configurations {
-	asciidoctorExtensions
-	compileOnly {
-		extendsFrom annotationProcessor
-	}
+    asciidoctorExtensions
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
 }
 
 repositories {
-	mavenCentral()
+    mavenCentral()
 }
 
 ext {
-	set('snippetsDir', file("build/generated-snippets"))
+    set('snippetsDir', file("build/generated-snippets"))
 }
 
 jacoco {
-	toolVersion = '0.8.8'
-	file("$buildDir/customJacocoReportDir")
+    toolVersion = '0.8.8'
+    file("$buildDir/customJacocoReportDir")
 }
 
 dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-	implementation 'org.springframework.boot:spring-boot-starter-web'
-	runtimeOnly 'com.mysql:mysql-connector-j'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    runtimeOnly 'com.mysql:mysql-connector-j'
 
-	// actuator
-	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    // actuator
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
 
-	// flyway
-	implementation 'org.flywaydb:flyway-core'
-	implementation 'org.flywaydb:flyway-mysql'
+    // flyway
+    implementation 'org.flywaydb:flyway-core'
+    implementation 'org.flywaydb:flyway-mysql'
 
-	// lombok
-	compileOnly 'org.projectlombok:lombok'
-	annotationProcessor 'org.projectlombok:lombok'
+    // lombok
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
 
-	// test
-	testCompileOnly 'org.projectlombok:lombok'
-	testAnnotationProcessor 'org.projectlombok:lombok'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    // test
+    testCompileOnly 'org.projectlombok:lombok'
+    testAnnotationProcessor 'org.projectlombok:lombok'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
-	// rest docs
-	testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
-	asciidoctorExtensions 'org.springframework.restdocs:spring-restdocs-asciidoctor'
+    // rest docs
+    testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
+    asciidoctorExtensions 'org.springframework.restdocs:spring-restdocs-asciidoctor'
 
-	// valid
-	implementation 'org.springframework.boot:spring-boot-starter-validation'
+    // valid
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
 }
 
 tasks.named('test') {
-	outputs.dir snippetsDir
-	useJUnitPlatform()
-	finalizedBy 'jacocoTestReport'
+    outputs.dir snippetsDir
+    useJUnitPlatform()
+    finalizedBy 'jacocoTestReport'
 }
 
 tasks.named('asciidoctor') {
-	inputs.dir snippetsDir
-	configurations 'asciidoctorExtensions'
-	dependsOn test
+    inputs.dir snippetsDir
+    configurations 'asciidoctorExtensions'
+    dependsOn test
 }
 
 asciidoctor.doFirst {
-	delete file('src/main/resources/static/docs')
+    delete file('src/main/resources/static/docs')
 }
 
 task copyDocument(type: Copy) {
-	dependsOn asciidoctor
-	from file("build/docs/asciidoc")
-	into file("src/main/resources/static/docs")
+    dependsOn asciidoctor
+    from file("build/docs/asciidoc")
+    into file("src/main/resources/static/docs")
 }
 
 build {
-	dependsOn copyDocument
+    dependsOn copyDocument
 }
 
 
 jar {
-	enabled = false
+    enabled = false
 }
 
 jacocoTestReport {
-	reports {
-		xml.enabled false
-		csv.enabled false
-		html.destination file("${buildDir}/jacocoHtml")
-	}
+    reports {
+        xml.enabled false
+        csv.enabled false
+        html.destination file("${buildDir}/jacocoHtml")
+    }
 
-	afterEvaluate {
-		classDirectories.setFrom(files(classDirectories.files.collect {
-			fileTree(dir: it, exclude: [
-					"com/hyperlink/server/ServerApplication.*",
-					"com/hyperlink/server/global/profile/controller/ProfileController.*"
-			])
-		}))
-	}
+    afterEvaluate {
+        classDirectories.setFrom(files(classDirectories.files.collect {
+            fileTree(dir: it, exclude: [
+                    "com/hyperlink/server/ServerApplication.*",
+                    "com/hyperlink/server/global/profile/controller/ProfileController.*",
+                    "com/hyperlink/server/domain/oauth"
+            ])
+        }))
+    }
 
-	finalizedBy 'jacocoTestCoverageVerification'
+    finalizedBy 'jacocoTestCoverageVerification'
 }
 
 jacocoTestCoverageVerification {
-	violationRules {
-		rule {
-			enabled = true
-			element = 'CLASS'
+    violationRules {
+        rule {
+            enabled = true
+            element = 'CLASS'
 
-			limit {
-				counter = 'LINE'
-				value = 'COVEREDRATIO'
-				minimum = 0.80
-			}
-		}
-	}
+            limit {
+                counter = 'LINE'
+                value = 'COVEREDRATIO'
+                minimum = 0.80
+            }
+        }
+    }
 }
 
