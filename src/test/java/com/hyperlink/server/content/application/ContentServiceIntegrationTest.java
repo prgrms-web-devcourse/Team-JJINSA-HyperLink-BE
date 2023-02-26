@@ -91,7 +91,8 @@ public class ContentServiceIntegrationTest {
           .limit(memberCount)
           .toList();
       workers.forEach(Thread::start);
-      countDownLatch.await();
+
+      Thread.sleep(7000);
     }
 
     @Order(2)
@@ -122,8 +123,8 @@ public class ContentServiceIntegrationTest {
 
       @Override
       public void run() {
-        countDownLatch.countDown();
         contentService.addView(contentId);
+        countDownLatch.countDown();
       }
     }
 
