@@ -29,4 +29,9 @@ public class Creator extends BaseEntity {
   @Column(nullable = false)
   private String description;
 
+  public Creator(String name, String profileImgUrl, String description) {
+    this.name = name;
+    this.profileImgUrl = profileImgUrl;
+    this.description = description;
+  }
 }

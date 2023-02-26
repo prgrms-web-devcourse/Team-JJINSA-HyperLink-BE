@@ -17,11 +17,12 @@ public class ContentController {
 
   private final ContentService contentService;
 
-  @PatchMapping("/{contentId}/inquiry")
+  @PatchMapping("/{contentId}/view")
   @ResponseStatus(HttpStatus.OK)
-  public PatchInquiryResponse addInquiryOfContent(@PathVariable("contentId") long contentId) {
-    int inquiryCount = contentService.addInquiryAndGetCount(contentId);
-    return new PatchInquiryResponse(inquiryCount);
+  public PatchInquiryResponse addViewOfContent(@PathVariable("contentId") long contentId) {
+    contentService.addView(contentId);
+    int viewCount = contentService.getViewCount(contentId);
+    return new PatchInquiryResponse(viewCount);
   }
 
 }
