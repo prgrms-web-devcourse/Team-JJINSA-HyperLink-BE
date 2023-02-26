@@ -10,6 +10,6 @@ public interface ContentRepository extends JpaRepository<Content, Long> {
 
   @Modifying(clearAutomatically = true)
   @Query("update Content c set c.viewCount = c.viewCount + 1 where c.id = :content_id")
-  int updateInquiryCount(@Param("content_id") Long contentId);
+  int updateViewCount(@Param("content_id") Long contentId);
 
 }
