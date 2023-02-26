@@ -41,7 +41,11 @@ public class Content extends BaseEntity {
 
   @Column(columnDefinition = "INT UNSIGNED", nullable = false)
   @ColumnDefault("0")
-  private int inquiry = 0;
+  private int viewCount = 0;
+
+  @Column(columnDefinition = "INT UNSIGNED", nullable = false)
+  @ColumnDefault("0")
+  private int likeCount = 0;
 
   public Content(String title, String contentImgUrl, String link) {
     this.title = title;

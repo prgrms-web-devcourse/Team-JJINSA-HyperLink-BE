@@ -17,7 +17,7 @@ public class ContentService {
     Content content = contentRepository.findById(contentId).orElseThrow(
         ContentNotFoundException::new);
 
-    return content.getInquiry();
+    return content.getViewCount();
   }
 
   @Transactional
