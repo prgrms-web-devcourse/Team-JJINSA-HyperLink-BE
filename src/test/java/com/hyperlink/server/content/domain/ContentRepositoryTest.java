@@ -23,7 +23,7 @@ public class ContentRepositoryTest {
   @DisplayName("조회수 update 메소드를 실행하면 조회수가 +1 된다")
   void updateInquiryTest() {
     Content content = new Content("title", "contentImgUrl", "link");
-    int beforeInquiry = content.getInquiry();
+    int beforeInquiry = content.getViewCount();
     contentRepository.save(content);
 
     contentRepository.updateInquiryCount(content.getId());
@@ -31,6 +31,6 @@ public class ContentRepositoryTest {
     Content findContent = contentRepository.findById(content.getId())
         .orElseThrow(ContentNotFoundException::new);
 
-    assertThat(findContent.getInquiry()).isEqualTo(beforeInquiry + 1);
+    assertThat(findContent.getViewCount()).isEqualTo(beforeInquiry + 1);
   }
 }

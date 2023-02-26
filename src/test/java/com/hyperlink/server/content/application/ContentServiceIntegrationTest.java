@@ -43,7 +43,7 @@ public class ContentServiceIntegrationTest {
     void success() {
       Content content = new Content("title", "contentImgUrl", "link");
       contentRepository.save(content);
-      int inquiryCountBeforeAdd = content.getInquiry();
+      int inquiryCountBeforeAdd = content.getViewCount();
 
       contentService.addInquiryAndGetCount(content.getId());
 
@@ -81,7 +81,7 @@ public class ContentServiceIntegrationTest {
       content = new Content("title", "contentImgUrl", "link");
       content = contentRepository.save(content);
       Long contentId = content.getId();
-      beforeInquiry = content.getInquiry();
+      beforeInquiry = content.getViewCount();
 
       List<Thread> workers = Stream.generate(() -> new Thread(new Worker(countDownLatch, contentId)))
           .limit(memberCount)
@@ -96,7 +96,7 @@ public class ContentServiceIntegrationTest {
     void addInquiry() {
       Content findContent = contentRepository.findById(content.getId())
           .orElseThrow(ContentNotFoundException::new);
-      assertThat(findContent.getInquiry()).isEqualTo(beforeInquiry + memberCount);
+      assertThat(findContent.getViewCount()).isEqualTo(beforeInquiry + memberCount);
     }
 
     @Order(3)
