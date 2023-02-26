@@ -2,6 +2,7 @@ package com.hyperlink.server.domain.content.domain.entity;
 
 import com.hyperlink.server.domain.category.domain.entity.Category;
 import com.hyperlink.server.domain.common.BaseEntity;
+import com.hyperlink.server.domain.creator.domain.entity.Creator;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -34,9 +35,9 @@ public class Content extends BaseEntity {
   @Column(nullable = false)
   private String link;
 
-  @JoinColumn(name = "category_id", nullable = false)
+  @JoinColumn(name = "creator_id", nullable = false)
   @ManyToOne(fetch = FetchType.LAZY)
-  private Category category;
+  private Creator creator;
 
   @Column(columnDefinition = "INT UNSIGNED", nullable = false)
   @ColumnDefault("0")
