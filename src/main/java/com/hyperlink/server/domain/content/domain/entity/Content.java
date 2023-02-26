@@ -1,11 +1,16 @@
 package com.hyperlink.server.domain.content.domain.entity;
 
+import com.hyperlink.server.domain.category.domain.entity.Category;
 import com.hyperlink.server.domain.common.BaseEntity;
+import com.hyperlink.server.domain.creator.domain.entity.Creator;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -29,6 +34,10 @@ public class Content extends BaseEntity {
 
   @Column(nullable = false)
   private String link;
+
+  @JoinColumn(name = "creator_id", nullable = false)
+  @ManyToOne(fetch = FetchType.LAZY)
+  private Creator creator;
 
   @Column(columnDefinition = "INT UNSIGNED", nullable = false)
   @ColumnDefault("0")
