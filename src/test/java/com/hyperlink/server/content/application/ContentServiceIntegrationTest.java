@@ -121,7 +121,8 @@ public class ContentServiceIntegrationTest {
     @Order(3)
     @Rollback(value = false)
     @Test
-    void tearDownContent() {
+    void tearDown() {
+      creatorRepository.deleteAll();
       contentRepository.deleteById(contentId);
     }
 
