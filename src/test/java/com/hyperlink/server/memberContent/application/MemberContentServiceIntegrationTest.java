@@ -4,6 +4,8 @@ import static com.hyperlink.server.domain.memberContent.domain.entity.MemberCont
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import com.hyperlink.server.domain.category.domain.CategoryRepository;
+import com.hyperlink.server.domain.category.domain.entity.Category;
 import com.hyperlink.server.domain.content.domain.ContentRepository;
 import com.hyperlink.server.domain.content.domain.entity.Content;
 import com.hyperlink.server.domain.creator.domain.CreatorRepository;
@@ -37,6 +39,8 @@ public class MemberContentServiceIntegrationTest {
   @Autowired
   ContentRepository contentRepository;
   @Autowired
+  CategoryRepository categoryRepository;
+  @Autowired
   CreatorRepository creatorRepository;
 
   Member member;
@@ -46,7 +50,9 @@ public class MemberContentServiceIntegrationTest {
   void setUp() {
     member = new Member("email", "nickname", "career", "3", "profileImgUrl");
     Creator creator = new Creator("name", "profile", "description");
-    content = new Content("title", "contentImgUrl", "link", creator);
+    Category category = new Category("개발");
+    content = new Content("title", "contentImgUrl", "link", creator, category);
+    categoryRepository.save(category);
     creatorRepository.save(creator);
     memberRepository.save(member);
     contentRepository.save(content);

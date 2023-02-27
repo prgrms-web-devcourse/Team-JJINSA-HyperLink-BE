@@ -3,6 +3,8 @@ package com.hyperlink.server.content.application;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import com.hyperlink.server.domain.category.domain.CategoryRepository;
+import com.hyperlink.server.domain.category.domain.entity.Category;
 import com.hyperlink.server.domain.content.application.ContentService;
 import com.hyperlink.server.domain.content.domain.ContentRepository;
 import com.hyperlink.server.domain.content.domain.entity.Content;
@@ -44,13 +46,18 @@ public class ContentServiceIntegrationTest {
   ContentRepository contentRepository;
   @Autowired
   CreatorRepository creatorRepository;
+  @Autowired
+  CategoryRepository categoryRepository;
 
   Creator creator;
+  Category category;
 
   @BeforeEach
   void setUp() {
     creator = new Creator("name", "profile", "description");
     creatorRepository.save(creator);
+    category = new Category("개발");
+    categoryRepository.save(category);
   }
 
   @Nested
@@ -60,7 +67,7 @@ public class ContentServiceIntegrationTest {
     @Test
     @DisplayName("성공하면 특정 컨텐츠의 조회수를 리턴한다.")
     void success() {
-      Content content = new Content("title", "contentImgUrl", "link", creator);
+      Content content = new Content("title", "contentImgUrl", "link", creator, category);
       contentRepository.save(content);
       int inquiryCountBeforeAdd = content.getViewCount();
 
@@ -96,7 +103,7 @@ public class ContentServiceIntegrationTest {
     void manyRequestView() throws InterruptedException {
       final CountDownLatch countDownLatch = new CountDownLatch(memberCount);
 
-      Content content = new Content("title", "contentImgUrl", "link", creator);
+      Content content = new Content("title", "contentImgUrl", "link", creator, category);
       content = contentRepository.save(content);
       contentId = content.getId();
       beforeViewCount = content.getViewCount();
@@ -153,12 +160,12 @@ public class ContentServiceIntegrationTest {
     @BeforeEach
     void setUp() {
       List<Content> contents = new ArrayList<>();
-      contents.add(new Content("개발", "ImgUrl", "link", creator));
-      contents.add(new Content("개발짱", "ImgUrl", "link", creator));
-      contents.add(new Content("짱개발짱", "ImgUrl", "link", creator));
-      contents.add(new Content("개발자의 성장하는 삶", "ImgUrl", "link", creator));
-      contents.add(new Content("키가 쑥쑥 성장판", "ImgUrl", "link", creator));
-      contents.add(new Content("짱코딩짱", "ImgUrl", "link", creator));
+      contents.add(new Content("개발", "ImgUrl", "link", creator, category));
+      contents.add(new Content("개발짱", "ImgUrl", "link", creator, category));
+      contents.add(new Content("짱개발짱", "ImgUrl", "link", creator, category));
+      contents.add(new Content("개발자의 성장하는 삶", "ImgUrl", "link", creator, category));
+      contents.add(new Content("키가 쑥쑥 성장판", "ImgUrl", "link", creator, category));
+      contents.add(new Content("짱코딩짱", "ImgUrl", "link", creator, category));
 
       contentRepository.saveAll(contents);
     }

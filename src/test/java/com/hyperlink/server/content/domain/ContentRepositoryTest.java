@@ -2,6 +2,8 @@ package com.hyperlink.server.content.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.hyperlink.server.domain.category.domain.CategoryRepository;
+import com.hyperlink.server.domain.category.domain.entity.Category;
 import com.hyperlink.server.domain.content.domain.ContentRepository;
 import com.hyperlink.server.domain.content.domain.entity.Content;
 import com.hyperlink.server.domain.content.exception.ContentNotFoundException;
@@ -22,14 +24,18 @@ class ContentRepositoryTest {
   ContentRepository contentRepository;
   @Autowired
   CreatorRepository creatorRepository;
+  @Autowired
+  CategoryRepository categoryRepository;
 
   @Test
   @DisplayName("조회수 update 메소드를 실행하면 조회수가 +1 된다")
   void updateInquiryTest() {
     Creator creator = new Creator("name", "profile", "description");
-    Content content = new Content("title", "contentImgUrl", "link", creator);
+    Category category = new Category("개발");
+    Content content = new Content("title", "contentImgUrl", "link", creator, category);
     int beforeInquiry = content.getViewCount();
     creatorRepository.save(creator);
+    categoryRepository.save(category);
     contentRepository.save(content);
 
     contentRepository.updateViewCount(content.getId());
