@@ -30,7 +30,7 @@ public class MemberContentService {
     });
   }
 
-  private boolean isBookmarked(Long memberId, Long contentId) {
+  public boolean isBookmarked(Long memberId, Long contentId) {
     return memberContentRepository.findMemberContentByMemberIdAndContentIdAndType(
         memberId, contentId, BOOKMARK.getTypeNumber()).isPresent();
   }
