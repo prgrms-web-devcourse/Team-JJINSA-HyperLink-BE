@@ -76,6 +76,9 @@ dependencies {
     //querydsl
     implementation "com.querydsl:querydsl-jpa:${queryDslVersion}"
     annotationProcessor "com.querydsl:querydsl-apt:${queryDslVersion}"
+
+	// amqp
+	implementation 'org.springframework.boot:spring-boot-starter-amqp'
 }
 
 def querydslDir = "$buildDir/generated/querydsl"
