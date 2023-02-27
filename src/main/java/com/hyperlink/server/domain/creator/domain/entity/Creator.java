@@ -37,4 +37,14 @@ public class Creator extends BaseEntity {
   @ManyToOne(fetch = FetchType.LAZY)
   private Category category;
 
+  public String getCategoryName() {
+    return category.getName();
+  }
+
+  public Creator(String name, String profileImgUrl, String description, Category category) {
+    this.name = name;
+    this.profileImgUrl = profileImgUrl;
+    this.description = description;
+    this.category = category;
+  }
 }
