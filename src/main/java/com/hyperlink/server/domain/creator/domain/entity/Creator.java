@@ -49,4 +49,8 @@ public class Creator extends BaseEntity {
     this.category = category;
   }
 
+  @JoinColumn(name = "category_id", nullable = false)
+  @ManyToOne(fetch = FetchType.LAZY)
+  private Category category;
+
 }
