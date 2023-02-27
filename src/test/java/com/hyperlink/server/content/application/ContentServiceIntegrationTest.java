@@ -141,6 +141,7 @@ public class ContentServiceIntegrationTest {
     @Test
     void tearDown() {
       contentRepository.deleteById(contentId);
+      creatorRepository.deleteAll();
     }
 
     private class Worker implements Runnable {
