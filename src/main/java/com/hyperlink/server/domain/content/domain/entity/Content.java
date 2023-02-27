@@ -43,6 +43,9 @@ public class Content extends BaseEntity {
   @ManyToOne(fetch = FetchType.LAZY)
   private Category category;
 
+  @Column(nullable = false, name = "is_viewable", columnDefinition = "TINYINT", length = 1)
+  private boolean isViewable;
+
   @Column(columnDefinition = "INT UNSIGNED", nullable = false)
   @ColumnDefault("0")
   private int viewCount = 0;
