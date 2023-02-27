@@ -5,6 +5,7 @@ import com.hyperlink.server.domain.content.domain.entity.Content;
 import com.hyperlink.server.domain.content.dto.ContentResponse;
 import com.hyperlink.server.domain.content.dto.RecommendationCompanyResponse;
 import com.hyperlink.server.domain.content.dto.SearchResponse;
+import com.hyperlink.server.domain.content.dto.ContentCreationResponse;
 import com.hyperlink.server.domain.content.exception.ContentNotFoundException;
 import com.hyperlink.server.domain.content.infrastructure.ContentRepositoryCustom;
 import com.hyperlink.server.domain.memberContent.application.MemberContentService;
@@ -68,4 +69,9 @@ public class ContentService {
     return Arrays.asList(keyword.split(" "));
   }
 
+
+  @Transactional
+  public void insertContent(ContentCreationResponse contentCreationResponse) {
+
+  }
 }
