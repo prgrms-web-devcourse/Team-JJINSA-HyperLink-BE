@@ -18,6 +18,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hyperlink.server.domain.auth.oauth.GoogleAccessToken;
 import com.hyperlink.server.domain.auth.oauth.GoogleAccessTokenRepository;
+import com.hyperlink.server.domain.auth.oauth.dto.OauthResponse;
 import com.hyperlink.server.domain.auth.token.JwtTokenProvider;
 import com.hyperlink.server.domain.category.domain.CategoryRepository;
 import com.hyperlink.server.domain.category.domain.entity.Category;
@@ -66,6 +67,7 @@ public class MemberControllerTest {
 
     GoogleAccessToken savedGoogleAccessToken = googleAccessTokenRepository.save(
         new GoogleAccessToken(accessToken, email));
+    OauthResponse oauthResponse = new OauthResponse(accessToken, true, email, "localhost");
 
     SignUpRequest signUpRequest = new SignUpRequest(email, "Chocho", "develop",
         "10", "localhost", 1995,

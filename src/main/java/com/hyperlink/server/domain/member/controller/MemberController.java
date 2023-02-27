@@ -10,6 +10,7 @@ import com.hyperlink.server.domain.member.dto.SignUpResponse;
 import com.hyperlink.server.domain.member.dto.SignUpResult;
 import java.net.URI;
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
@@ -37,7 +38,7 @@ public class MemberController {
 
   @PostMapping("/members/signup")
   public ResponseEntity<SignUpResponse> signup(HttpServletRequest request,
-      @RequestBody SignUpRequest signUpRequest) {
+      @RequestBody @Valid SignUpRequest signUpRequest) {
 
     String authorizationHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
     String accessToken = authTokenExtractor.extractToken(authorizationHeader);
@@ -45,7 +46,7 @@ public class MemberController {
     SignUpResult signUpResult = memberService.signUp(signUpRequest);
 
     ResponseCookie cookie = refreshTokenCookieProvider.createCookie(signUpResult.refreshToken());
-    
+
     return ResponseEntity.created(URI.create("/mypage"))
         .header(HttpHeaders.SET_COOKIE, cookie.toString()).body(SignUpResponse.from(
             signUpResult.accessToken()));
