@@ -70,6 +70,21 @@ dependencies {
 	annotationProcessor "com.querydsl:querydsl-apt:${queryDslVersion}"
 }
 
+def querydslDir = "$buildDir/generated/querydsl"
+querydsl {
+	jpa = true
+	querydslSourcesDir = querydslDir
+}
+sourceSets {
+	main.java.srcDir querydslDir
+}
+configurations {
+	querydsl.extendsFrom compileClasspath
+}
+compileQuerydsl {
+	options.annotationProcessorPath = configurations.querydsl
+}
+
 tasks.named('test') {
 	outputs.dir snippetsDir
 	useJUnitPlatform()
@@ -108,12 +123,17 @@ jacocoTestReport {
 		html.destination file("${buildDir}/jacocoHtml")
 	}
 
+	def Qdomains = []
+	for(qPattern in "**/QA" .. "**/QZ"){
+		Qdomains.add(qPattern+"*")
+	}
+
 	afterEvaluate {
 		classDirectories.setFrom(files(classDirectories.files.collect {
 			fileTree(dir: it, exclude: [
 					"com/hyperlink/server/ServerApplication.*",
 					"com/hyperlink/server/global/profile/controller/ProfileController.*"
-			])
+			] + Qdomains)
 		}))
 	}
 
@@ -121,6 +141,10 @@ jacocoTestReport {
 }
 
 jacocoTestCoverageVerification {
+	def Qdomains = []
+	for (qPattern in '*.QA'..'*.QZ') {
+		Qdomains.add(qPattern + '*')
+	}
 	violationRules {
 		rule {
 			enabled = true
@@ -131,21 +155,11 @@ jacocoTestCoverageVerification {
 				value = 'COVEREDRATIO'
 				minimum = 0.80
 			}
+
+			excludes = [
+			        '*.ProfileController*',
+					'*.ServerApplication*'
+			] + Qdomains
 		}
 	}
-}
-
-def querydslDir = "$buildDir/generated/querydsl"
-querydsl {
-	jpa = true
-	querydslSourcesDir = querydslDir
-}
-sourceSets {
-	main.java.srcDir querydslDir
-}
-configurations {
-	querydsl.extendsFrom compileClasspath
-}
-compileQuerydsl {
-	options.annotationProcessorPath = configurations.querydsl
 }
