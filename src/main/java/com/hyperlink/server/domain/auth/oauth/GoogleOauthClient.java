@@ -2,9 +2,9 @@ package com.hyperlink.server.domain.auth.oauth;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.hyperlink.server.domain.auth.dto.GoogleProfileResult;
-import com.hyperlink.server.domain.auth.dto.GoogleToken;
-import com.hyperlink.server.domain.auth.dto.OauthResponse;
+import com.hyperlink.server.domain.auth.oauth.dto.GoogleProfileResult;
+import com.hyperlink.server.domain.auth.oauth.dto.GoogleToken;
+import com.hyperlink.server.domain.auth.oauth.dto.OauthResponse;
 import com.hyperlink.server.domain.member.application.MemberService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -33,6 +33,7 @@ public class GoogleOauthClient {
 
   private final ObjectMapper objectMapper;
   private final MemberService memberService;
+  private final GoogleAccessTokenRepository googleAccessTokenRepository;
 
   public GoogleOauthClient(
       @Value("${google.client.id}") String clientId,
@@ -41,7 +42,7 @@ public class GoogleOauthClient {
       @Value("${google.tokenUri}") String tokenUri,
       @Value("${google.profileUri}") String profileUri,
       ObjectMapper objectMapper,
-      MemberService memberService) {
+      MemberService memberService, GoogleAccessTokenRepository googleAccessTokenRepository) {
     this.clientId = clientId;
     this.clientSecret = clientSecret;
     this.redirectUri = redirectUri;
@@ -50,10 +51,11 @@ public class GoogleOauthClient {
 
     this.objectMapper = objectMapper;
     this.memberService = memberService;
+    this.googleAccessTokenRepository = googleAccessTokenRepository;
   }
 
   @ResponseBody
-  @GetMapping("/oauth/code/google")
+  @GetMapping("/members/oauth/code/google")
   public ResponseEntity<OauthResponse> authGoogle(@RequestParam String code)
       throws JsonProcessingException {
     String accessToken = extractAccessToken(
@@ -63,6 +65,9 @@ public class GoogleOauthClient {
     String json = requestProfile(generateProfileRequest(accessToken)).getBody();
     GoogleProfileResult googleProfileResult = objectMapper.readValue(json,
         GoogleProfileResult.class);
+
+    googleAccessTokenRepository.save(
+        new GoogleAccessToken(accessToken, googleProfileResult.email()));
 
     boolean joinCheck = memberService.existsMemberByEmail(googleProfileResult.email());
     return ResponseEntity.ok(new OauthResponse(accessToken, joinCheck, googleProfileResult.email(),

@@ -35,6 +35,14 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     runtimeOnly 'com.mysql:mysql-connector-j'
 
+    // redis
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis:2.3.1.RELEASE'
+
+    // jwt
+    implementation 'io.jsonwebtoken:jjwt-api:0.11.2'
+    implementation 'io.jsonwebtoken:jjwt-impl:0.11.2'
+    implementation 'io.jsonwebtoken:jjwt-jackson:0.11.2'
+
     // actuator
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
 
@@ -102,7 +110,7 @@ jacocoTestReport {
             fileTree(dir: it, exclude: [
                     "com/hyperlink/server/ServerApplication.*",
                     "com/hyperlink/server/global/profile/controller/ProfileController.*",
-                    "com/hyperlink/server/domain/oauth"
+                    "com/hyperlink/server/domain/auth/oauth/**"
             ])
         }))
     }

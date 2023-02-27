@@ -1,4 +1,4 @@
-package com.hyperlink.server.domain.auth.dto;
+package com.hyperlink.server.domain.auth.oauth.dto;
 
 public record GoogleProfileResult(
     String sub,
