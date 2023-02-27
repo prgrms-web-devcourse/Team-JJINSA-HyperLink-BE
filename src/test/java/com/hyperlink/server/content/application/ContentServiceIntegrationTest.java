@@ -6,20 +6,30 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import com.hyperlink.server.domain.content.application.ContentService;
 import com.hyperlink.server.domain.content.domain.ContentRepository;
 import com.hyperlink.server.domain.content.domain.entity.Content;
+import com.hyperlink.server.domain.content.dto.SearchResponse;
 import com.hyperlink.server.domain.content.exception.ContentNotFoundException;
 import com.hyperlink.server.domain.creator.domain.CreatorRepository;
 import com.hyperlink.server.domain.creator.domain.entity.Creator;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.stream.Stream;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.junit.jupiter.api.TestMethodOrder;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,6 +45,14 @@ public class ContentServiceIntegrationTest {
   @Autowired
   CreatorRepository creatorRepository;
 
+  Creator creator;
+
+  @BeforeEach
+  void setUp() {
+    creator = new Creator("name", "profile", "description");
+    creatorRepository.save(creator);
+  }
+
   @Nested
   @DisplayName("조회수 갯수 조회 메서드는")
   class View {
@@ -42,9 +60,7 @@ public class ContentServiceIntegrationTest {
     @Test
     @DisplayName("성공하면 특정 컨텐츠의 조회수를 리턴한다.")
     void success() {
-      Creator creator = new Creator("name", "profile", "description");
       Content content = new Content("title", "contentImgUrl", "link", creator);
-      creatorRepository.save(creator);
       contentRepository.save(content);
       int inquiryCountBeforeAdd = content.getViewCount();
 
@@ -80,9 +96,7 @@ public class ContentServiceIntegrationTest {
     void manyRequestView() throws InterruptedException {
       final CountDownLatch countDownLatch = new CountDownLatch(memberCount);
 
-      Creator creator = new Creator("name", "profile", "description");
       Content content = new Content("title", "contentImgUrl", "link", creator);
-      creatorRepository.save(creator);
       content = contentRepository.save(content);
       contentId = content.getId();
       beforeViewCount = content.getViewCount();
@@ -128,5 +142,47 @@ public class ContentServiceIntegrationTest {
       }
     }
 
+  }
+
+  @TestInstance(Lifecycle.PER_CLASS)
+  @Nested
+  @DisplayName("검색 메서드는")
+  class Search {
+
+    @BeforeEach
+    void setUp() {
+      List<Content> contents = new ArrayList<>();
+      contents.add(new Content("개발", "ImgUrl", "link", creator));
+      contents.add(new Content("개발짱", "ImgUrl", "link", creator));
+      contents.add(new Content("짱개발짱", "ImgUrl", "link", creator));
+      contents.add(new Content("개발자의 성장하는 삶", "ImgUrl", "link", creator));
+      contents.add(new Content("키가 쑥쑥 성장판", "ImgUrl", "link", creator));
+      contents.add(new Content("짱코딩짱", "ImgUrl", "link", creator));
+
+      contentRepository.saveAll(contents);
+    }
+
+    Stream<Arguments> createResult() {
+      return Stream.of(
+          Arguments.of("개발 성장 코딩", 6),
+          Arguments.of("개발", 4),
+          Arguments.of("성장 개발", 5),
+          Arguments.of("코딩", 1)
+      );
+    }
+
+    @ParameterizedTest
+    @MethodSource("createResult")
+    @DisplayName("띄어쓰기를 기준으로 모든 키워드를 or 조건으로 containing 검색한 결과를 리턴한다.")
+    void everyKeywordSearchContaining(String keyword, int resultCount) {
+      Long memberId = 1L;
+      final int page = 0;
+      final int size = 10;
+      Pageable pageable = PageRequest.of(page, size);
+
+      SearchResponse searchResponse = contentService.search(memberId, keyword, pageable);
+
+      assertThat(searchResponse.resultCount()).isEqualTo(resultCount);
+    }
   }
 }
