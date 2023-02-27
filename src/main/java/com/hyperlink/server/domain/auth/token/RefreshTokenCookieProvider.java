@@ -18,7 +18,7 @@ public class RefreshTokenCookieProvider {
         .maxAge(Duration.ofMillis(expiredTimeMillis))
         .build();
   }
-  
+
   private ResponseCookieBuilder createTokenCookieBuilder(final String value) {
     return ResponseCookie.from(REFRESH_TOKEN, value)
         .httpOnly(true)

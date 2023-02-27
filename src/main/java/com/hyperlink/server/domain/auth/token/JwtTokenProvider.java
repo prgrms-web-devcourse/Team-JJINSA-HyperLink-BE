@@ -41,4 +41,5 @@ public class JwtTokenProvider {
         .setSubject(String.valueOf(memberId))
         .compact();
   }
+
 }

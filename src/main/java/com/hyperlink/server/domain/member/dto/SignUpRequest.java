@@ -13,7 +13,7 @@ public record SignUpRequest(
     @NotBlank @Size(max = 30) String careerYear,
     @NotBlank String profileUrl,
     @NotBlank Integer birthYear,
-    @NotBlank @Size(max = 10) String gender,
+    //@NotBlank @Size(max = 10) String gender,
     @NotBlank List<String> attentionCategory
 ) {
 
