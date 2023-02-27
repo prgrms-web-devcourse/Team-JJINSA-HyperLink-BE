@@ -49,8 +49,8 @@ public class MemberContentServiceIntegrationTest {
   @BeforeEach
   void setUp() {
     member = new Member("email", "nickname", "career", "3", "profileImgUrl");
-    Creator creator = new Creator("name", "profile", "description");
     Category category = new Category("개발");
+    Creator creator = new Creator("name", "profile", "description", category);
     content = new Content("title", "contentImgUrl", "link", creator, category);
     categoryRepository.save(category);
     creatorRepository.save(creator);

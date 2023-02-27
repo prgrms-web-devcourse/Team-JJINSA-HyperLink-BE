@@ -30,8 +30,8 @@ class ContentRepositoryTest {
   @Test
   @DisplayName("조회수 update 메소드를 실행하면 조회수가 +1 된다")
   void updateInquiryTest() {
-    Creator creator = new Creator("name", "profile", "description");
     Category category = new Category("개발");
+    Creator creator = new Creator("name", "profile", "description", category);
     Content content = new Content("title", "contentImgUrl", "link", creator, category);
     int beforeInquiry = content.getViewCount();
     creatorRepository.save(creator);

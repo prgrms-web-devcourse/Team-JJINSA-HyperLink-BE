@@ -54,10 +54,10 @@ public class ContentServiceIntegrationTest {
 
   @BeforeEach
   void setUp() {
-    creator = new Creator("name", "profile", "description");
-    creatorRepository.save(creator);
     category = new Category("개발");
     categoryRepository.save(category);
+    creator = new Creator("name", "profile", "description", category);
+    creatorRepository.save(creator);
   }
 
   @Nested
