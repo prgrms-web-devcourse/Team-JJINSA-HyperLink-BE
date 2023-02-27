@@ -1,4 +1,4 @@
-package com.hyperlink.server.token;
+package com.hyperlink.server.auth.token;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

@@ -110,7 +110,8 @@ jacocoTestReport {
             fileTree(dir: it, exclude: [
                     "com/hyperlink/server/ServerApplication.*",
                     "com/hyperlink/server/global/profile/controller/ProfileController.*",
-                    "com/hyperlink/server/domain/auth/oauth/**"
+                    "com/hyperlink/server/domain/auth/oauth/**",
+                    "com/hyperlink/server/global/config/**"
             ])
         }))
     }

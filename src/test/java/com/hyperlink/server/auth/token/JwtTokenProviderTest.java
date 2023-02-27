@@ -1,4 +1,4 @@
-package com.hyperlink.server.token;
+package com.hyperlink.server.auth.token;
 
 import com.hyperlink.server.domain.auth.token.AuthTokenExtractor;
 import com.hyperlink.server.domain.auth.token.JwtTokenProvider;
