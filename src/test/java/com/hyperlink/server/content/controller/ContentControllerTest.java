@@ -120,7 +120,7 @@ public class ContentControllerTest {
       void searchContentsTest() throws Exception {
         List<RecommendationCompanyResponse> recommendationCompanyResponses = List.of(
             new RecommendationCompanyResponse("네이버", "https://imglogo.com"));
-        ContentResponse contentResponse = new ContentResponse(27L, "개발자의 삶", "https://img1.com",
+        ContentResponse contentResponse = new ContentResponse(27L, "개발자의 삶", "슈","https://img1.com",
             "https://okky.kr/articles/503803", 4,
             100, false, false, "2023-02-17T12:30.334", recommendationCompanyResponses);
         List<ContentResponse> contentResponses = List.of(contentResponse);
@@ -152,6 +152,8 @@ public class ContentControllerTest {
                             .description("컨텐츠 id"),
                         fieldWithPath("contents.[].title").type(JsonFieldType.STRING)
                             .description("컨텐츠 제목"),
+                        fieldWithPath("contents.[].creatorName").type(JsonFieldType.STRING)
+                            .description("크리에이터 이름"),
                         fieldWithPath("contents.[].contentImgUrl").type(JsonFieldType.STRING)
                             .description("컨텐츠 이미지 URL"),
                         fieldWithPath("contents.[].link").type(JsonFieldType.STRING)
