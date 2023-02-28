@@ -11,9 +11,11 @@ public class GoogleAccessToken {
   @Id
   private String googleAccessToken;
   private String email;
+  private String profileUrl;
 
-  public GoogleAccessToken(String googleAccessToken, String email) {
+  public GoogleAccessToken(String googleAccessToken, String email, String profileUrl) {
     this.googleAccessToken = googleAccessToken;
     this.email = email;
+    this.profileUrl = profileUrl;
   }
 }

@@ -10,6 +10,8 @@ import com.hyperlink.server.domain.content.domain.ContentRepository;
 import com.hyperlink.server.domain.content.domain.entity.Content;
 import com.hyperlink.server.domain.creator.domain.CreatorRepository;
 import com.hyperlink.server.domain.creator.domain.entity.Creator;
+import com.hyperlink.server.domain.member.domain.Career;
+import com.hyperlink.server.domain.member.domain.CareerYear;
 import com.hyperlink.server.domain.member.domain.MemberRepository;
 import com.hyperlink.server.domain.member.domain.entity.Member;
 import com.hyperlink.server.domain.memberContent.application.MemberContentService;
@@ -48,7 +50,7 @@ public class MemberContentServiceIntegrationTest {
 
   @BeforeEach
   void setUp() {
-    member = new Member("email", "nickname", "career", "3", "profileImgUrl");
+    member = new Member("email", "nickname", Career.DEVELOP, CareerYear.MORE_TEN, "profileImgUrl");
     Category category = new Category("개발");
     Creator creator = new Creator("name", "profile", "description", category);
     content = new Content("title", "contentImgUrl", "link", creator, category);

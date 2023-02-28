@@ -1,5 +1,6 @@
 package com.hyperlink.server.domain.member.controller;
 
+import com.hyperlink.server.domain.auth.oauth.GoogleAccessToken;
 import com.hyperlink.server.domain.auth.oauth.GoogleAccessTokenRepository;
 import com.hyperlink.server.domain.auth.token.AuthTokenExtractor;
 import com.hyperlink.server.domain.auth.token.RefreshTokenCookieProvider;
@@ -42,21 +43,20 @@ public class MemberController {
 
     String authorizationHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
     String accessToken = authTokenExtractor.extractToken(authorizationHeader);
-    checkGoogleAccessToken(accessToken);
-    SignUpResult signUpResult = memberService.signUp(signUpRequest);
+    GoogleAccessToken googleAccessToken = googleAccessTokenRepository
+        .findById(accessToken)
+        .orElseThrow(TokenNotExistsException::new);
+
+    SignUpResult signUpResult = memberService.signUp(signUpRequest,
+        googleAccessToken.getProfileUrl());
+
+    googleAccessTokenRepository.deleteById(googleAccessToken.getGoogleAccessToken());
 
     ResponseCookie cookie = refreshTokenCookieProvider.createCookie(signUpResult.refreshToken());
 
     return ResponseEntity.created(URI.create("/mypage"))
         .header(HttpHeaders.SET_COOKIE, cookie.toString()).body(SignUpResponse.from(
             signUpResult.accessToken()));
-  }
-
-  private void checkGoogleAccessToken(String googleAccessToken) {
-    if (!googleAccessTokenRepository.existsById(googleAccessToken)) {
-      throw new TokenNotExistsException();
-    }
-    googleAccessTokenRepository.deleteById(googleAccessToken);
   }
 
 }

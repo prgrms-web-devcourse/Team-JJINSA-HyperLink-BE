@@ -6,6 +6,8 @@ import com.hyperlink.server.domain.attentionCategory.domain.entity.AttentionCate
 import com.hyperlink.server.domain.category.domain.CategoryRepository;
 import com.hyperlink.server.domain.category.domain.entity.Category;
 import com.hyperlink.server.domain.category.exception.CategoryNotFoundException;
+import com.hyperlink.server.domain.member.domain.Career;
+import com.hyperlink.server.domain.member.domain.CareerYear;
 import com.hyperlink.server.domain.member.domain.MemberRepository;
 import com.hyperlink.server.domain.member.domain.entity.Member;
 import java.util.Arrays;
@@ -39,7 +41,8 @@ class AttentionCategoryServiceIntegrationTest {
     Category beauty = categoryRepository.save(new Category("beauty"));
     List<String> attentionCategorys = Arrays.asList("develop", "beauty");
     Member savedMember = memberRepository.save(
-        new Member("rldnd5555@gmail.com", "chocho", "develop", "3", "url", 1990, "man"));
+        new Member("rldnd5555@gmail.com", "chocho", Career.DEVELOP, CareerYear.MORE_TEN, "url",
+            1990, "man"));
 
     attentionCategoryService.setAttentionCategory(savedMember, attentionCategorys);
     List<AttentionCategory> allAttentionCategory = attentionCategoryRepository.findAll();
@@ -62,7 +65,8 @@ class AttentionCategoryServiceIntegrationTest {
     Category beauty = categoryRepository.save(new Category("beauty"));
     List<String> attentionCategorys = Arrays.asList("food", "beauty");
     Member savedMember = memberRepository.save(
-        new Member("rldnd5555@gmail.com", "chocho", "develop", "3", "url", 1990, "man"));
+        new Member("rldnd5555@gmail.com", "chocho", Career.DEVELOP, CareerYear.MORE_TEN, "url",
+            1990, "man"));
     Assertions.assertThatThrownBy(() ->
         attentionCategoryService.setAttentionCategory(savedMember, attentionCategorys)
     ).isInstanceOf(

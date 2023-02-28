@@ -48,7 +48,7 @@ class GlobalExceptionHandlerTest {
     SignUpRequest signUpRequest = new SignUpRequest(" ",
         "chocho",
         "develop",
-        "10", "localhost", 1995,
+        "10", 1995,
         List.of("develop", "beauty"), "man");
 
     mockMvc.perform(MockMvcRequestBuilders
@@ -93,11 +93,11 @@ class GlobalExceptionHandlerTest {
     String accessToken = jwtTokenProvider.createAccessToken(1L);
 
     GoogleAccessToken savedGoogleAccessToken = googleAccessTokenRepository.save(
-        new GoogleAccessToken(accessToken, email));
-    OauthResponse oauthResponse = new OauthResponse(accessToken, true, email, "localhost");
+        new GoogleAccessToken(accessToken, email, "localhost"));
+    OauthResponse oauthResponse = new OauthResponse(accessToken, true, email);
 
     SignUpRequest signUpRequest = new SignUpRequest(email, "Chocho", "develop",
-        "10", "localhost", 1995,
+        "10", 1995,
         List.of("develop", "beauty"), "man");
 
     mockMvc.perform(MockMvcRequestBuilders

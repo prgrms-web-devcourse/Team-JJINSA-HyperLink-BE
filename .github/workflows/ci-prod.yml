@@ -33,18 +33,29 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
+      - name: Redis 설치
+        uses: shogo82148/actions-setup-redis@v1
+        with:
+          redis-version: '6.x'
+          run: redis-cli ping
+
       - name: application-prod.yml 생성
         run: |
+          mkdir src/test/resources
           touch src/main/resources/application.yml
+          touch src/test/resources/application-test.yml
 
       - name: application-prod.yml 설정
         run: echo "${{secrets.APPLICATIONPRODUCTION}}" | base64 --decode > src/main/resources/application.yml
+
+      - name: application-test.yml 설정
+        run: echo "${{secrets.APPLICATION}}" | base64 --decode > src/test/resources/application-test.yml
 
       - name: ./gradlew 권한 설정
         run: chmod +x ./gradlew
 
       - name: 빌드
-        run: SPRING_PROFILES_ACTIVE=[set1] ./gradlew clean build -x test -x :asciidoctor
+        run: SPRING_PROFILES_ACTIVE=[set1] ./gradlew clean build -x jacocoTestCoverageVerification
 
       - name: aws 세팅
         uses: aws-actions/configure-aws-credentials@v1

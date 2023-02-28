@@ -3,6 +3,7 @@ package com.hyperlink.server.creator.application;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import com.hyperlink.server.domain.category.domain.CategoryRepository;
 import com.hyperlink.server.domain.category.domain.entity.Category;
 import com.hyperlink.server.domain.category.exception.CategoryNotFoundException;
@@ -12,6 +13,8 @@ import com.hyperlink.server.domain.creator.domain.entity.Creator;
 import com.hyperlink.server.domain.creator.dto.CreatorEnrollRequest;
 import com.hyperlink.server.domain.creator.dto.CreatorEnrollResponse;
 import com.hyperlink.server.domain.creator.exception.CreatorNotFoundException;
+import com.hyperlink.server.domain.member.domain.Career;
+import com.hyperlink.server.domain.member.domain.CareerYear;
 import com.hyperlink.server.domain.member.domain.MemberRepository;
 import com.hyperlink.server.domain.member.domain.entity.Member;
 import com.hyperlink.server.domain.member.exception.MemberNotFoundException;
@@ -40,10 +43,10 @@ public class CreatorServiceIntegrationTest {
 
   @Autowired
   CreatorRepository creatorRepository;
-  
+
   @Autowired
   NotRecommendCreatorRepository notRecommendCreatorRepository;
-  
+
   @Autowired
   MemberRepository memberRepository;
 
@@ -59,7 +62,8 @@ public class CreatorServiceIntegrationTest {
           "profileImgUrl", "크리에이터입니다.", "develop");
 
       categoryRepository.save(develop);
-      CreatorEnrollResponse creatorEnrollResponse = creatorService.enrollCreator(creatorEnrollRequest);
+      CreatorEnrollResponse creatorEnrollResponse = creatorService.enrollCreator(
+          creatorEnrollRequest);
 
       Optional<Creator> foundCreator = creatorRepository.findById(creatorEnrollResponse.id());
       assertThat(foundCreator).isPresent();
@@ -88,7 +92,7 @@ public class CreatorServiceIntegrationTest {
 
     @BeforeEach
     void setUp() {
-      member = new Member("email", "nickname", "career", "careerYear", "profileImgUrl");
+      member = new Member("email", "nickname", Career.ETC, CareerYear.EIGHT, "profileImgUrl");
       memberRepository.save(member);
       category = new Category("개발");
       categoryRepository.save(category);
@@ -104,7 +108,8 @@ public class CreatorServiceIntegrationTest {
 
       NotRecommendCreator notRecommendCreator = creatorService.notRecommend(memberId, creatorId);
 
-      List<NotRecommendCreator> memberNotRecommendCreators = notRecommendCreatorRepository.findByMemberId(memberId);
+      List<NotRecommendCreator> memberNotRecommendCreators = notRecommendCreatorRepository.findByMemberId(
+          memberId);
 
       assertThat(memberNotRecommendCreators).contains(notRecommendCreator);
     }

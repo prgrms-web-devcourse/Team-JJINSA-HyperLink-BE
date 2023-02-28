@@ -19,6 +19,8 @@ import com.hyperlink.server.domain.creator.controller.CreatorController;
 import com.hyperlink.server.domain.creator.domain.entity.Creator;
 import com.hyperlink.server.domain.creator.dto.CreatorEnrollRequest;
 import com.hyperlink.server.domain.creator.dto.CreatorEnrollResponse;
+import com.hyperlink.server.domain.member.domain.Career;
+import com.hyperlink.server.domain.member.domain.CareerYear;
 import com.hyperlink.server.domain.member.domain.entity.Member;
 import com.hyperlink.server.domain.notRecommendCreator.domain.entity.NotRecommendCreator;
 import org.junit.jupiter.api.Assertions;
@@ -144,7 +146,8 @@ public class CreatorControllerTest {
       @DisplayName("해당 멤버의 비추천 크리에이터 목록에 추가하고 OK를 응답한다")
       void addNotRecommend() throws Exception {
         long creatorId = 10L;
-        Member member = new Member("email", "nickname", "career", "careerYear", "profileImgUrl");
+        Member member = new Member("email", "nickname", Career.ETC, CareerYear.EIGHT,
+            "profileImgUrl");
         Category category = new Category("개발");
         Creator creator = new Creator("name", "profileImgUrl", "descriptions", category);
         NotRecommendCreator notRecommendCreator = new NotRecommendCreator(member, creator);

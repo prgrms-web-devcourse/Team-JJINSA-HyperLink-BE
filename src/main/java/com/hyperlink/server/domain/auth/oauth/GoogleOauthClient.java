@@ -66,12 +66,12 @@ public class GoogleOauthClient {
           GoogleProfileResult.class);
 
       googleAccessTokenRepository.save(
-          new GoogleAccessToken(accessToken, googleProfileResult.email()));
+          new GoogleAccessToken(accessToken, googleProfileResult.email(),
+              googleProfileResult.picture()));
 
       boolean joinCheck = memberService.existsMemberByEmail(googleProfileResult.email());
       return ResponseEntity.ok(
-          new OauthResponse(accessToken, joinCheck, googleProfileResult.email(),
-              googleProfileResult.picture()));
+          new OauthResponse(accessToken, joinCheck, googleProfileResult.email()));
     } catch (JsonProcessingException exception) {
       throw new JsonProcessingCustomException();
     }

@@ -21,6 +21,8 @@ import com.hyperlink.server.domain.auth.oauth.GoogleAccessTokenRepository;
 import com.hyperlink.server.domain.auth.token.JwtTokenProvider;
 import com.hyperlink.server.domain.auth.token.RefreshToken;
 import com.hyperlink.server.domain.auth.token.RefreshTokenRepository;
+import com.hyperlink.server.domain.member.domain.Career;
+import com.hyperlink.server.domain.member.domain.CareerYear;
 import com.hyperlink.server.domain.member.domain.MemberRepository;
 import com.hyperlink.server.domain.member.domain.entity.Member;
 import java.util.UUID;
@@ -65,13 +67,13 @@ class AuthControllerTest {
   void loginCorrectTest() throws Exception {
     String email = "rldnd1234@naver.com";
     Member saveMember = memberRepository.save(
-        new Member(email, "Chocho", "develop", "10", "localhost", 1995, "man"));
+        new Member(email, "Chocho", Career.DEVELOP, CareerYear.MORE_TEN, "localhost", 1995, "man"));
 
     LoginRequest loginRequest = new LoginRequest(email);
     String accessToken = jwtTokenProvider.createAccessToken(saveMember.getId());
 
     GoogleAccessToken savedGoogleAccessToken = googleAccessTokenRepository.save(
-        new GoogleAccessToken(accessToken, email));
+        new GoogleAccessToken(accessToken, email, "localhost"));
 
     mockMvc.perform(MockMvcRequestBuilders
             .post("/members/login")
@@ -116,7 +118,7 @@ class AuthControllerTest {
   void logoutCorrectTest() throws Exception {
     String email = "rldnd1234@naver.com";
     Member saveMember = memberRepository.save(
-        new Member(email, "Chocho", "develop", "10", "localhost", 1995, "man"));
+        new Member(email, "Chocho", Career.DEVELOP, CareerYear.MORE_TEN, "localhost", 1995, "man"));
 
     RefreshToken savedRefreshToken = refreshTokenRepository.save(
         new RefreshToken(UUID.randomUUID().toString(), saveMember.getId()));
@@ -135,7 +137,7 @@ class AuthControllerTest {
   void logoutInCorrectTest() throws Exception {
     String email = "rldnd1234@naver.com";
     Member saveMember = memberRepository.save(
-        new Member(email, "Chocho", "develop", "10", "localhost", 1995, "man"));
+        new Member(email, "Chocho", Career.FINANCE, CareerYear.NINE, "localhost", 1995, "man"));
 
     mockMvc.perform(MockMvcRequestBuilders
             .post("/members/logout"))
@@ -148,7 +150,7 @@ class AuthControllerTest {
   void renewTest() throws Exception {
     String email = "rldnd1234@naver.com";
     Member saveMember = memberRepository.save(
-        new Member(email, "Chocho", "develop", "10", "localhost", 1995, "man"));
+        new Member(email, "Chocho", Career.FINANCE, CareerYear.EIGHT, "localhost", 1995, "man"));
 
     RefreshToken savedRefreshToken = refreshTokenRepository.save(
         new RefreshToken(UUID.randomUUID().toString(), saveMember.getId()));
