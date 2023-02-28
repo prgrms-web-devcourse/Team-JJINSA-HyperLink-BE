@@ -44,6 +44,7 @@ public class Content extends BaseEntity {
   private Category category;
 
   @Column(nullable = false, name = "is_viewable", columnDefinition = "TINYINT", length = 1)
+  @ColumnDefault("0")
   private boolean isViewable;
 
   @Column(columnDefinition = "INT UNSIGNED", nullable = false)
