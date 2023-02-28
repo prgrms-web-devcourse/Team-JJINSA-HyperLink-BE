@@ -89,7 +89,6 @@ public class MemberControllerTest {
                 fieldWithPath("nickname").type(JsonFieldType.STRING).description("닉네임"),
                 fieldWithPath("career").type(JsonFieldType.STRING).description("직업 분야 "),
                 fieldWithPath("careerYear").type(JsonFieldType.STRING).description("경력"),
-                fieldWithPath("profileUrl").type(JsonFieldType.STRING).description("프로필 이미지 url"),
                 fieldWithPath("birthYear").type(JsonFieldType.NUMBER).description("출생년도"),
                 fieldWithPath("attentionCategory").type(JsonFieldType.ARRAY).description("관심목록"),
                 fieldWithPath("gender").type(JsonFieldType.STRING).description("성별")),

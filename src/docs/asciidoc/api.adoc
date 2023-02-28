@@ -29,29 +29,13 @@ operation::MemberContentController/includeCreateOrDeleteBookmark[snippets='http-
 
 === /members/signup
 
-.Request
-include::{snippets}/members/signup/http-request.adoc[]
-include::{snippets}/members/signup/request-headers.adoc[]
-include::{snippets}//members/signup/request-fields.adoc[]
-
-.Response
-include::{snippets}/members/signup/http-response.adoc[]
-include::{snippets}/members/signup/response-headers.adoc[]
-include::{snippets}//members/signup/response-fields.adoc[]
+operation::members/signup[snippets='http-request,http-response,response-fields']
 
 === 로그인
 
 === /members/login
 
-.Request
-include::{snippets}/members/login/http-request.adoc[]
-include::{snippets}/members/login/request-headers.adoc[]
-include::{snippets}//members/login/request-fields.adoc[]
-
-.Response
-include::{snippets}/members/login/http-response.adoc[]
-include::{snippets}/members/login/response-headers.adoc[]
-include::{snippets}//members/login/response-fields.adoc[]
+operation::members/login[snippets='http-request,http-response,response-fields']
 
 == Creator
 
