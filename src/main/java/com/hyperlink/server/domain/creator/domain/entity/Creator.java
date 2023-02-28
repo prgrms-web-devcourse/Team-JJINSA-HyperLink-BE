@@ -38,10 +38,6 @@ public class Creator extends BaseEntity {
   private Category category;
 
 
-  public String getCategoryName() {
-    return category.getName();
-  }
-
   public Creator(String name, String profileImgUrl, String description, Category category) {
     this.name = name;
     this.profileImgUrl = profileImgUrl;
@@ -49,18 +45,7 @@ public class Creator extends BaseEntity {
     this.category = category;
   }
 
-  @JoinColumn(name = "category_id", nullable = false)
-  @ManyToOne(fetch = FetchType.LAZY)
-  private Category category;
-
   public String getCategoryName() {
     return category.getName();
-  }
-
-  public Creator(String name, String profileImgUrl, String description, Category category) {
-    this.name = name;
-    this.profileImgUrl = profileImgUrl;
-    this.description = description;
-    this.category = category;
   }
 }
