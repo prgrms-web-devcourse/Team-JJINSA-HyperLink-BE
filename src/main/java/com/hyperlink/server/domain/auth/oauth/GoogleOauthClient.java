@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hyperlink.server.domain.auth.oauth.dto.GoogleProfileResult;
 import com.hyperlink.server.domain.auth.oauth.dto.GoogleToken;
 import com.hyperlink.server.domain.auth.oauth.dto.OauthResponse;
+import com.hyperlink.server.domain.auth.oauth.exception.JsonProcessingCustomException;
 import com.hyperlink.server.domain.member.application.MemberService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -56,22 +57,26 @@ public class GoogleOauthClient {
 
   @ResponseBody
   @GetMapping("/members/oauth/code/google")
-  public ResponseEntity<OauthResponse> authGoogle(@RequestParam String code)
-      throws JsonProcessingException {
-    String accessToken = extractAccessToken(
-        requestAccessToken(
-            generateAuthCodeRequest(code)).getBody());
+  public ResponseEntity<OauthResponse> authGoogle(@RequestParam String code) {
+    try {
+      String accessToken = extractAccessToken(
+          requestAccessToken(
+              generateAuthCodeRequest(code)).getBody());
 
-    String json = requestProfile(generateProfileRequest(accessToken)).getBody();
-    GoogleProfileResult googleProfileResult = objectMapper.readValue(json,
-        GoogleProfileResult.class);
+      String json = requestProfile(generateProfileRequest(accessToken)).getBody();
+      GoogleProfileResult googleProfileResult = objectMapper.readValue(json,
+          GoogleProfileResult.class);
 
-    googleAccessTokenRepository.save(
-        new GoogleAccessToken(accessToken, googleProfileResult.email()));
+      googleAccessTokenRepository.save(
+          new GoogleAccessToken(accessToken, googleProfileResult.email()));
 
-    boolean joinCheck = memberService.existsMemberByEmail(googleProfileResult.email());
-    return ResponseEntity.ok(new OauthResponse(accessToken, joinCheck, googleProfileResult.email(),
-        googleProfileResult.picture()));
+      boolean joinCheck = memberService.existsMemberByEmail(googleProfileResult.email());
+      return ResponseEntity.ok(
+          new OauthResponse(accessToken, joinCheck, googleProfileResult.email(),
+              googleProfileResult.picture()));
+    } catch (JsonProcessingException exception) {
+      throw new JsonProcessingCustomException();
+    }
   }
 
   private HttpEntity<MultiValueMap<String, String>> generateAuthCodeRequest(String code) {

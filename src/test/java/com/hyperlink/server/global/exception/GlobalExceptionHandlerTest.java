@@ -44,7 +44,6 @@ class GlobalExceptionHandlerTest {
 
   @Test
   void MethodArgumentNotValidExceptionTest() throws Exception {
-
     String accessToken = jwtTokenProvider.createAccessToken(1L);
     SignUpRequest signUpRequest = new SignUpRequest(" ",
         "chocho",
