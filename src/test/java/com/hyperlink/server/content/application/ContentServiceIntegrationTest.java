@@ -59,7 +59,7 @@ public class ContentServiceIntegrationTest {
   void setUp() {
     category = new Category("개발");
     categoryRepository.save(category);
-    creator = new Creator("name", "profile", "description", category);
+    creator = new Creator("슈카", "profile", "description", category);
     creatorRepository.save(creator);
   }
 
