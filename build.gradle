@@ -109,27 +109,19 @@ tasks.named('asciidoctor') {
     dependsOn test
 }
 
-//asciidoctor.doFirst {
-//    delete file('src/main/resources/static/docs')
-//}
-//
-//task copyDocument(type: Copy) {
-//	dependsOn asciidoctor
-//	from file("build/docs/asciidoc")
-//	into file("src/main/resources/static/docs")
-//	into file("src/main/resources/db")
-//	into file("src/main/resources/crawling-scripts")
-//}
+asciidoctor.doFirst {
+    delete file('src/main/resources/static/docs')
+}
 
-//task copyDocument(type: Copy) {
-//    dependsOn asciidoctor
-//    from file("build/docs/asciidoc")
-//    into file("src/main/resources/static/docs")
-//}
+task copyDocument(type: Copy) {
+    dependsOn asciidoctor
+    from file("build/docs/asciidoc")
+    into file("build/resources/main/static/docs")
+}
 
-//build {
-//    dependsOn copyDocument
-//}
+build {
+    dependsOn copyDocument
+}
 
 
 jacocoTestReport {
