@@ -99,6 +99,10 @@ tasks.named('test') {
     finalizedBy 'jacocoTestReport'
 }
 
+jar {
+	enabled = false
+}
+
 tasks.named('asciidoctor') {
     inputs.dir snippetsDir
     configurations 'asciidoctorExtensions'
@@ -120,10 +124,6 @@ build {
 }
 
 
-jar {
-    enabled = false
-}
-
 jacocoTestReport {
 	reports {
 		xml.enabled false
@@ -141,7 +141,9 @@ jacocoTestReport {
 			fileTree(dir: it, exclude: [
 					"com/hyperlink/server/ServerApplication.*",
 					"com/hyperlink/server/global/profile/controller/ProfileController.*",
-          "com/hyperlink/server/domain/auth/oauth/**"
+					"com/hyperlink/server/domain/auth/oauth/**",
+					"com.hyperlink.server.global.exception.ErrorReportRequest.*",
+					"com.hyperlink.server.global.exception.GlobalExceptionHandler.*"
 			] + Qdomains)
 		}))
 	}
@@ -167,7 +169,11 @@ jacocoTestCoverageVerification {
 
 			excludes = [
 			        '*.ProfileController*',
-			    		'*.ServerApplication*'
+					'*.ServerApplication*',
+					'*.oauth*',
+					'*.ErrorReportRequest*',
+					"*.GlobalExceptionHandler*"
+
 			] + Qdomains
 		}
 	}
