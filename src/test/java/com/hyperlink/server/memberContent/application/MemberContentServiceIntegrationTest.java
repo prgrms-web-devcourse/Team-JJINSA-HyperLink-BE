@@ -1,8 +1,8 @@
 package com.hyperlink.server.memberContent.application;
 
 import static com.hyperlink.server.domain.memberContent.domain.entity.MemberContentActionType.BOOKMARK;
-import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.hyperlink.server.domain.content.domain.ContentRepository;
 import com.hyperlink.server.domain.content.domain.entity.Content;
@@ -13,18 +13,10 @@ import com.hyperlink.server.domain.memberContent.domain.MemberContentRepository;
 import com.hyperlink.server.domain.memberContent.domain.entity.MemberContent;
 import com.hyperlink.server.domain.memberContent.exception.BookmarkExistedException;
 import com.hyperlink.server.domain.memberContent.exception.BookmarkNotFoundException;
-import java.util.Optional;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
-import org.junit.jupiter.api.TestInstance.Lifecycle;
-import org.junit.jupiter.api.TestMethodOrder;
-import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
@@ -48,7 +40,7 @@ public class MemberContentServiceIntegrationTest {
 
   @BeforeEach
   void setUp() {
-    member = new Member("email", "nickname", "career", "3", "profileImgUrl");
+    member = new Member("email", "nickname", "career", "3", "profileImgUrl", 1990);
     content = new Content("title", "contentImgUrl", "link");
     memberRepository.save(member);
     contentRepository.save(content);
