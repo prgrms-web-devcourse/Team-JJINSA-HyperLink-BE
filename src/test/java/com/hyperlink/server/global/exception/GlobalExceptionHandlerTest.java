@@ -45,17 +45,10 @@ class GlobalExceptionHandlerTest {
   @Test
   void MethodArgumentNotValidExceptionTest() throws Exception {
 
-    Category develop = categoryRepository.save(new Category("develop"));
-    Category beauty = categoryRepository.save(new Category("beauty"));
-
-    String email = "rldnd1234@naver.com";
     String accessToken = jwtTokenProvider.createAccessToken(1L);
-
-    GoogleAccessToken savedGoogleAccessToken = googleAccessTokenRepository.save(
-        new GoogleAccessToken(accessToken, email));
-
     SignUpRequest signUpRequest = new SignUpRequest(" ",
-        "Chochoehehehehehehehehehehehehehehehehehehehehehehehheheheehehehhehehehehehehehe",
+        "chocho",
+
         "develop",
         "10", "localhost", 1995,
         List.of("develop", "beauty"));

@@ -4,6 +4,7 @@ package com.hyperlink.server.domain.member.dto;
 import com.hyperlink.server.domain.member.domain.entity.Member;
 import java.util.List;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 public record SignUpRequest(
@@ -12,9 +13,8 @@ public record SignUpRequest(
     @NotBlank @Size(max = 30) String career,
     @NotBlank @Size(max = 30) String careerYear,
     @NotBlank String profileUrl,
-    @NotBlank Integer birthYear,
-    //@NotBlank @Size(max = 10) String gender,
-    @NotBlank List<String> attentionCategory
+    @NotNull Integer birthYear,
+    @NotNull List<String> attentionCategory
 ) {
 
   public static Member to(SignUpRequest signUpRequest) {
