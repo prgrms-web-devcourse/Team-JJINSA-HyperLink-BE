@@ -11,6 +11,7 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 @Component
 public class LoginMemberIdArgumentResolver implements HandlerMethodArgumentResolver {
 
+  private static final int TOKEN_VALUE_INDEX = 1;
   private final AuthTokenExtractor authTokenExtractor;
 
   public LoginMemberIdArgumentResolver(AuthTokenExtractor authTokenExtractor) {
@@ -27,7 +28,7 @@ public class LoginMemberIdArgumentResolver implements HandlerMethodArgumentResol
   public Long resolveArgument(final MethodParameter parameter,
       final ModelAndViewContainer mavContainer,
       final NativeWebRequest webRequest, final WebDataBinderFactory binderFactory) {
-    String accessToken = webRequest.getHeader("Authorization").split("Bearer ")[1];
+    String accessToken = webRequest.getHeader("Authorization").split("Bearer ")[TOKEN_VALUE_INDEX];
     return authTokenExtractor.extractMemberId(accessToken);
   }
 }
