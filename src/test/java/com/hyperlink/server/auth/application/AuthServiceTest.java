@@ -45,4 +45,21 @@ class AuthServiceTest {
         .isEqualTo(saveMember.getId());
     assertThat(refreshTokenRepository.existsById(loginResult.refreshToken())).isTrue();
   }
+
+  @DisplayName("로그아웃이 가능하다.")
+  @Test
+  void logoutTest() {
+    String email = "rldnd1234@naver.com";
+    Member saveMember = memberRepository.save(
+        new Member(email, "Chocho", "develop", "10", "localhost", 1995, "man"));
+
+    LoginRequest loginRequest = new LoginRequest(email);
+    LoginResult loginResult = authService.login(loginRequest);
+    String accessToken = loginResult.accessToken();
+    assertThat(refreshTokenRepository.existsById(loginResult.refreshToken())).isTrue();
+
+    authService.logout(loginResult.refreshToken());
+    assertThat(refreshTokenRepository.existsById(loginResult.refreshToken())).isFalse();
+  }
+
 }

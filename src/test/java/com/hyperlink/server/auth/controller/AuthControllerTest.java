@@ -19,8 +19,13 @@ import com.hyperlink.server.domain.auth.dto.LoginRequest;
 import com.hyperlink.server.domain.auth.oauth.GoogleAccessToken;
 import com.hyperlink.server.domain.auth.oauth.GoogleAccessTokenRepository;
 import com.hyperlink.server.domain.auth.token.JwtTokenProvider;
+import com.hyperlink.server.domain.auth.token.RefreshToken;
+import com.hyperlink.server.domain.auth.token.RefreshTokenRepository;
 import com.hyperlink.server.domain.member.domain.MemberRepository;
 import com.hyperlink.server.domain.member.domain.entity.Member;
+import java.util.UUID;
+import javax.servlet.http.Cookie;
+import javax.transaction.Transactional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,8 +36,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
 @AutoConfigureRestDocs
@@ -41,19 +46,20 @@ import org.springframework.transaction.annotation.Transactional;
 class AuthControllerTest {
 
   @Autowired
-  private MemberRepository memberRepository;
-
-  @Autowired
   private GoogleAccessTokenRepository googleAccessTokenRepository;
 
   @Autowired
-  private JwtTokenProvider jwtTokenProvider;
+  private MemberRepository memberRepository;
 
+  @Autowired
+  private JwtTokenProvider jwtTokenProvider;
   @Autowired
   MockMvc mockMvc;
 
   @Autowired
   ObjectMapper objectMapper;
+  @Autowired
+  private RefreshTokenRepository refreshTokenRepository;
 
   @DisplayName("로그인을 통해 인증토큰을 받을 수 있다.")
   @Test
@@ -88,5 +94,30 @@ class AuthControllerTest {
             responseFields(
                 fieldWithPath("accessToken").type(JsonFieldType.STRING).description("AccessToken")))
         );
+  }
+
+  @DisplayName("로그아웃을 통해 refreshToken을 지울 수 있다.")
+  @Test
+  void logoutTest() throws Exception {
+    String email = "rldnd1234@naver.com";
+    Member saveMember = memberRepository.save(
+        new Member(email, "Chocho", "develop", "10", "localhost", 1995, "man"));
+
+    String accessToken = jwtTokenProvider.createAccessToken(saveMember.getId());
+    RefreshToken savedRefreshToken = refreshTokenRepository.save(
+        new RefreshToken(UUID.randomUUID().toString(), saveMember.getId()));
+
+    Cookie cookie = new Cookie("refreshToken", savedRefreshToken.getRefreshToken());
+
+    final ResultActions resultActions = mockMvc.perform(
+        MockMvcRequestBuilders.get("/members/logout")
+            .cookie(new Cookie("refreshToken", "refreshTokenValue")));
+
+    mockMvc.perform(MockMvcRequestBuilders
+            .post("/members/logout")
+            .header(HttpHeaders.COOKIE, "refreshToken=" + savedRefreshToken.getRefreshToken())
+            .cookie(cookie))
+        .andExpect(status().isOk())
+        .andDo(print());
   }
 }

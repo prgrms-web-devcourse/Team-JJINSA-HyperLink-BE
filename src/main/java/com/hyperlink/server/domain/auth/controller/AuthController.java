@@ -4,32 +4,31 @@ import com.hyperlink.server.domain.auth.application.AuthService;
 import com.hyperlink.server.domain.auth.dto.LoginRequest;
 import com.hyperlink.server.domain.auth.dto.LoginResponse;
 import com.hyperlink.server.domain.auth.dto.LoginResult;
-import com.hyperlink.server.domain.auth.oauth.GoogleAccessTokenRepository;
-import com.hyperlink.server.domain.auth.token.AuthTokenExtractor;
 import com.hyperlink.server.domain.auth.token.RefreshTokenCookieProvider;
+import com.hyperlink.server.domain.auth.token.exception.InValidAccessException;
 import com.hyperlink.server.domain.auth.token.exception.TokenNotExistsException;
 import javax.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+@Slf4j
 @RestController
 public class AuthController {
 
   private final RefreshTokenCookieProvider refreshTokenCookieProvider;
-  private final AuthTokenExtractor authTokenExtractor;
-  private final GoogleAccessTokenRepository googleAccessTokenRepository;
   private final AuthService authService;
 
   public AuthController(RefreshTokenCookieProvider refreshTokenCookieProvider,
-      AuthTokenExtractor authTokenExtractor,
-      GoogleAccessTokenRepository googleAccessTokenRepository, AuthService authService) {
+      AuthService authService) {
     this.refreshTokenCookieProvider = refreshTokenCookieProvider;
-    this.authTokenExtractor = authTokenExtractor;
-    this.googleAccessTokenRepository = googleAccessTokenRepository;
     this.authService = authService;
   }
 
@@ -49,12 +48,28 @@ public class AuthController {
 
   private void checkGoogleAccessToken(HttpServletRequest httpServletRequest) {
     String authorizationHeader = httpServletRequest.getHeader(HttpHeaders.AUTHORIZATION);
-    String googleAccessToken = authTokenExtractor.extractToken(authorizationHeader);
+    String googleAccessToken = authService.extractToken(authorizationHeader);
 
-    if (!googleAccessTokenRepository.existsById(googleAccessToken)) {
+    if (!authService.googleTokenExistsById(googleAccessToken)) {
       throw new TokenNotExistsException();
     }
-    googleAccessTokenRepository.deleteById(googleAccessToken);
+    authService.googleTokenDeleteById(googleAccessToken);
   }
 
+  @PostMapping("/members/logout")
+  @ResponseStatus(HttpStatus.OK)
+  public void logout(@CookieValue(name = "refreshToken", required = false) String refreshToken) {
+
+    log.info("#### refreshToken: " + refreshToken);
+
+    validateRefreshTokenExists(refreshToken);
+
+    authService.logout(refreshToken);
+  }
+
+  private void validateRefreshTokenExists(final String refreshToken) {
+    if (refreshToken == null || refreshToken.isBlank()) {
+      throw new InValidAccessException();
+    }
+  }
 }

@@ -1,8 +1,9 @@
 package com.hyperlink.server.domain.auth.application;
 
-import com.hyperlink.server.domain.attentionCategory.application.AttentionCategoryService;
 import com.hyperlink.server.domain.auth.dto.LoginRequest;
 import com.hyperlink.server.domain.auth.dto.LoginResult;
+import com.hyperlink.server.domain.auth.oauth.GoogleAccessTokenRepository;
+import com.hyperlink.server.domain.auth.token.AuthTokenExtractor;
 import com.hyperlink.server.domain.auth.token.JwtTokenProvider;
 import com.hyperlink.server.domain.auth.token.RefreshToken;
 import com.hyperlink.server.domain.auth.token.RefreshTokenRepository;
@@ -15,18 +16,25 @@ import org.springframework.stereotype.Service;
 public class AuthService {
 
   private final MemberRepository memberRepository;
-  private final AttentionCategoryService attentionCategoryService;
+  private final GoogleAccessTokenRepository googleAccessTokenRepository;
   private final JwtTokenProvider jwtTokenProvider;
+  private final AuthTokenExtractor authTokenExtractor;
   private final RefreshTokenRepository refreshTokenRepository;
 
   public AuthService(MemberRepository memberRepository,
-      AttentionCategoryService attentionCategoryService, JwtTokenProvider jwtTokenProvider,
-      RefreshTokenRepository refreshTokenRepository) {
+      GoogleAccessTokenRepository googleAccessTokenRepository, JwtTokenProvider jwtTokenProvider,
+      AuthTokenExtractor authTokenExtractor, RefreshTokenRepository refreshTokenRepository) {
     this.memberRepository = memberRepository;
-    this.attentionCategoryService = attentionCategoryService;
+    this.googleAccessTokenRepository = googleAccessTokenRepository;
     this.jwtTokenProvider = jwtTokenProvider;
+    this.authTokenExtractor = authTokenExtractor;
     this.refreshTokenRepository = refreshTokenRepository;
   }
+
+  public String extractToken(final String authorizationHeader) {
+    return authTokenExtractor.extractToken(authorizationHeader);
+  }
+
 
   public LoginResult login(LoginRequest loginRequest) {
 
@@ -37,5 +45,18 @@ public class AuthService {
         new RefreshToken(UUID.randomUUID().toString(), memberId));
 
     return new LoginResult(accessToken, savedRefreshToken.getRefreshToken());
+  }
+
+  public void logout(String refreshToken) {
+    refreshTokenRepository.deleteById(refreshToken);
+  }
+
+  public boolean googleTokenExistsById(String googleAccessToken) {
+    return googleAccessTokenRepository.existsById(googleAccessToken);
+  }
+
+
+  public void googleTokenDeleteById(String googleAccessToken) {
+    googleAccessTokenRepository.deleteById(googleAccessToken);
   }
 }
