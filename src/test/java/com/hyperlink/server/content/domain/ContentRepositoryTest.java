@@ -34,8 +34,8 @@ class ContentRepositoryTest {
     Creator creator = new Creator("name", "profile", "description", category);
     Content content = new Content("title", "contentImgUrl", "link", creator, category);
     int beforeInquiry = content.getViewCount();
-    creatorRepository.save(creator);
     categoryRepository.save(category);
+    creatorRepository.save(creator);
     contentRepository.save(content);
 
     contentRepository.updateViewCount(content.getId());
