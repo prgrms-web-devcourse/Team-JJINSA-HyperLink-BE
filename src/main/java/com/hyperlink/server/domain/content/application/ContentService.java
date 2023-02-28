@@ -1,13 +1,19 @@
 package com.hyperlink.server.domain.content.application;
 
+import com.hyperlink.server.domain.category.domain.CategoryRepository;
+import com.hyperlink.server.domain.category.domain.entity.Category;
+import com.hyperlink.server.domain.category.exception.CategoryNotFoundException;
 import com.hyperlink.server.domain.content.domain.ContentRepository;
 import com.hyperlink.server.domain.content.domain.entity.Content;
+import com.hyperlink.server.domain.content.dto.ContentEnrollResponse;
 import com.hyperlink.server.domain.content.dto.ContentResponse;
 import com.hyperlink.server.domain.content.dto.RecommendationCompanyResponse;
 import com.hyperlink.server.domain.content.dto.SearchResponse;
-import com.hyperlink.server.domain.content.dto.ContentCreationResponse;
 import com.hyperlink.server.domain.content.exception.ContentNotFoundException;
 import com.hyperlink.server.domain.content.infrastructure.ContentRepositoryCustom;
+import com.hyperlink.server.domain.creator.domain.CreatorRepository;
+import com.hyperlink.server.domain.creator.domain.entity.Creator;
+import com.hyperlink.server.domain.creator.exception.CreatorNotFoundException;
 import com.hyperlink.server.domain.memberContent.application.MemberContentService;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -20,9 +26,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class ContentService {
 
   private final ContentRepository contentRepository;
+  private final CategoryRepository categoryRepository;
+  private final CreatorRepository creatorRepository;
   private final ContentRepositoryCustom contentRepositoryCustom;
   private final MemberContentService memberContentService;
 
@@ -71,7 +80,16 @@ public class ContentService {
 
 
   @Transactional
-  public void insertContent(ContentCreationResponse contentCreationResponse) {
+  public Long insertContent(ContentEnrollResponse contentEnrollResponse) {
+    System.out.println(contentEnrollResponse);
 
+    Creator creator = creatorRepository.findByName(contentEnrollResponse.creator())
+        .orElseThrow(CreatorNotFoundException::new);
+    Category category = categoryRepository.findByName(contentEnrollResponse.category())
+        .orElseThrow(CategoryNotFoundException::new);
+
+    Content content = ContentEnrollResponse.toContent(contentEnrollResponse, creator, category);
+    contentRepository.save(content);
+    return content.getId();
   }
 }
