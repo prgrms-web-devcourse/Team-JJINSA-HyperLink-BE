@@ -16,6 +16,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.stream.Stream;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
@@ -35,6 +37,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 
+@TestInstance(Lifecycle.PER_CLASS)
 @SpringBootTest
 @Transactional
 @DisplayName("ContentService 통합 테스트")
@@ -52,12 +55,18 @@ public class ContentServiceIntegrationTest {
   Creator creator;
   Category category;
 
-  @BeforeEach
+  @BeforeAll
   void setUp() {
     category = new Category("개발");
     categoryRepository.save(category);
     creator = new Creator("name", "profile", "description", category);
     creatorRepository.save(creator);
+  }
+
+  @AfterAll
+  void tearDown() {
+    creatorRepository.deleteAll();
+    categoryRepository.deleteAll();
   }
 
   @Nested
@@ -88,6 +97,7 @@ public class ContentServiceIntegrationTest {
   }
 
   @TestMethodOrder(OrderAnnotation.class)
+  @TestInstance(Lifecycle.PER_CLASS)
   @Nested
   @DisplayName("조회수 추가 메서드는")
   class AddViewAndGetCount {
@@ -95,25 +105,26 @@ public class ContentServiceIntegrationTest {
     static Long contentId;
     final int memberCount = 3;
     int beforeViewCount;
+    final CountDownLatch countDownLatch = new CountDownLatch(memberCount);
+
+    @BeforeAll
+    void contentSetUp() {
+      Content content = new Content("title", "contentImgUrl", "link", creator, category);
+      content = contentRepository.save(content);
+      contentId = content.getId();
+      beforeViewCount = content.getViewCount();
+    }
 
     @Order(1)
     @Rollback(value = false)
     @Test
     @DisplayName("3명의 사용자가 동시에 조회수 추가를 요청했을 때")
     void manyRequestView() throws InterruptedException {
-      final CountDownLatch countDownLatch = new CountDownLatch(memberCount);
-
-      Content content = new Content("title", "contentImgUrl", "link", creator, category);
-      content = contentRepository.save(content);
-      contentId = content.getId();
-      beforeViewCount = content.getViewCount();
-
       List<Thread> workers = Stream.generate(() -> new Thread(new Worker(countDownLatch, contentId)))
           .limit(memberCount)
           .toList();
       workers.forEach(Thread::start);
-
-      Thread.sleep(7000);
+      countDownLatch.await();
     }
 
     @Order(2)
@@ -130,8 +141,6 @@ public class ContentServiceIntegrationTest {
     @Test
     void tearDown() {
       contentRepository.deleteById(contentId);
-      categoryRepository.deleteAll();
-      creatorRepository.deleteAll();
     }
 
     private class Worker implements Runnable {
