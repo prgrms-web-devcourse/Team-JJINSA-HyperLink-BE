@@ -36,7 +36,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 @Transactional
@@ -109,12 +108,29 @@ class AuthControllerTest {
 
     Cookie cookie = new Cookie("refreshToken", savedRefreshToken.getRefreshToken());
 
-    final ResultActions resultActions = mockMvc.perform(
-        MockMvcRequestBuilders.get("/members/logout")
-            .cookie(new Cookie("refreshToken", "refreshTokenValue")));
-
     mockMvc.perform(MockMvcRequestBuilders
             .post("/members/logout")
+            .header(HttpHeaders.COOKIE, "refreshToken=" + savedRefreshToken.getRefreshToken())
+            .cookie(cookie))
+        .andExpect(status().isOk())
+        .andDo(print());
+  }
+
+  @DisplayName("refreshToken을 통해 accessToken을 재발급 받을 수 있다.")
+  @Test
+  void renewTest() throws Exception {
+    String email = "rldnd1234@naver.com";
+    Member saveMember = memberRepository.save(
+        new Member(email, "Chocho", "develop", "10", "localhost", 1995, "man"));
+
+    String accessToken = jwtTokenProvider.createAccessToken(saveMember.getId());
+    RefreshToken savedRefreshToken = refreshTokenRepository.save(
+        new RefreshToken(UUID.randomUUID().toString(), saveMember.getId()));
+
+    Cookie cookie = new Cookie("refreshToken", savedRefreshToken.getRefreshToken());
+
+    mockMvc.perform(MockMvcRequestBuilders
+            .post("/members/access-token")
             .header(HttpHeaders.COOKIE, "refreshToken=" + savedRefreshToken.getRefreshToken())
             .cookie(cookie))
         .andExpect(status().isOk())

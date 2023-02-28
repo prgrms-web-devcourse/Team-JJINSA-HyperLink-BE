@@ -2,11 +2,13 @@ package com.hyperlink.server.domain.auth.application;
 
 import com.hyperlink.server.domain.auth.dto.LoginRequest;
 import com.hyperlink.server.domain.auth.dto.LoginResult;
+import com.hyperlink.server.domain.auth.dto.RenewResult;
 import com.hyperlink.server.domain.auth.oauth.GoogleAccessTokenRepository;
 import com.hyperlink.server.domain.auth.token.AuthTokenExtractor;
 import com.hyperlink.server.domain.auth.token.JwtTokenProvider;
 import com.hyperlink.server.domain.auth.token.RefreshToken;
 import com.hyperlink.server.domain.auth.token.RefreshTokenRepository;
+import com.hyperlink.server.domain.auth.token.exception.RefreshTokenNotExistException;
 import com.hyperlink.server.domain.member.domain.MemberRepository;
 import com.hyperlink.server.domain.member.exception.MemberNotFoundException;
 import java.util.UUID;
@@ -58,5 +60,17 @@ public class AuthService {
 
   public void googleTokenDeleteById(String googleAccessToken) {
     googleAccessTokenRepository.deleteById(googleAccessToken);
+  }
+
+  public RenewResult renewAccessToken(final String refreshToken) {
+    RefreshToken oldRefreshToken = refreshTokenRepository.findById(refreshToken)
+        .orElseThrow(RefreshTokenNotExistException::new);
+
+    Long memberId = oldRefreshToken.getMemberId();
+    String newAccessToken = jwtTokenProvider.createAccessToken(memberId);
+    RefreshToken newRefreshToken = refreshTokenRepository.save(
+        new RefreshToken(UUID.randomUUID().toString(), memberId));
+
+    return new RenewResult(newAccessToken, newRefreshToken.getRefreshToken());
   }
 }
