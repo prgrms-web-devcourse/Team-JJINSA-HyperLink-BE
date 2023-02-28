@@ -49,7 +49,7 @@ public class ContentControllerTest {
       @DisplayName("조회수 추가에 성공하고 OK와 최종 조회수를 응답한다")
       void addInquiryOfContentTest() throws Exception {
         mockMvc.perform(
-            patch("/contents/"+ contentId +"/inquiry")
+            patch("/contents/"+ contentId +"/view")
         )
         .andExpect(status().isOk())
         .andDo(
@@ -58,7 +58,7 @@ public class ContentControllerTest {
                 preprocessRequest(prettyPrint()),
                 preprocessResponse(prettyPrint()),
                 responseFields(
-                    fieldWithPath("inquiry").type(JsonFieldType.NUMBER)
+                    fieldWithPath("viewCount").type(JsonFieldType.NUMBER)
                         .description("조회수 추가 완료 후 최종 조회수")
                 )
             )

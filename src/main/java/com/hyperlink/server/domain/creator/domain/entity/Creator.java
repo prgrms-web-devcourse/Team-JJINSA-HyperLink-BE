@@ -32,9 +32,15 @@ public class Creator extends BaseEntity {
 
   @Column(nullable = false)
   private String description;
-
+ 
   @JoinColumn(name = "category_id", nullable = false)
   @ManyToOne(fetch = FetchType.LAZY)
   private Category category;
+
+  public Creator(String name, String profileImgUrl, String description) {
+    this.name = name;
+    this.profileImgUrl = profileImgUrl;
+    this.description = description;
+  }
 
 }

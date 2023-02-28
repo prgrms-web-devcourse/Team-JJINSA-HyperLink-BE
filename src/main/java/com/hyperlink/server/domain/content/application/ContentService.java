@@ -13,7 +13,7 @@ public class ContentService {
 
   private final ContentRepository contentRepository;
 
-  public int getInquiry(Long contentId) {
+  public int getViewCount(Long contentId) {
     Content content = contentRepository.findById(contentId).orElseThrow(
         ContentNotFoundException::new);
 
@@ -21,8 +21,7 @@ public class ContentService {
   }
 
   @Transactional
-  public int addInquiryAndGetCount(Long contentId) {
-    contentRepository.updateInquiryCount(contentId);
-    return getInquiry(contentId);
+  public void addView(Long contentId) {
+    contentRepository.updateViewCount(contentId);
   }
 }

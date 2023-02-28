@@ -6,6 +6,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.hyperlink.server.domain.content.domain.ContentRepository;
 import com.hyperlink.server.domain.content.domain.entity.Content;
+import com.hyperlink.server.domain.creator.domain.CreatorRepository;
+import com.hyperlink.server.domain.creator.domain.entity.Creator;
 import com.hyperlink.server.domain.member.domain.MemberRepository;
 import com.hyperlink.server.domain.member.domain.entity.Member;
 import com.hyperlink.server.domain.memberContent.application.MemberContentService;
@@ -34,14 +36,18 @@ public class MemberContentServiceIntegrationTest {
   MemberRepository memberRepository;
   @Autowired
   ContentRepository contentRepository;
+  @Autowired
+  CreatorRepository creatorRepository;
 
   Member member;
   Content content;
 
   @BeforeEach
   void setUp() {
-    member = new Member("email", "nickname", "career", "3", "profileImgUrl", 1990);
-    content = new Content("title", "contentImgUrl", "link");
+    member = new Member("email", "nickname", "career", "3", "profileImgUrl");
+    Creator creator = new Creator("name", "profile", "description");
+    content = new Content("title", "contentImgUrl", "link", creator);
+    creatorRepository.save(creator);
     memberRepository.save(member);
     contentRepository.save(content);
   }
