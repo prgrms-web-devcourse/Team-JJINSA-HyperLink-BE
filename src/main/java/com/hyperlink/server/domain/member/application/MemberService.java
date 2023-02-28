@@ -32,7 +32,7 @@ public class MemberService {
   }
 
   public boolean existsMemberByEmail(String email) {
-    return memberRepository.existsMemberByEmail(email);
+    return memberRepository.existsByEmail(email);
   }
 
   @Transactional

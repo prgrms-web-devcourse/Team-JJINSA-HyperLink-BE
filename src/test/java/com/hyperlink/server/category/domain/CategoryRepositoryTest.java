@@ -20,7 +20,7 @@ class CategoryRepositoryTest {
   @Test
   void findCategoriesByNameCorrectTest() {
     Category savedCategory = categoryRepository.save(new Category("develop"));
-    Category foundCategory = categoryRepository.findCategoriesByName("develop").get();
+    Category foundCategory = categoryRepository.findByName("develop").get();
     Assertions.assertThat(foundCategory).usingRecursiveComparison().isEqualTo(savedCategory);
   }
 }
