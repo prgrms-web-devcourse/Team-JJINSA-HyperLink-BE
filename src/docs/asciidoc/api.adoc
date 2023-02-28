@@ -18,7 +18,7 @@ operation::ContentControllerTest/search[snippets='http-request,http-response,res
 === 북마크 추가/삭제
 operation::MemberContentController/includeCreateOrDeleteBookmark[snippets='http-request,http-response']
 
-== 멤버
+== Member
 === 회원가입
 === /members/signup
 .Request
