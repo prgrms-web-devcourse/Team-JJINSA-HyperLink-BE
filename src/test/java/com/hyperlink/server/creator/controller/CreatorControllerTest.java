@@ -37,7 +37,7 @@ public class CreatorControllerTest {
 
   @Nested
   @DisplayName("크리에이터 생성 API는")
-  class EnrollCreatorTest {
+  class CreatorEnrollTest {
 
 
     @Nested
@@ -47,10 +47,10 @@ public class CreatorControllerTest {
       @Test
       @DisplayName("크리에이터 이름이 누락되면 BadRequest를 응답한다.")
       public void blankInName() throws Exception {
-        //given
+
         CreatorEnrollRequest creatorEnrollRequest = new CreatorEnrollRequest("", "profileImgUrl",
             "description", "categoryName");
-        // when & then
+
         mockMvc.perform(
                 post("/admin/creators")
                     .content(objectMapper.writeValueAsString(creatorEnrollRequest))
@@ -63,11 +63,11 @@ public class CreatorControllerTest {
       @Test
       @DisplayName("크리에이터 설명글(description)이 누락되면 BadRequest를 응답한다.")
       public void blankInDescription() throws Exception {
-        //given
+
         CreatorEnrollRequest creatorEnrollRequest = new CreatorEnrollRequest("creatorName",
             "profileImgUrl",
             "", "categoryName");
-        // when & then
+
         mockMvc.perform(
                 post("/admin/creators")
                     .content(objectMapper.writeValueAsString(creatorEnrollRequest))
@@ -80,11 +80,11 @@ public class CreatorControllerTest {
       @Test
       @DisplayName("크리에이터 카테고리 이름이 누락되면 BadRequest를 응답한다.")
       public void blankInCategoryName() throws Exception {
-        //given
+
         CreatorEnrollRequest creatorEnrollRequest = new CreatorEnrollRequest("creatorName",
             "profileImgUrl",
             "description", "");
-        // when & then
+
         mockMvc.perform(
                 post("/admin/creators")
                     .content(objectMapper.writeValueAsString(creatorEnrollRequest))
@@ -102,13 +102,13 @@ public class CreatorControllerTest {
       @Test
       @DisplayName("모든 요청 값이 올바르면 Created를 응답하고 CreatorEnrollResponse를 반환한다.")
       public void enrollCreatorStatusCreatedReturnCreatorEnrollResponse() throws Exception {
-        //given
+
         CreatorEnrollRequest creatorEnrollRequest = new CreatorEnrollRequest("creatorName",
             "profileImgUrl", "description", "categoryName");
         given(creatorService.enrollCreator(creatorEnrollRequest)).willReturn(
             new CreatorEnrollResponse(1L, "creatorName", "profileImgUrl", "description",
                 "categoryName"));
-        // when & then
+
         mockMvc.perform(
                 post("/admin/creators")
                     .content(objectMapper.writeValueAsString(creatorEnrollRequest))

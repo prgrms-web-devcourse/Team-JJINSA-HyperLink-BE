@@ -34,17 +34,16 @@ public class CreatorServiceMockTest {
 
   @Nested
   @DisplayName("크리에이터 생성 메서드는")
-  class CreatorConstructTest {
+  class CreatorEnrollTest {
 
     @Test
     @DisplayName("성공하면 크리에이터를 생성한다.")
     public void success() throws Exception {
-      //given
       Category developCategory = new Category("develop");
       CreatorEnrollRequest creatorEnrollRequest = new CreatorEnrollRequest("크리에이터 이름",
           "profileImgUrl", "크리에이터입니다.", "develop");
       Creator creator = CreatorEnrollRequest.toCreator(creatorEnrollRequest, developCategory);
-      // when
+
       when(categoryRepository.findByName(developCategory.getName())).thenReturn(
           Optional.of(developCategory));
       when(creatorRepository.save(any()))
@@ -54,7 +53,7 @@ public class CreatorServiceMockTest {
       CreatorEnrollResponse creatorEnrollResponse = creatorService.enrollCreator(
           creatorEnrollRequest);
 
-      //then
+
       Assertions.assertNotNull(creatorEnrollResponse);
     }
 

@@ -35,17 +35,15 @@ public class CreatorServiceIntegrationTest {
 
   @Nested
   @DisplayName("크리에이터 생성 메서드는")
-  class CreatorConstructTest {
+  class CreatorEnrollTest {
 
     @Test
     @DisplayName("성공하면 크리에이터로 등록된다.")
     public void success() throws Exception {
-      //given
       Category develop = new Category("develop");
       CreatorEnrollRequest creatorEnrollRequest = new CreatorEnrollRequest("크리에이터 이름",
           "profileImgUrl", "크리에이터입니다.", "develop");
 
-      // when
       categoryRepository.save(develop);
       CreatorEnrollResponse creatorEnrollResponse = creatorService.enrollCreator(creatorEnrollRequest);
       //then
@@ -57,7 +55,6 @@ public class CreatorServiceIntegrationTest {
     @Test
     @DisplayName("없는 카테고리 이름으로 등록하면 CategoryNotFoundException이 발생한다.")
     public void fail() throws Exception {
-      //given
       CreatorEnrollRequest creatorEnrollRequest = new CreatorEnrollRequest("크리에이터 이름",
           "profileImgUrl", "크리에이터입니다.", "develop");
 
