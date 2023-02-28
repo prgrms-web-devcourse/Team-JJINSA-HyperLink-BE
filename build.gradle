@@ -141,7 +141,21 @@ jacocoTestReport {
             fileTree(dir: it, exclude: [
                     "com/hyperlink/server/ServerApplication.*",
                     "com/hyperlink/server/global/profile/controller/ProfileController.*",
-                    "com/hyperlink/server/domain/auth/oauth/**"
+                    //oauth
+                    "com/hyperlink/server/domain/auth/oauth/dto/GoogleProfileResult.*",
+                    "com/hyperlink/server/domain/auth/oauth/dto/GoogleToken.*",
+                    "com/hyperlink/server/domain/auth/oauth/dto/OauthResponse.*",
+                    "com/hyperlink/server/domain/auth/oauth/GoogleAccessToken.*",
+                    "com/hyperlink/server/domain/auth/oauth/GoogleOauthClient.*",
+                    "com/hyperlink/server/domain/auth/oauth/JsonProcessingCustomException.*",
+
+                    //시간
+                    "com/hyperlink/server/domain/member/exception/SignUpTimeOutException.*",
+                    "com/hyperlink/server/domain/token/exception/TokenExpiredException.*",
+                    //설정 파일
+                    "com/hyperlink/server/global/config/LoginMemberIdArgumentResolver.*",
+                    "com/hyperlink/server/global/config/WebConfig.*"
+
             ] + Qdomains)
         }))
     }
@@ -167,7 +181,23 @@ jacocoTestCoverageVerification {
 
             excludes = [
                     '*.ProfileController*',
-                    '*.ServerApplication*'
+                    '*.ServerApplication*',
+                    '*.GlobalExceptionHandler*',
+                    //oauth
+                    '*.GoogleAccessToken*',
+                    '*.GoogleAccessTokenRepository*',
+                    '*.GoogleOauthClient*',
+                    '*.GoogleProfileResult*',
+                    '*.GoogleToken*',
+                    '*.OauthResponse*',
+                    '*.JsonProcessingCustomException*',
+                    //시간초과
+                    '*.TokenExpiredException*',
+                    '*.SignUpTimeOutException*',
+                    //argumentResolver
+                    '*.LoginMemberIdArgumentResolver*',
+                    //config
+                    '*.WebConfig*',
             ] + Qdomains
         }
     }

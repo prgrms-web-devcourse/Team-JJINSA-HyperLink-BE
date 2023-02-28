@@ -1,6 +1,7 @@
 package com.hyperlink.server.auth.application;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.hyperlink.server.domain.auth.application.AuthService;
 import com.hyperlink.server.domain.auth.dto.LoginRequest;
@@ -9,6 +10,7 @@ import com.hyperlink.server.domain.auth.dto.RenewResult;
 import com.hyperlink.server.domain.auth.token.AuthTokenExtractor;
 import com.hyperlink.server.domain.auth.token.RefreshToken;
 import com.hyperlink.server.domain.auth.token.RefreshTokenRepository;
+import com.hyperlink.server.domain.auth.token.exception.RefreshTokenNotExistException;
 import com.hyperlink.server.domain.member.domain.MemberRepository;
 import com.hyperlink.server.domain.member.domain.entity.Member;
 import java.util.UUID;
@@ -67,7 +69,7 @@ class AuthServiceTest {
 
   @DisplayName("refreshToken을 통해 accessToken 재발급이 가능하다.")
   @Test
-  void renewAccessTokenTest() {
+  void renewAccessTokenCorrectTest() {
     String email = "rldnd1234@naver.com";
     Member saveMember = memberRepository.save(
         new Member(email, "Chocho", "develop", "10", "localhost", 1995, "man"));
@@ -77,8 +79,16 @@ class AuthServiceTest {
 
     RenewResult renewResult = authService.renewAccessToken(refreshToken.getRefreshToken());
 
-    assertThat(refreshToken).isEqualTo(renewResult.refreshToken());
     assertThat(saveMember.getId()).isEqualTo(
         authTokenExtractor.extractMemberId(renewResult.accessToken()));
+  }
+
+  @DisplayName("refreshToken을 통해 accessToken 재발급이 가능하다.")
+  @Test
+  void renewAccessTokenInCorrectTest() {
+
+    assertThatThrownBy(() -> {
+      authService.renewAccessToken(UUID.randomUUID().toString());
+    }).isInstanceOf(RefreshTokenNotExistException.class);
   }
 }

@@ -15,8 +15,8 @@ import com.hyperlink.server.domain.creator.exception.CreatorNotFoundException;
 import com.hyperlink.server.domain.member.domain.MemberRepository;
 import com.hyperlink.server.domain.member.domain.entity.Member;
 import com.hyperlink.server.domain.member.exception.MemberNotFoundException;
-import com.hyperlink.server.domain.memberCreator.domain.MemberCreatorRepository;
-import com.hyperlink.server.domain.memberCreator.domain.entity.MemberCreator;
+import com.hyperlink.server.domain.notRecommendCreator.domain.NotRecommendCreatorRepository;
+import com.hyperlink.server.domain.notRecommendCreator.domain.entity.NotRecommendCreator;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -42,7 +42,7 @@ public class CreatorServiceIntegrationTest {
   CreatorRepository creatorRepository;
   
   @Autowired
-  MemberCreatorRepository memberCreatorRepository;
+  NotRecommendCreatorRepository notRecommendCreatorRepository;
   
   @Autowired
   MemberRepository memberRepository;
@@ -102,9 +102,9 @@ public class CreatorServiceIntegrationTest {
       Long memberId = member.getId();
       Long creatorId = creator.getId();
 
-      MemberCreator notRecommendCreator = creatorService.notRecommend(memberId, creatorId);
+      NotRecommendCreator notRecommendCreator = creatorService.notRecommend(memberId, creatorId);
 
-      List<MemberCreator> memberNotRecommendCreators = memberCreatorRepository.findByMemberId(memberId);
+      List<NotRecommendCreator> memberNotRecommendCreators = notRecommendCreatorRepository.findByMemberId(memberId);
 
       assertThat(memberNotRecommendCreators).contains(notRecommendCreator);
     }

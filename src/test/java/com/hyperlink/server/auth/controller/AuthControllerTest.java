@@ -62,7 +62,7 @@ class AuthControllerTest {
 
   @DisplayName("로그인을 통해 인증토큰을 받을 수 있다.")
   @Test
-  void loginTest() throws Exception {
+  void loginCorrectTest() throws Exception {
     String email = "rldnd1234@naver.com";
     Member saveMember = memberRepository.save(
         new Member(email, "Chocho", "develop", "10", "localhost", 1995, "man"));
@@ -95,14 +95,29 @@ class AuthControllerTest {
         );
   }
 
+  @DisplayName("로그인시 accessToken이 존재하지않는다면 401을 반환한다.")
+  @Test
+  void loginInCorrectTest() throws Exception {
+    String email = "rldnd1234@naver.com";
+    LoginRequest loginRequest = new LoginRequest(email);
+
+    mockMvc.perform(MockMvcRequestBuilders
+            .post("/members/login")
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(loginRequest)))
+        .andExpect(status().isUnauthorized())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andDo(print());
+  }
+
   @DisplayName("로그아웃을 통해 refreshToken을 지울 수 있다.")
   @Test
-  void logoutTest() throws Exception {
+  void logoutCorrectTest() throws Exception {
     String email = "rldnd1234@naver.com";
     Member saveMember = memberRepository.save(
         new Member(email, "Chocho", "develop", "10", "localhost", 1995, "man"));
 
-    String accessToken = jwtTokenProvider.createAccessToken(saveMember.getId());
     RefreshToken savedRefreshToken = refreshTokenRepository.save(
         new RefreshToken(UUID.randomUUID().toString(), saveMember.getId()));
 
@@ -110,9 +125,21 @@ class AuthControllerTest {
 
     mockMvc.perform(MockMvcRequestBuilders
             .post("/members/logout")
-            .header(HttpHeaders.COOKIE, "refreshToken=" + savedRefreshToken.getRefreshToken())
             .cookie(cookie))
         .andExpect(status().isOk())
+        .andDo(print());
+  }
+
+  @DisplayName("refhToken이 없이 로그아웃을 요청한다면 401 에러가 발생한다.")
+  @Test
+  void logoutInCorrectTest() throws Exception {
+    String email = "rldnd1234@naver.com";
+    Member saveMember = memberRepository.save(
+        new Member(email, "Chocho", "develop", "10", "localhost", 1995, "man"));
+
+    mockMvc.perform(MockMvcRequestBuilders
+            .post("/members/logout"))
+        .andExpect(status().isUnauthorized())
         .andDo(print());
   }
 
@@ -123,14 +150,13 @@ class AuthControllerTest {
     Member saveMember = memberRepository.save(
         new Member(email, "Chocho", "develop", "10", "localhost", 1995, "man"));
 
-    String accessToken = jwtTokenProvider.createAccessToken(saveMember.getId());
     RefreshToken savedRefreshToken = refreshTokenRepository.save(
         new RefreshToken(UUID.randomUUID().toString(), saveMember.getId()));
 
     Cookie cookie = new Cookie("refreshToken", savedRefreshToken.getRefreshToken());
 
     mockMvc.perform(MockMvcRequestBuilders
-            .post("/members/access-token")
+            .get("/members/access-token")
             .header(HttpHeaders.COOKIE, "refreshToken=" + savedRefreshToken.getRefreshToken())
             .cookie(cookie))
         .andExpect(status().isOk())
