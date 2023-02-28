@@ -60,7 +60,7 @@ class AuthControllerTest {
   void loginTest() throws Exception {
     String email = "rldnd1234@naver.com";
     Member saveMember = memberRepository.save(
-        new Member(email, "Chocho", "develop", "10", "localhost", 1995));
+        new Member(email, "Chocho", "develop", "10", "localhost", 1995, "man"));
 
     LoginRequest loginRequest = new LoginRequest(email);
     String accessToken = jwtTokenProvider.createAccessToken(saveMember.getId());

@@ -28,7 +28,7 @@ class JwtTokenProviderTest {
   @Test
   void createAccessTokenTest() {
     Member saveMember = memberRepository.save(
-        new Member("rldnd1234@naver.com", "Chocho", "develop", "10", "localhost", 1995));
+        new Member("rldnd1234@naver.com", "Chocho", "develop", "10", "localhost", 1995, "man"));
 
     String accessToken = jwtTokenProvider.createAccessToken(saveMember.getId());
     Assertions.assertThat(authTokenExtractor.extractMemberId(accessToken))

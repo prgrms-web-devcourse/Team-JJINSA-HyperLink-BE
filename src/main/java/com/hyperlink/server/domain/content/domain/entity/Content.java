@@ -43,6 +43,10 @@ public class Content extends BaseEntity {
   @ManyToOne(fetch = FetchType.LAZY)
   private Category category;
 
+  @Column(nullable = false, name = "is_viewable", columnDefinition = "TINYINT", length = 1)
+  @ColumnDefault("0")
+  private boolean isViewable;
+
   @Column(columnDefinition = "INT UNSIGNED", nullable = false)
   @ColumnDefault("0")
   private int viewCount = 0;
@@ -51,9 +55,11 @@ public class Content extends BaseEntity {
   @ColumnDefault("0")
   private int likeCount = 0;
 
-  public Content(String title, String contentImgUrl, String link) {
+  public Content(String title, String contentImgUrl, String link, Creator creator, Category category) {
     this.title = title;
     this.contentImgUrl = contentImgUrl;
     this.link = link;
+    this.creator = creator;
+    this.category = category;
   }
 }

@@ -1,0 +1,1 @@
+ALTER TABLE `content` MODIFY COLUMN is_viewable TINYINT(1) DEFAULT 0;

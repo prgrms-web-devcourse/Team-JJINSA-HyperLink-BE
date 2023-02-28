@@ -41,7 +41,7 @@ class MemberServiceIntegrationTest {
   @Test
   void existsMemberByEmailTest() {
     Member saveMember = memberRepository.save(
-        new Member("rldnd1234@naver.com", "Chocho", "develop", "10", "localhost", 1995));
+        new Member("rldnd1234@naver.com", "Chocho", "develop", "10", "localhost", 1995, "man"));
 
     assertThat(memberService.existsMemberByEmail(saveMember.getEmail())).isTrue();
     assertThat(memberService.existsMemberByEmail("rldnd")).isFalse();
@@ -55,7 +55,7 @@ class MemberServiceIntegrationTest {
 
     SignUpRequest signUpRequest = new SignUpRequest("rldnd1234@naver.com", "Chocho", "develop",
         "10", "localhost", 1995,
-        List.of("develop", "beauty"));
+        List.of("develop", "beauty"), "man");
 
     SignUpResult signUpResult = memberService.signUp(signUpRequest);
 
@@ -64,5 +64,6 @@ class MemberServiceIntegrationTest {
     assertThat(authTokenExtractor.extractMemberId(signUpResult.accessToken())).isEqualTo(
         signUpResult.memberId());
   }
+
 
 }

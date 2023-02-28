@@ -39,7 +39,7 @@ class AttentionCategoryServiceIntegrationTest {
     Category beauty = categoryRepository.save(new Category("beauty"));
     List<String> attentionCategorys = Arrays.asList("develop", "beauty");
     Member savedMember = memberRepository.save(
-        new Member("rldnd5555@gmail.com", "chocho", "develop", "3", "url", 1990));
+        new Member("rldnd5555@gmail.com", "chocho", "develop", "3", "url", 1990, "man"));
 
     attentionCategoryService.setAttentionCategory(savedMember, attentionCategorys);
     List<AttentionCategory> allAttentionCategory = attentionCategoryRepository.findAll();
@@ -62,7 +62,7 @@ class AttentionCategoryServiceIntegrationTest {
     Category beauty = categoryRepository.save(new Category("beauty"));
     List<String> attentionCategorys = Arrays.asList("food", "beauty");
     Member savedMember = memberRepository.save(
-        new Member("rldnd5555@gmail.com", "chocho", "develop", "3", "url", 1990));
+        new Member("rldnd5555@gmail.com", "chocho", "develop", "3", "url", 1990, "man"));
     Assertions.assertThatThrownBy(() ->
         attentionCategoryService.setAttentionCategory(savedMember, attentionCategorys)
     ).isInstanceOf(

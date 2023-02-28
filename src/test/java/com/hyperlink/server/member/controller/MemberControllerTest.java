@@ -69,7 +69,7 @@ public class MemberControllerTest {
 
     SignUpRequest signUpRequest = new SignUpRequest(email, "Chocho", "develop",
         "10", "localhost", 1995,
-        List.of("develop", "beauty"));
+        List.of("develop", "beauty"), "man");
 
     mockMvc.perform(MockMvcRequestBuilders
             .post("/members/signup")
@@ -91,7 +91,8 @@ public class MemberControllerTest {
                 fieldWithPath("careerYear").type(JsonFieldType.STRING).description("경력"),
                 fieldWithPath("profileUrl").type(JsonFieldType.STRING).description("프로필 이미지 url"),
                 fieldWithPath("birthYear").type(JsonFieldType.NUMBER).description("출생년도"),
-                fieldWithPath("attentionCategory").type(JsonFieldType.ARRAY).description("관심목록")),
+                fieldWithPath("attentionCategory").type(JsonFieldType.ARRAY).description("관심목록"),
+                fieldWithPath("gender").type(JsonFieldType.STRING).description("성별")),
             responseHeaders(headerWithName(HttpHeaders.SET_COOKIE).description("RefreshToken")),
             responseFields(
                 fieldWithPath("accessToken").type(JsonFieldType.STRING).description("AccessToken")))

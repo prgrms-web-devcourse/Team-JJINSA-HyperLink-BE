@@ -14,13 +14,14 @@ public record SignUpRequest(
     @NotBlank @Size(max = 30) String careerYear,
     @NotBlank String profileUrl,
     @NotNull Integer birthYear,
-    @NotNull List<String> attentionCategory
+    @NotNull List<String> attentionCategory,
+    @NotBlank String gender
 ) {
 
   public static Member to(SignUpRequest signUpRequest) {
     return new Member(signUpRequest.email, signUpRequest.nickname,
         signUpRequest.career, signUpRequest.careerYear,
-        signUpRequest.profileUrl, signUpRequest.birthYear);
+        signUpRequest.profileUrl, signUpRequest.birthYear, signUpRequest.gender);
   }
 
 }
