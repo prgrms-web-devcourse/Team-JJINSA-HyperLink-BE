@@ -34,6 +34,7 @@ public class CreatorService {
     Creator creator = CreatorEnrollRequest.toCreator(creatorEnrollRequest, category);
     Creator savedCreator = creatorRepository.save(creator);
     return CreatorEnrollResponse.from(savedCreator);
+  }
 
   public MemberCreator notRecommend(Long memberId, Long creatorId) {
     Member member = memberRepository.findById(memberId).orElseThrow(MemberNotFoundException::new);

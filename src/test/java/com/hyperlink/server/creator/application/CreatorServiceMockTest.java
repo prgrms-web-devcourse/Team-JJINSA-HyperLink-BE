@@ -13,6 +13,8 @@ import com.hyperlink.server.domain.creator.domain.CreatorRepository;
 import com.hyperlink.server.domain.creator.domain.entity.Creator;
 import com.hyperlink.server.domain.creator.dto.CreatorEnrollRequest;
 import com.hyperlink.server.domain.creator.dto.CreatorEnrollResponse;
+import com.hyperlink.server.domain.member.domain.MemberRepository;
+import com.hyperlink.server.domain.memberCreator.domain.MemberCreatorRepository;
 import java.util.Optional;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -25,6 +27,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 @DisplayName("CreatorService Mock 테스트")
 public class CreatorServiceMockTest {
+
+  @Mock
+  MemberRepository memberRepository;
+
+  @Mock
+  MemberCreatorRepository memberCreatorRepository;
 
   @Mock
   CategoryRepository categoryRepository;
@@ -49,7 +57,7 @@ public class CreatorServiceMockTest {
       when(creatorRepository.save(any()))
           .thenReturn(new Creator("크리에이터 이름",
               "profileImgUrl", "크리에이터입니다.", developCategory));
-      CreatorService creatorService = new CreatorService(creatorRepository, categoryRepository);
+      CreatorService creatorService = new CreatorService(memberRepository, creatorRepository, categoryRepository, memberCreatorRepository);
       CreatorEnrollResponse creatorEnrollResponse = creatorService.enrollCreator(
           creatorEnrollRequest);
 
@@ -60,14 +68,13 @@ public class CreatorServiceMockTest {
     @Test
     @DisplayName("저장하려고하는 크리에이터의 카테고리가 없으면 CategoryNotFoundException이 발생한다.")
     public void fail() throws Exception {
-      //given
+
       CreatorEnrollRequest creatorEnrollRequest = new CreatorEnrollRequest("크리에이터 이름",
           "profileImgUrl", "크리에이터입니다.", "emptyCategory");
-      // when
-      when(categoryRepository.findByName(any())).thenThrow(new CategoryNotFoundException());
-      CreatorService creatorService = new CreatorService(creatorRepository, categoryRepository);
 
-      //then
+      when(categoryRepository.findByName(any())).thenThrow(new CategoryNotFoundException());
+      CreatorService creatorService = new CreatorService(memberRepository, creatorRepository, categoryRepository, memberCreatorRepository);
+
       Assertions.assertThrows(CategoryNotFoundException.class, () -> {
         creatorService.enrollCreator(creatorEnrollRequest);
       });
