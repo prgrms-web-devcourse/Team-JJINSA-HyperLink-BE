@@ -1,17 +1,14 @@
 package com.hyperlink.server.domain.member.exception;
 
 import com.hyperlink.server.global.exception.BusinessException;
-import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
-@Getter
-public class MemberNotFoundException extends BusinessException {
+public class SignUpTimeOutException extends BusinessException {
 
-  private static final String MESSAGE = "해당하는 멤버를 찾을 수 없습니다.";
+  private static final String MESSAGE = "회원가입 입력시간이 초과했습니다.";
   private static final HttpStatus status = HttpStatus.NOT_FOUND;
 
-  public MemberNotFoundException() {
+  public SignUpTimeOutException() {
     super(MESSAGE, status);
   }
-
 }

@@ -38,6 +38,10 @@ public class Content extends BaseEntity {
   @ManyToOne(fetch = FetchType.LAZY)
   private Creator creator;
 
+  @JoinColumn(name = "category_id", nullable = false)
+  @ManyToOne(fetch = FetchType.LAZY)
+  private Category category;
+
   @Column(columnDefinition = "INT UNSIGNED", nullable = false)
   @ColumnDefault("0")
   private int viewCount = 0;

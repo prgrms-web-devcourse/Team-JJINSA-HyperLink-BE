@@ -30,7 +30,7 @@ public class GlobalExceptionHandler {
   }
 
   @ExceptionHandler(MethodArgumentNotValidException.class)
-  protected ResponseEntity<String> handleBindException() {
+  protected ResponseEntity<String> handleValidation() {
     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("요청하신 필드값의 유효성이 잘못되었습니다.");
   }
 

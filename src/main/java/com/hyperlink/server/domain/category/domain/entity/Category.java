@@ -20,6 +20,10 @@ public class Category extends BaseEntity {
   @Column(name = "category_id")
   private Long id;
 
-  @Column(length = 30, nullable = false)
+  @Column(length = 30, nullable = false, unique = true)
   private String name;
+
+  public Category(String name) {
+    this.name = name;
+  }
 }
