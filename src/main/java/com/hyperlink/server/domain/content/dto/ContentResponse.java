@@ -5,6 +5,7 @@ import java.util.List;
 public record ContentResponse(
     Long contentId,
     String title,
+    String creatorName,
     String contentImgUrl,
     String link,
     int likeCount,

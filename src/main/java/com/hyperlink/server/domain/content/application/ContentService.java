@@ -55,7 +55,7 @@ public class ContentService {
       List<RecommendationCompanyResponse> recommendationCompanyResponses = new ArrayList<>();
 
       ContentResponse contentResponse = new ContentResponse(content.getId(), content.getTitle(),
-          content.getContentImgUrl(),
+          content.getCreator().getName(), content.getContentImgUrl(),
           content.getLink(), content.getLikeCount(), content.getViewCount(), isBookmarked, isLiked,
           content.getCreatedAt().toString(), recommendationCompanyResponses);
       contentResponses.add(contentResponse);
