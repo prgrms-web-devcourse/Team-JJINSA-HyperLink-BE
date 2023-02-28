@@ -65,8 +65,8 @@ public class ContentServiceIntegrationTest {
 
   @AfterAll
   void tearDown() {
-    creatorRepository.deleteAll();
-    categoryRepository.deleteAll();
+    creatorRepository.deleteById(creator.getId());
+    categoryRepository.deleteById(category.getId());
   }
 
   @Nested
