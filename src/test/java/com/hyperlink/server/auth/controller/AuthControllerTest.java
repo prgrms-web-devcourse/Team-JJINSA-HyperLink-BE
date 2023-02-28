@@ -42,7 +42,7 @@ class AuthControllerTest {
 
   @Autowired
   private MemberRepository memberRepository;
-  
+
   @Autowired
   private GoogleAccessTokenRepository googleAccessTokenRepository;
 
@@ -55,8 +55,7 @@ class AuthControllerTest {
   @Autowired
   ObjectMapper objectMapper;
 
-
-  @DisplayName("")
+  @DisplayName("로그인을 통해 인증토큰을 받을 수 있다.")
   @Test
   void loginTest() throws Exception {
     String email = "rldnd1234@naver.com";

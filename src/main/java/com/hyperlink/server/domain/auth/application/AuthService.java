@@ -30,7 +30,7 @@ public class AuthService {
 
   public LoginResult login(LoginRequest loginRequest) {
 
-    Long memberId = memberRepository.findMemberByEmail(loginRequest.email()).orElseThrow(
+    Long memberId = memberRepository.findByEmail(loginRequest.email()).orElseThrow(
         MemberNotFoundException::new).getId();
     String accessToken = jwtTokenProvider.createAccessToken(memberId);
     RefreshToken savedRefreshToken = refreshTokenRepository.save(
