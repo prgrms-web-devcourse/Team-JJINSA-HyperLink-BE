@@ -44,7 +44,7 @@ jobs:
         run: chmod +x ./gradlew
 
       - name: 빌드
-        run: SPRING_PROFILES_ACTIVE=[set1] ./gradlew clean build -x test -x :asciidoctor
+        run: SPRING_PROFILES_ACTIVE=[set1] ./gradlew clean build
 
       - name: aws 세팅
         uses: aws-actions/configure-aws-credentials@v1

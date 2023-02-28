@@ -3,6 +3,8 @@ package com.hyperlink.server.content.application;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import com.hyperlink.server.domain.category.domain.CategoryRepository;
+import com.hyperlink.server.domain.category.domain.entity.Category;
 import com.hyperlink.server.domain.content.application.ContentService;
 import com.hyperlink.server.domain.content.domain.ContentRepository;
 import com.hyperlink.server.domain.content.domain.entity.Content;
@@ -14,6 +16,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.stream.Stream;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
@@ -33,6 +37,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 
+@TestInstance(Lifecycle.PER_CLASS)
 @SpringBootTest
 @Transactional
 @DisplayName("ContentService 통합 테스트")
@@ -44,13 +49,24 @@ public class ContentServiceIntegrationTest {
   ContentRepository contentRepository;
   @Autowired
   CreatorRepository creatorRepository;
+  @Autowired
+  CategoryRepository categoryRepository;
 
   Creator creator;
+  Category category;
 
-  @BeforeEach
+  @BeforeAll
   void setUp() {
-    creator = new Creator("name", "profile", "description");
+    category = new Category("개발");
+    categoryRepository.save(category);
+    creator = new Creator("name", "profile", "description", category);
     creatorRepository.save(creator);
+  }
+
+  @AfterAll
+  void tearDown() {
+    creatorRepository.deleteAll();
+    categoryRepository.deleteAll();
   }
 
   @Nested
@@ -60,7 +76,7 @@ public class ContentServiceIntegrationTest {
     @Test
     @DisplayName("성공하면 특정 컨텐츠의 조회수를 리턴한다.")
     void success() {
-      Content content = new Content("title", "contentImgUrl", "link", creator);
+      Content content = new Content("title", "contentImgUrl", "link", creator, category);
       contentRepository.save(content);
       int inquiryCountBeforeAdd = content.getViewCount();
 
@@ -81,6 +97,7 @@ public class ContentServiceIntegrationTest {
   }
 
   @TestMethodOrder(OrderAnnotation.class)
+  @TestInstance(Lifecycle.PER_CLASS)
   @Nested
   @DisplayName("조회수 추가 메서드는")
   class AddViewAndGetCount {
@@ -88,25 +105,26 @@ public class ContentServiceIntegrationTest {
     static Long contentId;
     final int memberCount = 3;
     int beforeViewCount;
+    final CountDownLatch countDownLatch = new CountDownLatch(memberCount);
+
+    @BeforeAll
+    void contentSetUp() {
+      Content content = new Content("title", "contentImgUrl", "link", creator, category);
+      content = contentRepository.save(content);
+      contentId = content.getId();
+      beforeViewCount = content.getViewCount();
+    }
 
     @Order(1)
     @Rollback(value = false)
     @Test
     @DisplayName("3명의 사용자가 동시에 조회수 추가를 요청했을 때")
     void manyRequestView() throws InterruptedException {
-      final CountDownLatch countDownLatch = new CountDownLatch(memberCount);
-
-      Content content = new Content("title", "contentImgUrl", "link", creator);
-      content = contentRepository.save(content);
-      contentId = content.getId();
-      beforeViewCount = content.getViewCount();
-
       List<Thread> workers = Stream.generate(() -> new Thread(new Worker(countDownLatch, contentId)))
           .limit(memberCount)
           .toList();
       workers.forEach(Thread::start);
-
-      Thread.sleep(7000);
+      countDownLatch.await();
     }
 
     @Order(2)
@@ -122,7 +140,6 @@ public class ContentServiceIntegrationTest {
     @Rollback(value = false)
     @Test
     void tearDown() {
-      creatorRepository.deleteAll();
       contentRepository.deleteById(contentId);
     }
 
@@ -153,12 +170,12 @@ public class ContentServiceIntegrationTest {
     @BeforeEach
     void setUp() {
       List<Content> contents = new ArrayList<>();
-      contents.add(new Content("개발", "ImgUrl", "link", creator));
-      contents.add(new Content("개발짱", "ImgUrl", "link", creator));
-      contents.add(new Content("짱개발짱", "ImgUrl", "link", creator));
-      contents.add(new Content("개발자의 성장하는 삶", "ImgUrl", "link", creator));
-      contents.add(new Content("키가 쑥쑥 성장판", "ImgUrl", "link", creator));
-      contents.add(new Content("짱코딩짱", "ImgUrl", "link", creator));
+      contents.add(new Content("개발", "ImgUrl", "link", creator, category));
+      contents.add(new Content("개발짱", "ImgUrl", "link", creator, category));
+      contents.add(new Content("짱개발짱", "ImgUrl", "link", creator, category));
+      contents.add(new Content("개발자의 성장하는 삶", "ImgUrl", "link", creator, category));
+      contents.add(new Content("키가 쑥쑥 성장판", "ImgUrl", "link", creator, category));
+      contents.add(new Content("짱코딩짱", "ImgUrl", "link", creator, category));
 
       contentRepository.saveAll(contents);
     }

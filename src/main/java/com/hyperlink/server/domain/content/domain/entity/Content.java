@@ -1,5 +1,6 @@
 package com.hyperlink.server.domain.content.domain.entity;
 
+import com.hyperlink.server.domain.category.domain.entity.Category;
 import com.hyperlink.server.domain.common.BaseEntity;
 import com.hyperlink.server.domain.creator.domain.entity.Creator;
 import javax.persistence.Column;
@@ -54,10 +55,11 @@ public class Content extends BaseEntity {
   @ColumnDefault("0")
   private int likeCount = 0;
 
-  public Content(String title, String contentImgUrl, String link, Creator creator) {
+  public Content(String title, String contentImgUrl, String link, Creator creator, Category category) {
     this.title = title;
     this.contentImgUrl = contentImgUrl;
     this.link = link;
     this.creator = creator;
+    this.category = category;
   }
 }
