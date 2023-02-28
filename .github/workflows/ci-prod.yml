@@ -35,6 +35,7 @@ jobs:
 
       - name: application-prod.yml 생성
         run: |
+          mkdir src/test/resources
           touch src/main/resources/application.yml
           touch src/test/resources/application-test.yml
 
