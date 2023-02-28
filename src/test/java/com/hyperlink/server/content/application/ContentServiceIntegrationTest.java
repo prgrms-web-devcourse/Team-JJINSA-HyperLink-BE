@@ -5,13 +5,16 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.hyperlink.server.domain.category.domain.CategoryRepository;
 import com.hyperlink.server.domain.category.domain.entity.Category;
+import com.hyperlink.server.domain.category.exception.CategoryNotFoundException;
 import com.hyperlink.server.domain.content.application.ContentService;
 import com.hyperlink.server.domain.content.domain.ContentRepository;
 import com.hyperlink.server.domain.content.domain.entity.Content;
+import com.hyperlink.server.domain.content.dto.ContentEnrollResponse;
 import com.hyperlink.server.domain.content.dto.SearchResponse;
 import com.hyperlink.server.domain.content.exception.ContentNotFoundException;
 import com.hyperlink.server.domain.creator.domain.CreatorRepository;
 import com.hyperlink.server.domain.creator.domain.entity.Creator;
+import com.hyperlink.server.domain.creator.exception.CreatorNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
@@ -120,7 +123,8 @@ public class ContentServiceIntegrationTest {
     @Test
     @DisplayName("3명의 사용자가 동시에 조회수 추가를 요청했을 때")
     void manyRequestView() throws InterruptedException {
-      List<Thread> workers = Stream.generate(() -> new Thread(new Worker(countDownLatch, contentId)))
+      List<Thread> workers = Stream.generate(
+              () -> new Thread(new Worker(countDownLatch, contentId)))
           .limit(memberCount)
           .toList();
       workers.forEach(Thread::start);
@@ -201,6 +205,43 @@ public class ContentServiceIntegrationTest {
       SearchResponse searchResponse = contentService.search(memberId, keyword, pageable);
 
       assertThat(searchResponse.resultCount()).isEqualTo(resultCount);
+    }
+  }
+
+  @TestInstance(Lifecycle.PER_CLASS)
+  @Nested
+  @DisplayName("컨텐츠 추가 메서드는")
+  class InsertContent {
+
+    @Test
+    @DisplayName("성공하면 컨텐츠를 추가한다.")
+    public void insertContentSuccess() {
+      Long savedContentId = contentService.insertContent(
+          new ContentEnrollResponse("게시글", "link", "contentImgLink", category.getName(),
+              creator.getName()));
+
+      assertThat(contentRepository.findById(savedContentId)).isPresent();
+    }
+
+    @Nested
+    @DisplayName("[실패]")
+    class Failure {
+
+      @Test
+      @DisplayName("크리에이터의 이름이 잘못 입력되면 CreatorNotFoundException 을 발생한다.")
+      void creatorNotFoundExceptionTest() {
+        assertThrows(CreatorNotFoundException.class, () -> contentService.insertContent(
+            new ContentEnrollResponse("게시글", "link", "contentImgLink", category.getName(),
+                "잘못된 크리에이터 명")));
+      }
+
+      @Test
+      @DisplayName("카테고리의 이름이 잘못 입력되면 CategoryNotFoundException 을 발생한다.")
+      void categoryNotFoundExceptionTest() {
+        assertThrows(CategoryNotFoundException.class, () -> contentService.insertContent(
+            new ContentEnrollResponse("게시글", "link", "contentImgLink", "잘못된 카테고리명",
+                creator.getName())));
+      }
     }
   }
 }
