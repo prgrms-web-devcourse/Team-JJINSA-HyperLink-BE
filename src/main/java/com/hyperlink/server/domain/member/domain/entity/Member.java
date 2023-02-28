@@ -13,6 +13,7 @@ import javax.persistence.ManyToOne;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
 
 @Entity
 @Getter
@@ -42,6 +43,13 @@ public class Member extends BaseEntity {
   @Column(columnDefinition = "INT UNSIGNED")
   private Integer birthYear;
 
+  @Column(length = 10)
+  private String gender;
+
+  @Column(nullable = false, name = "is_admin", columnDefinition = "TINYINT", length = 1)
+  @ColumnDefault("0")
+  private Boolean isAdmin;
+
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "company_id")
   private Company company;
@@ -53,5 +61,15 @@ public class Member extends BaseEntity {
     this.career = career;
     this.careerYear = careerYear;
     this.profileImgUrl = profileImgUrl;
+  }
+
+  public Member(String email, String nickname, String career, String careerYear,
+      String profileImgUrl, Integer birthYear) {
+    this.email = email;
+    this.nickname = nickname;
+    this.career = career;
+    this.careerYear = careerYear;
+    this.profileImgUrl = profileImgUrl;
+    this.birthYear = birthYear;
   }
 }

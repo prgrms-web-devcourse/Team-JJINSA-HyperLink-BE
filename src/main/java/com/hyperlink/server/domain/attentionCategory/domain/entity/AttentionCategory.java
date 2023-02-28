@@ -32,4 +32,9 @@ public class AttentionCategory extends BaseEntity {
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "category_id")
   private Category category;
+
+  public AttentionCategory(Member member, Category category) {
+    this.member = member;
+    this.category = category;
+  }
 }

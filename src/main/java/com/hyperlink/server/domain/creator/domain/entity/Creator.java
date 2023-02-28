@@ -24,7 +24,7 @@ public class Creator extends BaseEntity {
   @Column(name = "creator_id")
   private Long id;
 
-  @Column(nullable = false)
+  @Column(nullable = false, unique = true)
   private String name;
 
   @Column(nullable = false)
@@ -32,10 +32,11 @@ public class Creator extends BaseEntity {
 
   @Column(nullable = false)
   private String description;
-
+ 
   @JoinColumn(name = "category_id", nullable = false)
   @ManyToOne(fetch = FetchType.LAZY)
   private Category category;
+
 
   public String getCategoryName() {
     return category.getName();
@@ -47,4 +48,5 @@ public class Creator extends BaseEntity {
     this.description = description;
     this.category = category;
   }
+
 }

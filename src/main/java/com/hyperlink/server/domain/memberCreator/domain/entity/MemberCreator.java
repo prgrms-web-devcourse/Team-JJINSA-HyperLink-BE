@@ -31,4 +31,9 @@ public class MemberCreator {
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "creator_id")
   private Creator creator;
+
+  public MemberCreator(Member member, Creator creator) {
+    this.member = member;
+    this.creator = creator;
+  }
 }
