@@ -33,6 +33,12 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
+      - name: Redis 설치
+        uses: shogo82148/actions-setup-redis@v1
+        with:
+          redis-version: '6.x'
+          run: redis-cli ping
+
       - name: application-prod.yml 생성
         run: |
           mkdir src/test/resources
