@@ -47,11 +47,12 @@ public class Member extends BaseEntity {
   private Company company;
 
   public Member(String email, String nickname, String career, String careerYear,
-      String profileImgUrl) {
+      String profileImgUrl, Integer birthYear) {
     this.email = email;
     this.nickname = nickname;
     this.career = career;
     this.careerYear = careerYear;
     this.profileImgUrl = profileImgUrl;
+    this.birthYear = birthYear;
   }
 }

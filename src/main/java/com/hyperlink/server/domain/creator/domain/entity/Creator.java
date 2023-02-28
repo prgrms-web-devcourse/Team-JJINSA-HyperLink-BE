@@ -1,11 +1,15 @@
 package com.hyperlink.server.domain.creator.domain.entity;
 
+import com.hyperlink.server.domain.category.domain.entity.Category;
 import com.hyperlink.server.domain.common.BaseEntity;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,7 +24,7 @@ public class Creator extends BaseEntity {
   @Column(name = "creator_id")
   private Long id;
 
-  @Column(nullable = false)
+  @Column(nullable = false, unique = true)
   private String name;
 
   @Column(nullable = false)
@@ -28,10 +32,15 @@ public class Creator extends BaseEntity {
 
   @Column(nullable = false)
   private String description;
+ 
+  @JoinColumn(name = "category_id", nullable = false)
+  @ManyToOne(fetch = FetchType.LAZY)
+  private Category category;
 
   public Creator(String name, String profileImgUrl, String description) {
     this.name = name;
     this.profileImgUrl = profileImgUrl;
     this.description = description;
   }
+
 }
