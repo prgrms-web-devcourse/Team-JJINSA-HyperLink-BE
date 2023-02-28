@@ -8,12 +8,33 @@ backtony.github.io(Rest Docs)
 :sectlinks:
 
 == Content
+
 === 조회수 갱신
+
 operation::ContentControllerTest/addInquiryOfContent[snippets='http-request,http-response,response-fields']
 
 === 검색
+
 operation::ContentControllerTest/search[snippets='http-request,http-response,response-fields']
 
 == MemberContent
+
 === 북마크 추가/삭제
+
 operation::MemberContentController/includeCreateOrDeleteBookmark[snippets='http-request,http-response']
+
+== 멤버
+
+=== 회원가입
+
+=== /members/signup
+
+.Request
+include::{snippets}/members/signup/http-request.adoc[]
+include::{snippets}/members/signup/request-headers.adoc[]
+include::{snippets}//members/signup/request-fields.adoc[]
+
+.Response
+include::{snippets}/members/signup/http-response.adoc[]
+include::{snippets}/members/signup/response-headers.adoc[]
+include::{snippets}//members/signup/response-fields.adoc[]
