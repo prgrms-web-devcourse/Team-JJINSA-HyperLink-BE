@@ -21,7 +21,7 @@ import org.springframework.util.PatternMatchUtils;
 public class AuthenticationFilter implements Filter {
 
   private static final String[] whitelist = {"/", "/members/logout", "/members/login",
-      "/members/signup", "/members/access-token", "/oauth/code/google"};
+      "/members/signup", "/profile", "/actuator/health", "/oauth/code/google", "/members/access-token"};
 
   private final AuthTokenExtractor authTokenExtractor;
   private final JwtTokenProvider jwtTokenProvider;
