@@ -1,7 +1,7 @@
 #!/bin/bash
 BASE_PATH=/home/ec2-user/app
-CHECK_PROFILE=/api/v0.1/profile
-CHECK_HEALTH=/api/v0.1/actuator/health
+CHECK_PROFILE=/profile
+CHECK_HEALTH=/actuator/health
 
 MY_IP=$(curl -s ifconfig.me)
 if [ $MY_IP == 54.180.58.103 ]

@@ -41,7 +41,7 @@ class AuthServiceTest {
     LoginRequest loginRequest = new LoginRequest(email);
     LoginResult loginResult = authService.login(loginRequest);
     String accessToken = loginResult.accessToken();
-    assertThat(authTokenExtractor.extractMemberId(accessToken))
+    assertThat(authTokenExtractor.extractMemberId(accessToken).get())
         .isEqualTo(saveMember.getId());
     assertThat(refreshTokenRepository.existsById(loginResult.refreshToken())).isTrue();
   }

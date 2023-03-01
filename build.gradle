@@ -76,6 +76,9 @@ dependencies {
     //querydsl
     implementation "com.querydsl:querydsl-jpa:${queryDslVersion}"
     annotationProcessor "com.querydsl:querydsl-apt:${queryDslVersion}"
+
+    // apache kafka
+    implementation 'org.springframework.kafka:spring-kafka'
 }
 
 def querydslDir = "$buildDir/generated/querydsl"
@@ -99,6 +102,10 @@ tasks.named('test') {
     finalizedBy 'jacocoTestReport'
 }
 
+jar {
+    enabled = false
+}
+
 tasks.named('asciidoctor') {
     inputs.dir snippetsDir
     configurations 'asciidoctorExtensions'
@@ -112,16 +119,11 @@ asciidoctor.doFirst {
 task copyDocument(type: Copy) {
     dependsOn asciidoctor
     from file("build/docs/asciidoc")
-    into file("src/main/resources/static/docs")
+    into file("build/resources/main/static/docs")
 }
 
 build {
     dependsOn copyDocument
-}
-
-
-jar {
-    enabled = false
 }
 
 jacocoTestReport {
@@ -141,7 +143,8 @@ jacocoTestReport {
             fileTree(dir: it, exclude: [
                     "com/hyperlink/server/ServerApplication.*",
                     "com/hyperlink/server/global/profile/controller/ProfileController.*",
-                    "com/hyperlink/server/domain/auth/oauth/**"
+                    "com/hyperlink/server/global/exception/ErrorReportRequest.*",
+                    "com/hyperlink/server/global/exception/GlobalExceptionHandler.*"
             ] + Qdomains)
         }))
     }
@@ -167,7 +170,10 @@ jacocoTestCoverageVerification {
 
             excludes = [
                     '*.ProfileController*',
-                    '*.ServerApplication*'
+                    '*.ServerApplication*',
+                    '*.oauth*',
+                    '*.ErrorReportRequest*',
+                    "*.GlobalExceptionHandler*"
             ] + Qdomains
         }
     }

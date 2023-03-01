@@ -9,7 +9,7 @@ then
   MY_DOMAIN=api.hyper-link.store
 fi
 
-CHECK_PROFILE=/api/v0.1/profile
+CHECK_PROFILE=/profile
 echo "> 현재 구동중인 Port 확인"
 CURRENT_PROFILE=$(curl -s https://$MY_DOMAIN$CHECK_PROFILE)
 
