@@ -79,6 +79,9 @@ dependencies {
 
     // apache kafka
     implementation 'org.springframework.kafka:spring-kafka'
+
+	// amqp
+	implementation 'org.springframework.boot:spring-boot-starter-amqp'
 }
 
 def querydslDir = "$buildDir/generated/querydsl"

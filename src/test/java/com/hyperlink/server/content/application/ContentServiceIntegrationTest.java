@@ -1,17 +1,22 @@
 package com.hyperlink.server.content.application;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.hyperlink.server.domain.category.domain.CategoryRepository;
 import com.hyperlink.server.domain.category.domain.entity.Category;
+import com.hyperlink.server.domain.category.exception.CategoryNotFoundException;
 import com.hyperlink.server.domain.content.application.ContentService;
 import com.hyperlink.server.domain.content.domain.ContentRepository;
 import com.hyperlink.server.domain.content.domain.entity.Content;
+import com.hyperlink.server.domain.content.dto.ContentEnrollResponse;
 import com.hyperlink.server.domain.content.dto.SearchResponse;
 import com.hyperlink.server.domain.content.exception.ContentNotFoundException;
 import com.hyperlink.server.domain.creator.domain.CreatorRepository;
 import com.hyperlink.server.domain.creator.domain.entity.Creator;
+import com.hyperlink.server.domain.creator.exception.CreatorNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
@@ -120,7 +125,8 @@ public class ContentServiceIntegrationTest {
     @Test
     @DisplayName("3명의 사용자가 동시에 조회수 추가를 요청했을 때")
     void manyRequestView() throws InterruptedException {
-      List<Thread> workers = Stream.generate(() -> new Thread(new Worker(countDownLatch, contentId)))
+      List<Thread> workers = Stream.generate(
+              () -> new Thread(new Worker(countDownLatch, contentId)))
           .limit(memberCount)
           .toList();
       workers.forEach(Thread::start);
@@ -201,6 +207,67 @@ public class ContentServiceIntegrationTest {
       SearchResponse searchResponse = contentService.search(memberId, keyword, pageable);
 
       assertThat(searchResponse.resultCount()).isEqualTo(resultCount);
+    }
+  }
+
+  @TestInstance(Lifecycle.PER_CLASS)
+  @Nested
+  @DisplayName("컨텐츠 추가 메서드는")
+  class InsertContent {
+
+    @Test
+    @DisplayName("성공하면 컨텐츠를 추가한다.")
+    public void insertContentSuccess() {
+      ContentEnrollResponse contentEnrollResponse = new ContentEnrollResponse("게시글", "link",
+          "contentImgLink", category.getName(),
+          creator.getName());
+
+      Long savedContentId = contentService.insertContent(contentEnrollResponse);
+
+      assertThat(contentRepository.findById(savedContentId)).isPresent();
+    }
+
+    @Nested
+    @DisplayName("[실패]")
+    class Failure {
+
+      @Test
+      @DisplayName("이미 저장된 컨텐츠를 다시 저장하려고하면 저장하지 않고 -1을 반환한다.")
+      void insertFailIfExists() {
+        ContentEnrollResponse contentEnrollResponse = new ContentEnrollResponse("게시글", "link",
+            "contentImgLink", category.getName(),
+            creator.getName());
+        ContentEnrollResponse sameContentEnrollResponse = new ContentEnrollResponse("게시글", "link",
+            "contentImgLink", category.getName(),
+            creator.getName());
+
+        contentService.insertContent(contentEnrollResponse);
+        Long insertResult = contentService.insertContent(sameContentEnrollResponse);
+
+        assertEquals(-1L, (long) insertResult);
+      }
+
+      @Test
+      @DisplayName("크리에이터의 이름이 잘못 입력되면 CreatorNotFoundException 을 발생한다.")
+      void creatorNotFoundExceptionTest() {
+        ContentEnrollResponse contentEnrollResponse = new ContentEnrollResponse("게시글", "link",
+            "contentImgLink", category.getName(),
+            "잘못된 크리에이터 명");
+
+        assertThrows(CreatorNotFoundException.class,
+            () -> contentService.insertContent(contentEnrollResponse));
+      }
+
+      @Test
+      @DisplayName("카테고리의 이름이 잘못 입력되면 CategoryNotFoundException 을 발생한다.")
+      void categoryNotFoundExceptionTest() {
+        ContentEnrollResponse contentEnrollResponse = new ContentEnrollResponse("게시글", "link",
+            "contentImgLink", "잘못된 카테고리명",
+            creator.getName());
+
+        assertThrows(CategoryNotFoundException.class,
+            () -> contentService.insertContent(contentEnrollResponse));
+      }
     }
   }
 }
