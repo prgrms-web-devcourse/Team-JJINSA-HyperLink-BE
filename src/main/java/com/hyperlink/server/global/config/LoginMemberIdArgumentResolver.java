@@ -22,7 +22,7 @@ public class LoginMemberIdArgumentResolver implements HandlerMethodArgumentResol
   @Override
   public boolean supportsParameter(final MethodParameter parameter) {
     return parameter.hasParameterAnnotation(LoginMemberId.class)
-        && parameter.getParameterType().equals(Long.class);
+        && parameter.getParameterType().equals(Optional.class);
   }
 
   @Override
