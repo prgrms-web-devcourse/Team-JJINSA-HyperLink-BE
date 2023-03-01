@@ -1,7 +1,9 @@
 package com.hyperlink.server.content.application;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.hyperlink.server.domain.category.domain.CategoryRepository;
 import com.hyperlink.server.domain.category.domain.entity.Category;
@@ -216,9 +218,11 @@ public class ContentServiceIntegrationTest {
     @Test
     @DisplayName("성공하면 컨텐츠를 추가한다.")
     public void insertContentSuccess() {
-      Long savedContentId = contentService.insertContent(
-          new ContentEnrollResponse("게시글", "link", "contentImgLink", category.getName(),
-              creator.getName()));
+      ContentEnrollResponse contentEnrollResponse = new ContentEnrollResponse("게시글", "link",
+          "contentImgLink", category.getName(),
+          creator.getName());
+
+      Long savedContentId = contentService.insertContent(contentEnrollResponse);
 
       assertThat(contentRepository.findById(savedContentId)).isPresent();
     }
@@ -228,19 +232,41 @@ public class ContentServiceIntegrationTest {
     class Failure {
 
       @Test
+      @DisplayName("이미 저장된 컨텐츠를 다시 저장하려고하면 저장하지 않고 -1을 반환한다.")
+      void insertFailIfExists() {
+        ContentEnrollResponse contentEnrollResponse = new ContentEnrollResponse("게시글", "link",
+            "contentImgLink", category.getName(),
+            creator.getName());
+        ContentEnrollResponse sameContentEnrollResponse = new ContentEnrollResponse("게시글", "link",
+            "contentImgLink", category.getName(),
+            creator.getName());
+
+        contentService.insertContent(contentEnrollResponse);
+        Long insertResult = contentService.insertContent(sameContentEnrollResponse);
+
+        assertEquals(-1L, (long) insertResult);
+      }
+
+      @Test
       @DisplayName("크리에이터의 이름이 잘못 입력되면 CreatorNotFoundException 을 발생한다.")
       void creatorNotFoundExceptionTest() {
-        assertThrows(CreatorNotFoundException.class, () -> contentService.insertContent(
-            new ContentEnrollResponse("게시글", "link", "contentImgLink", category.getName(),
-                "잘못된 크리에이터 명")));
+        ContentEnrollResponse contentEnrollResponse = new ContentEnrollResponse("게시글", "link",
+            "contentImgLink", category.getName(),
+            "잘못된 크리에이터 명");
+
+        assertThrows(CreatorNotFoundException.class,
+            () -> contentService.insertContent(contentEnrollResponse));
       }
 
       @Test
       @DisplayName("카테고리의 이름이 잘못 입력되면 CategoryNotFoundException 을 발생한다.")
       void categoryNotFoundExceptionTest() {
-        assertThrows(CategoryNotFoundException.class, () -> contentService.insertContent(
-            new ContentEnrollResponse("게시글", "link", "contentImgLink", "잘못된 카테고리명",
-                creator.getName())));
+        ContentEnrollResponse contentEnrollResponse = new ContentEnrollResponse("게시글", "link",
+            "contentImgLink", "잘못된 카테고리명",
+            creator.getName());
+
+        assertThrows(CategoryNotFoundException.class,
+            () -> contentService.insertContent(contentEnrollResponse));
       }
     }
   }

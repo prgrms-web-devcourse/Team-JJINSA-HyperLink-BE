@@ -56,26 +56,32 @@ public class ContentRabbitMQIntegrationTest {
   @Test
   @DisplayName("RabbitMQ에 데이터를 넣으면 이는 DB로 저장된다.")
   void rabbitMQSaveToDatabase() throws InterruptedException, JsonProcessingException {
-    String naverCreatorName = "네이버 D2 기술 블로그";
-    rabbitTemplate.convertAndSend(objectMapper.writeValueAsString(new ContentEnrollResponse("DEVIEW 2023 D-6! 부스를 소개합니다.",
+    String naverCreatorName = "ybCreatorName(삭제x)";
+    ContentEnrollResponse contentEnrollResponse1 = new ContentEnrollResponse(
+        "DEVIEW 2023 D-6! 부스를 소개합니다.",
         "https://d2.naver.com/news/3775781",
         "https://d2.naver.com/content/images/2023/02/-----------2023-02-06------2-53-17.png",
-        "develop", naverCreatorName)));
+        "developCategoryTest(삭제x)", naverCreatorName);
 
-    rabbitTemplate.convertAndSend(objectMapper.writeValueAsString(new ContentEnrollResponse("오프라인으로 돌아온 DEVIEW 2023, 미리보는 참가 신청 방법!",
+    ContentEnrollResponse contentEnrollResponse2 = new ContentEnrollResponse(
+        "오프라인으로 돌아온 DEVIEW 2023, 미리보는 참가 신청 방법!",
         "https://d2.naver.com/news/1888051",
         "https://d2.naver.com/content/images/2023/02/D2-------------_170X120.png",
-        "develop", naverCreatorName)));
+        "developCategoryTest(삭제x)", naverCreatorName);
 
-    rabbitTemplate.convertAndSend(objectMapper.writeValueAsString(new ContentEnrollResponse("네이버 검색 SRE 2편 - 측정하지 않으면 개선할 수 없다! SRE KPI 개발기",
+    ContentEnrollResponse contentEnrollResponse3 = new ContentEnrollResponse(
+        "네이버 검색 SRE 2편 - 측정하지 않으면 개선할 수 없다! SRE KPI 개발기",
         "https://d2.naver.com/helloworld/9231267",
         "https://d2.naver.com/content/images/2023/01/d2_spring_2nd.png",
-        "develop", naverCreatorName)));
+        "developCategoryTest(삭제x)", naverCreatorName);
+
+    rabbitTemplate.convertAndSend(objectMapper.writeValueAsString(contentEnrollResponse1));
+    rabbitTemplate.convertAndSend(objectMapper.writeValueAsString(contentEnrollResponse2));
+    rabbitTemplate.convertAndSend(objectMapper.writeValueAsString(contentEnrollResponse3));
 
     Thread.sleep(5000);
     allByCreatorName = contentRepository.findAllByCreatorName(naverCreatorName);
     assertEquals(3, allByCreatorName.size());
-
   }
 
 }
