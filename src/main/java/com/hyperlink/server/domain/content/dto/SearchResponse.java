@@ -1,10 +1,7 @@
 package com.hyperlink.server.domain.content.dto;
 
-import java.util.List;
-
 public record SearchResponse(
-    List<ContentResponse> contents,
-    boolean hasNext,
+    GetContentsCommonResponse getContentsCommonResponse,
     String keyword,
     int resultCount
 ) {
