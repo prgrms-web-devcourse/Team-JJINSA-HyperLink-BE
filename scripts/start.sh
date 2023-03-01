@@ -62,7 +62,7 @@ else
 fi
 
 echo "> $IDLE_PROFILE 배포"
-sudo nohup java -jar -Dspring.profiles.active=$IDLE_PROFILE $IDLE_APPLICATION_PATH &
+sudo nohup java -jar -Dspring.profiles.active=$IDLE_PROFILE $IDLE_APPLICATION_PATH > hyperlink.log 2>&1 &
 
 echo "> $IDLE_PROFILE 10초 후 Health check 시작"
 echo "> curl -s http://$MY_DOMAIN:$IDLE_PORT$CHECK_HEALTH "
