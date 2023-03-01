@@ -40,16 +40,16 @@ public class AuthTokenExtractor {
 
   public Optional<Long> extractMemberId(final String accessToken) {
     try {
-      if (accessToken != null && !accessToken.isBlank()) {
-        String memberId = Jwts.parserBuilder()
-            .setSigningKey(SECRET_KEY)
-            .build()
-            .parseClaimsJws(accessToken)
-            .getBody()
-            .getSubject();
-        return Optional.of(Long.parseLong(memberId));
+      if (accessToken == null || accessToken.isBlank()) {
+        return Optional.empty();
       }
-      return Optional.empty();
+      String memberId = Jwts.parserBuilder()
+          .setSigningKey(SECRET_KEY)
+          .build()
+          .parseClaimsJws(accessToken)
+          .getBody()
+          .getSubject();
+      return Optional.of(Long.parseLong(memberId));
 
     } catch (final JwtException e) {
       throw new TokenInvalidFormatException();
