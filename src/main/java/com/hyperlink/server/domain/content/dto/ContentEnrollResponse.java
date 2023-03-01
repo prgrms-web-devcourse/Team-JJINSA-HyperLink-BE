@@ -5,7 +5,7 @@ import com.hyperlink.server.domain.content.domain.entity.Content;
 import com.hyperlink.server.domain.creator.domain.entity.Creator;
 
 public record ContentEnrollResponse(String title, String link, String contentImgLink,
-                                    String category, String creator) {
+                                    String categoryName, String creatorName) {
 
   public static Content toContent(ContentEnrollResponse contentEnrollResponse, Creator creator,
       Category category) {

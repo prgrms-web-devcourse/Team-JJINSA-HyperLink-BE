@@ -14,4 +14,6 @@ public interface ContentRepository extends JpaRepository<Content, Long> {
   void updateViewCount(@Param("content_id") Long contentId);
 
   List<Content> findAllByCreatorName(String creatorName);
+
+  boolean existsByLink(String link);
 }

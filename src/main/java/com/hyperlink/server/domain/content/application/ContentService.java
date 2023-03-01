@@ -19,11 +19,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -81,14 +83,17 @@ public class ContentService {
 
   @Transactional
   public Long insertContent(ContentEnrollResponse contentEnrollResponse) {
-    System.out.println(contentEnrollResponse);
-
-    Creator creator = creatorRepository.findByName(contentEnrollResponse.creator())
+    Creator creator = creatorRepository.findByName(contentEnrollResponse.creatorName())
         .orElseThrow(CreatorNotFoundException::new);
-    Category category = categoryRepository.findByName(contentEnrollResponse.category())
+    Category category = categoryRepository.findByName(contentEnrollResponse.categoryName())
         .orElseThrow(CategoryNotFoundException::new);
 
     Content content = ContentEnrollResponse.toContent(contentEnrollResponse, creator, category);
+    boolean exist = contentRepository.existsByLink(content.getLink());
+    if(exist) {
+      log.info("이미 존재하는 컨텐츠입니다. {}", contentEnrollResponse);
+      return -1L;
+    }
     contentRepository.save(content);
     return content.getId();
   }
