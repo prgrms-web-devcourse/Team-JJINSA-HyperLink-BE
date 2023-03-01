@@ -20,7 +20,8 @@ import org.springframework.util.PatternMatchUtils;
 @Slf4j
 public class AuthenticationFilter implements Filter {
 
-  private static final String[] whitelist = {"/", "/members/login", "/members/signup",
+  private static final String[] whitelist = {"/", "/members/logout", "/members/login",
+      "/members/signup",
       "/oauth/code/google"};
 
   private final AuthTokenExtractor authTokenExtractor;
