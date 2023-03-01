@@ -8,6 +8,7 @@ import com.hyperlink.server.domain.content.dto.SearchResponse;
 import com.hyperlink.server.domain.content.exception.ContentNotFoundException;
 import com.hyperlink.server.domain.content.infrastructure.ContentRepositoryCustom;
 import com.hyperlink.server.domain.memberContent.application.MemberContentService;
+import com.hyperlink.server.domain.memberHistory.application.MemberHistoryService;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -24,6 +25,7 @@ public class ContentService {
   private final ContentRepository contentRepository;
   private final ContentRepositoryCustom contentRepositoryCustom;
   private final MemberContentService memberContentService;
+  private final MemberHistoryService memberHistoryService;
 
   public int getViewCount(Long contentId) {
     Content content = contentRepository.findById(contentId).orElseThrow(
@@ -33,8 +35,11 @@ public class ContentService {
   }
 
   @Transactional
-  public void addView(Long contentId) {
+  public void addView(Long memberId, Long contentId) {
     contentRepository.updateViewCount(contentId);
+    if (memberId != null) {
+      memberHistoryService.insertMemberHistory(memberId, contentId);
+    }
   }
 
   public SearchResponse search(Long memberId, String keyword, Pageable pageable) {

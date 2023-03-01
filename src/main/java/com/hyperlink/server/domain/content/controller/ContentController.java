@@ -29,7 +29,9 @@ public class ContentController {
   @PatchMapping("/{contentId}/view")
   @ResponseStatus(HttpStatus.OK)
   public PatchInquiryResponse addViewOfContent(@PathVariable("contentId") long contentId) {
-    contentService.addView(contentId);
+    // TODO : JWT
+    Long memberId = 1L;
+    contentService.addView(memberId, contentId);
     int viewCount = contentService.getViewCount(contentId);
     return new PatchInquiryResponse(viewCount);
   }
