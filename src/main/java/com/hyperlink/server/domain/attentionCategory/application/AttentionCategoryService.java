@@ -2,10 +2,12 @@ package com.hyperlink.server.domain.attentionCategory.application;
 
 import com.hyperlink.server.domain.attentionCategory.domain.AttentionCategoryRepository;
 import com.hyperlink.server.domain.attentionCategory.domain.entity.AttentionCategory;
+import com.hyperlink.server.domain.attentionCategory.dto.AttentionCategoryResponse;
 import com.hyperlink.server.domain.category.domain.CategoryRepository;
 import com.hyperlink.server.domain.category.domain.entity.Category;
 import com.hyperlink.server.domain.category.exception.CategoryNotFoundException;
 import com.hyperlink.server.domain.member.domain.entity.Member;
+import java.util.ArrayList;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,11 +26,16 @@ public class AttentionCategoryService {
   }
 
   @Transactional
-  public void setAttentionCategory(Member member, List<String> attentionCategory) {
+  public AttentionCategoryResponse changeAttentionCategory(Member member,
+      List<String> attentionCategory) {
+
+    List<String> savedAttentionCategory = new ArrayList<>();
     attentionCategory.stream().forEach(categoryName -> {
       Category category = categoryRepository.findByName(categoryName)
           .orElseThrow(CategoryNotFoundException::new);
       attentionCategoryRepository.save(new AttentionCategory(member, category));
+      savedAttentionCategory.add(category.getName());
     });
+    return AttentionCategoryResponse.from(savedAttentionCategory);
   }
 }

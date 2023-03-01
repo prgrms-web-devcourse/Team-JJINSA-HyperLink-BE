@@ -44,7 +44,7 @@ class AttentionCategoryServiceIntegrationTest {
         new Member("rldnd5555@gmail.com", "chocho", Career.DEVELOP, CareerYear.MORE_TEN, "url",
             1990, "man"));
 
-    attentionCategoryService.setAttentionCategory(savedMember, attentionCategorys);
+    attentionCategoryService.changeAttentionCategory(savedMember, attentionCategorys);
     List<AttentionCategory> allAttentionCategory = attentionCategoryRepository.findAll();
 
     List<Category> result = allAttentionCategory.stream()
@@ -68,7 +68,7 @@ class AttentionCategoryServiceIntegrationTest {
         new Member("rldnd5555@gmail.com", "chocho", Career.DEVELOP, CareerYear.MORE_TEN, "url",
             1990, "man"));
     Assertions.assertThatThrownBy(() ->
-        attentionCategoryService.setAttentionCategory(savedMember, attentionCategorys)
+        attentionCategoryService.changeAttentionCategory(savedMember, attentionCategorys)
     ).isInstanceOf(
         CategoryNotFoundException.class);
   }
