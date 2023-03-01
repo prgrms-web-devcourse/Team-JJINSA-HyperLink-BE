@@ -5,5 +5,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface MemberHistoryRepository extends JpaRepository<MemberHistory, Long> {
 
-  List<MemberHistory> findByMemberId(Long memberId);
+  List<MemberHistory> findAllByMemberId(Long memberId);
 }

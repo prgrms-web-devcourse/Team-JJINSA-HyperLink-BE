@@ -61,7 +61,7 @@ class MemberHistoryIntegrationTest {
 
     memberHistoryService.insertMemberHistory(member.getId(), content.getId());
 
-    List<MemberHistory> findMemberHistory = memberHistoryRepository.findByMemberId(member.getId());
+    List<MemberHistory> findMemberHistory = memberHistoryRepository.findAllByMemberId(member.getId());
     assertThat(findMemberHistory.get(0).getMember()).isEqualTo(member);
     assertThat(findMemberHistory.get(0).getContent()).isEqualTo(content);
   }
