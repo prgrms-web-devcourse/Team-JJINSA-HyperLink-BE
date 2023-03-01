@@ -17,7 +17,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class WebConfig implements WebMvcConfigurer {
 
   private static final String CORS_ALLOWED_METHODS = "GET,POST,HEAD,PUT,PATCH,DELETE,TRACE,OPTIONS";
-  private static final String FRONTEND_LOCALHOST = "http://localhost:3000";
 
   private final AuthTokenExtractor authTokenExtractor;
   private final JwtTokenProvider jwtTokenProvider;
@@ -47,8 +46,9 @@ public class WebConfig implements WebMvcConfigurer {
   public void addCorsMappings(final CorsRegistry registry) {
     registry.addMapping("/**") //추후 변동예정.
         .allowedMethods(CORS_ALLOWED_METHODS.split(","))
-        .allowedOrigins(FRONTEND_LOCALHOST)
-        .allowCredentials(true)
+        .allowedOrigins("*")
+        .allowedHeaders("*")
+        .allowCredentials(false)
         .exposedHeaders(HttpHeaders.LOCATION, HttpHeaders.SET_COOKIE);
   }
 
