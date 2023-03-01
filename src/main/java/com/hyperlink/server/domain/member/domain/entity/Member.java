@@ -64,12 +64,14 @@ public class Member extends BaseEntity {
   }
 
   public Member(String email, String nickname, String career, String careerYear,
-      String profileImgUrl, Integer birthYear) {
+      String profileImgUrl,
+      Integer birthYear, String gender) {
     this.email = email;
     this.nickname = nickname;
     this.career = career;
     this.careerYear = careerYear;
     this.profileImgUrl = profileImgUrl;
     this.birthYear = birthYear;
+    this.gender = gender;
   }
 }

@@ -1,6 +1,8 @@
 package com.hyperlink.server.domain.auth.token;
 
+import com.hyperlink.server.domain.auth.token.exception.TokenExpiredException;
 import com.hyperlink.server.domain.member.domain.MemberRepository;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import java.nio.charset.StandardCharsets;
@@ -42,4 +44,15 @@ public class JwtTokenProvider {
         .compact();
   }
 
+  public void validateExpiredToken(final String accessToken) {
+    try {
+      Date expiration = Jwts.parserBuilder().setSigningKey(SECRET_KEY).build()
+          .parseClaimsJws(accessToken).getBody().getExpiration();
+      if (expiration.before(new Date())) {
+        throw new TokenExpiredException();
+      }
+    } catch (ExpiredJwtException e) {
+      throw new TokenExpiredException();
+    }
+  }
 }

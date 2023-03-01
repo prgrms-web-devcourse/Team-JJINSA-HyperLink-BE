@@ -43,14 +43,13 @@ class GlobalExceptionHandlerTest {
   ObjectMapper objectMapper;
 
   @Test
-  void handleValidationTest() throws Exception {
+  void MethodArgumentNotValidExceptionTest() throws Exception {
     String accessToken = jwtTokenProvider.createAccessToken(1L);
     SignUpRequest signUpRequest = new SignUpRequest(" ",
         "chocho",
-
         "develop",
         "10", "localhost", 1995,
-        List.of("develop", "beauty"));
+        List.of("develop", "beauty"), "man");
 
     mockMvc.perform(MockMvcRequestBuilders
             .post("/members/signup")
@@ -99,7 +98,7 @@ class GlobalExceptionHandlerTest {
 
     SignUpRequest signUpRequest = new SignUpRequest(email, "Chocho", "develop",
         "10", "localhost", 1995,
-        List.of("develop", "beauty"));
+        List.of("develop", "beauty"), "man");
 
     mockMvc.perform(MockMvcRequestBuilders
             .get("/members/signup")

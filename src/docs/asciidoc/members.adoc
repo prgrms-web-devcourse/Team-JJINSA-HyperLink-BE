@@ -1,0 +1,23 @@
+:hardbreaks:
+ifndef::snippets[]
+:snippets: ../ ../ ../build/generated-snippets
+endif::[]
+
+
+== 멤버
+
+=== 회원가입
+
+=== /members/signup
+
+.Request
+include::{snippets}/members/signup/http-request.adoc[]
+include::{snippets}/members/signup/request-headers.adoc[]
+include::{snippets}//members/signup/request-fields.adoc[]
+
+.Response
+include::{snippets}/members/signup/http-response.adoc[]
+include::{snippets}/members/signup/response-headers.adoc[]
+include::{snippets}//members/signup/response-fields.adoc[]
+
+

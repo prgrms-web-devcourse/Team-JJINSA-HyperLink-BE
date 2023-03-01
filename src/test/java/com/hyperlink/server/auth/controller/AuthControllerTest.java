@@ -1,5 +1,4 @@
-package com.hyperlink.server.member.controller;
-
+package com.hyperlink.server.auth.controller;
 
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
@@ -16,13 +15,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.hyperlink.server.domain.auth.dto.LoginRequest;
 import com.hyperlink.server.domain.auth.oauth.GoogleAccessToken;
 import com.hyperlink.server.domain.auth.oauth.GoogleAccessTokenRepository;
 import com.hyperlink.server.domain.auth.token.JwtTokenProvider;
-import com.hyperlink.server.domain.category.domain.CategoryRepository;
-import com.hyperlink.server.domain.category.domain.entity.Category;
-import com.hyperlink.server.domain.member.dto.SignUpRequest;
-import java.util.List;
+import com.hyperlink.server.domain.member.domain.MemberRepository;
+import com.hyperlink.server.domain.member.domain.entity.Member;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
@@ -39,10 +38,10 @@ import org.springframework.transaction.annotation.Transactional;
 @AutoConfigureRestDocs
 @AutoConfigureMockMvc
 @SpringBootTest
-public class MemberControllerTest {
+class AuthControllerTest {
 
   @Autowired
-  private CategoryRepository categoryRepository;
+  private MemberRepository memberRepository;
 
   @Autowired
   private GoogleAccessTokenRepository googleAccessTokenRepository;
@@ -56,47 +55,38 @@ public class MemberControllerTest {
   @Autowired
   ObjectMapper objectMapper;
 
+  @DisplayName("로그인을 통해 인증토큰을 받을 수 있다.")
   @Test
-  void signupTest() throws Exception {
-    Category develop = categoryRepository.save(new Category("develop"));
-    Category beauty = categoryRepository.save(new Category("beauty"));
-
+  void loginTest() throws Exception {
     String email = "rldnd1234@naver.com";
-    String accessToken = jwtTokenProvider.createAccessToken(1L);
+    Member saveMember = memberRepository.save(
+        new Member(email, "Chocho", "develop", "10", "localhost", 1995, "man"));
+
+    LoginRequest loginRequest = new LoginRequest(email);
+    String accessToken = jwtTokenProvider.createAccessToken(saveMember.getId());
 
     GoogleAccessToken savedGoogleAccessToken = googleAccessTokenRepository.save(
         new GoogleAccessToken(accessToken, email));
 
-    SignUpRequest signUpRequest = new SignUpRequest(email, "Chocho", "develop",
-        "10", "localhost", 1995,
-        List.of("develop", "beauty"), "man");
-
     mockMvc.perform(MockMvcRequestBuilders
-            .post("/members/signup")
-            .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
+            .post("/members/login")
+            .header(HttpHeaders.AUTHORIZATION,
+                "Bearer " + savedGoogleAccessToken.getGoogleAccessToken())
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON)
-            .content(objectMapper.writeValueAsString(signUpRequest)))
-        .andExpect(status().isCreated())
+            .content(objectMapper.writeValueAsString(loginRequest)))
+        .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andDo(print())
-        .andDo(document("members/signup",
+        .andDo(document("members/login",
             preprocessRequest(prettyPrint()),
             preprocessResponse(prettyPrint()),
             requestHeaders(headerWithName(HttpHeaders.AUTHORIZATION).description("AccessToken")),
             requestFields(
-                fieldWithPath("email").type(JsonFieldType.STRING).description("이메일"),
-                fieldWithPath("nickname").type(JsonFieldType.STRING).description("닉네임"),
-                fieldWithPath("career").type(JsonFieldType.STRING).description("직업 분야 "),
-                fieldWithPath("careerYear").type(JsonFieldType.STRING).description("경력"),
-                fieldWithPath("profileUrl").type(JsonFieldType.STRING).description("프로필 이미지 url"),
-                fieldWithPath("birthYear").type(JsonFieldType.NUMBER).description("출생년도"),
-                fieldWithPath("attentionCategory").type(JsonFieldType.ARRAY).description("관심목록"),
-                fieldWithPath("gender").type(JsonFieldType.STRING).description("성별")),
+                fieldWithPath("email").type(JsonFieldType.STRING).description("이메일")),
             responseHeaders(headerWithName(HttpHeaders.SET_COOKIE).description("RefreshToken")),
             responseFields(
                 fieldWithPath("accessToken").type(JsonFieldType.STRING).description("AccessToken")))
         );
   }
-
 }
