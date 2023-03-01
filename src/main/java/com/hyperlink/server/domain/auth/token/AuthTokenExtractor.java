@@ -43,7 +43,7 @@ public class AuthTokenExtractor {
 
   public Optional<Long> extractMemberId(final String accessToken) {
     try {
-      if (accessToken == null && !accessToken.isBlank()) {
+      if (accessToken == null || accessToken.isBlank()) {
         return Optional.empty();
       }
       String memberId = Jwts.parserBuilder()
