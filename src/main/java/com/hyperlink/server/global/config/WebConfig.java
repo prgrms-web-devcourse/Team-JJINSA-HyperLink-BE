@@ -8,6 +8,7 @@ import javax.servlet.Filter;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpHeaders;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -27,7 +28,7 @@ public class WebConfig implements WebMvcConfigurer {
 
   @Bean
   public FilterRegistrationBean loginFilter() {
-    
+
     FilterRegistrationBean<Filter> filterRegistrationBean = new FilterRegistrationBean<Filter>();
 
     filterRegistrationBean.setFilter(
@@ -50,6 +51,7 @@ public class WebConfig implements WebMvcConfigurer {
         .allowedOrigins("*")
         .allowedHeaders("*")
         .allowedMethods(CORS_ALLOWED_METHODS.split(","))
-        .allowCredentials(false);
+        .allowCredentials(false)
+        .exposedHeaders(HttpHeaders.LOCATION, HttpHeaders.SET_COOKIE);
   }
 }

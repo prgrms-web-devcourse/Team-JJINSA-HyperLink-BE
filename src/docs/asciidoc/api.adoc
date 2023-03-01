@@ -37,6 +37,10 @@ operation::members/login[snippets='http-request,http-response,response-fields']
 
 operation::members/mypage[snippets='http-request,http-response,response-fields']
 
+=== 관심목록 변경
+
+operation::members/attention-category[snippets='http-request,http-response,response-fields']
+
 == Creator
 
 === 비추천 크리에이터 추가

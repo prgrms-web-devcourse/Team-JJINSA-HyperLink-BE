@@ -142,6 +142,4 @@ public class MemberControllerTest {
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andDo(print());
   }
-
-
 }
