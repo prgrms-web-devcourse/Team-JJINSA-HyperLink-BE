@@ -2,6 +2,9 @@ package com.hyperlink.server.content.application;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 import com.hyperlink.server.domain.category.domain.CategoryRepository;
 import com.hyperlink.server.domain.category.domain.entity.Category;
@@ -12,6 +15,9 @@ import com.hyperlink.server.domain.content.dto.SearchResponse;
 import com.hyperlink.server.domain.content.exception.ContentNotFoundException;
 import com.hyperlink.server.domain.creator.domain.CreatorRepository;
 import com.hyperlink.server.domain.creator.domain.entity.Creator;
+import com.hyperlink.server.domain.member.domain.MemberRepository;
+import com.hyperlink.server.domain.member.domain.entity.Member;
+import com.hyperlink.server.domain.memberHistory.application.MemberHistoryService;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
@@ -32,6 +38,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.annotation.Rollback;
@@ -51,6 +58,10 @@ public class ContentServiceIntegrationTest {
   CreatorRepository creatorRepository;
   @Autowired
   CategoryRepository categoryRepository;
+  @Autowired
+  MemberRepository memberRepository;
+  @MockBean
+  MemberHistoryService memberHistoryService;
 
   Creator creator;
   Category category;
@@ -80,7 +91,7 @@ public class ContentServiceIntegrationTest {
       contentRepository.save(content);
       int inquiryCountBeforeAdd = content.getViewCount();
 
-      contentService.addView(content.getId());
+      contentService.addView(null, content.getId());
 
       int findInquiry = contentService.getViewCount(content.getId());
 
@@ -96,52 +107,97 @@ public class ContentServiceIntegrationTest {
     }
   }
 
-  @TestMethodOrder(OrderAnnotation.class)
-  @TestInstance(Lifecycle.PER_CLASS)
   @Nested
   @DisplayName("조회수 추가 메서드는")
   class AddViewAndGetCount {
 
-    static Long contentId;
-    final int memberCount = 3;
-    int beforeViewCount;
-    final CountDownLatch countDownLatch = new CountDownLatch(memberCount);
+    @Nested
+    @DisplayName("비회원 사용자가 요청했을 때")
+    class MemberIdIsNull {
 
-    @BeforeAll
-    void contentSetUp() {
-      Content content = new Content("title", "contentImgUrl", "link", creator, category);
-      content = contentRepository.save(content);
-      contentId = content.getId();
-      beforeViewCount = content.getViewCount();
+      @Test
+      @DisplayName("조회수가 +1 처리되고, 히스토리 내역에 추가된 데이터가 없다")
+      void addViewPlusOneAndNothingChangeHistory() {
+        Long memberId = null;
+        Content content = new Content("title", "contentImgUrl", "link", creator, category);
+        content = contentRepository.save(content);
+        int beforeViewCount = content.getViewCount();
+
+        contentService.addView(memberId, content.getId());
+
+        Content findContent = contentRepository.findById(content.getId())
+            .orElseThrow(ContentNotFoundException::new);
+        assertThat(findContent.getViewCount()).isEqualTo(beforeViewCount + 1);
+      }
     }
 
-    @Order(1)
-    @Rollback(value = false)
-    @Test
-    @DisplayName("3명의 사용자가 동시에 조회수 추가를 요청했을 때")
-    void manyRequestView() throws InterruptedException {
-      List<Thread> workers = Stream.generate(() -> new Thread(new Worker(countDownLatch, contentId)))
-          .limit(memberCount)
-          .toList();
-      workers.forEach(Thread::start);
-      countDownLatch.await();
+    @Nested
+    @DisplayName("로그인된 사용자가 요청했을 때")
+    class RequestMember {
+
+      @Test
+      @DisplayName("사용자의 히스토리 내역에 해당 콘텐츠 데이터가 추가된다")
+      void addMemberHistory() {
+        Member member = new Member("email", "nickname", "career", "3", "profileImgUrl");
+        memberRepository.save(member);
+
+        Content content = new Content("title", "contentImgUrl", "link", creator, category);
+        content = contentRepository.save(content);
+
+        contentService.addView(member.getId(), content.getId());
+
+        verify(memberHistoryService, times(1)).insertMemberHistory(any(), any());
+      }
     }
 
-    @Order(2)
-    @Test
-    @DisplayName("조회수가 +3 처리된다.")
-    void addView() {
-      Content findContent = contentRepository.findById(contentId)
-          .orElseThrow(ContentNotFoundException::new);
-      assertThat(findContent.getViewCount()).isEqualTo(beforeViewCount + memberCount);
+    @TestMethodOrder(OrderAnnotation.class)
+    @TestInstance(Lifecycle.PER_CLASS)
+    @Nested
+    @DisplayName("다수의 사용자가 동시에")
+    class ConcurrencyTest {
+
+      static Long contentId;
+      final int memberCount = 3;
+      int beforeViewCount;
+      final CountDownLatch countDownLatch = new CountDownLatch(memberCount);
+
+      @BeforeAll
+      void contentSetUpConcurrencyTest() {
+        Content content = new Content("title", "contentImgUrl", "link", creator, category);
+        content = contentRepository.save(content);
+        contentId = content.getId();
+        beforeViewCount = content.getViewCount();
+      }
+
+      @Order(1)
+      @Rollback(value = false)
+      @Test
+      @DisplayName("조회수 추가를 요청했을 때")
+      void manyRequestView() throws InterruptedException {
+        List<Thread> workers = Stream.generate(() -> new Thread(new Worker(countDownLatch, contentId)))
+            .limit(memberCount)
+            .toList();
+        workers.forEach(Thread::start);
+        countDownLatch.await();
+      }
+
+      @Order(2)
+      @Test
+      @DisplayName("조회수가 요청 수만큼 증가한다.")
+      void addView() {
+        Content findContent = contentRepository.findById(contentId)
+            .orElseThrow(ContentNotFoundException::new);
+        assertThat(findContent.getViewCount()).isEqualTo(beforeViewCount + memberCount);
+      }
+
+      @Order(3)
+      @Rollback(value = false)
+      @Test
+      void tearDown() {
+        contentRepository.deleteById(contentId);
+      }
     }
 
-    @Order(3)
-    @Rollback(value = false)
-    @Test
-    void tearDown() {
-      contentRepository.deleteById(contentId);
-    }
 
     private class Worker implements Runnable {
 
@@ -155,7 +211,7 @@ public class ContentServiceIntegrationTest {
 
       @Override
       public void run() {
-        contentService.addView(contentId);
+        contentService.addView(null, contentId);
         countDownLatch.countDown();
       }
     }
