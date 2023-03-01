@@ -1,0 +1,1 @@
+ALTER TABLE `content` ADD COLUMN is_viewable TinyInt(1) after `like_count`;

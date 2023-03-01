@@ -1,13 +1,13 @@
 #!/bin/bash
 BASE_PATH=/home/ec2-user/app
-CHECK_PROFILE=/api/v0.1/profile
-CHECK_HEALTH=/api/v0.1/actuator/health
+CHECK_PROFILE=/profile
+CHECK_HEALTH=/actuator/health
 
 MY_IP=$(curl -s ifconfig.me)
-if [ $MY_IP == 54.180.58.103 ]
+if [ $MY_IP == 52.79.110.182 ]
 then
   MY_DOMAIN=test.hyper-link.store
-elif [ $MY_IP == 54.180.208.136 ]
+elif [ $MY_IP == 3.36.209.200 ]
 then
   MY_DOMAIN=api.hyper-link.store
 fi

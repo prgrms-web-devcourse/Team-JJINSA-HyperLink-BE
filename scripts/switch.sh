@@ -1,15 +1,15 @@
 #!/bin/bash
 
 MY_IP=$(curl -s ifconfig.me)
-if [ $MY_IP == 54.180.58.103 ]
+if [ $MY_IP == 52.79.110.182 ]
 then
   MY_DOMAIN=test.hyper-link.store
-elif [ $MY_IP == 54.180.208.136 ]
+elif [ $MY_IP == 3.36.209.200 ]
 then
   MY_DOMAIN=api.hyper-link.store
 fi
 
-CHECK_PROFILE=/api/v0.1/profile
+CHECK_PROFILE=/profile
 echo "> 현재 구동중인 Port 확인"
 CURRENT_PROFILE=$(curl -s https://$MY_DOMAIN$CHECK_PROFILE)
 

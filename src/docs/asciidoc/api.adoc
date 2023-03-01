@@ -7,6 +7,54 @@ backtony.github.io(Rest Docs)
 :toclevels: 4
 :sectlinks:
 
+== Content
+
+=== 조회수 갱신
+
+operation::ContentControllerTest/addInquiryOfContent[snippets='http-request,http-response,response-fields']
+
+=== 검색
+
+operation::ContentControllerTest/search[snippets='http-request,http-response,response-fields']
+
+== MemberContent
+
+=== 북마크 추가/삭제
+
+operation::MemberContentController/includeCreateOrDeleteBookmark[snippets='http-request,http-response']
+
 == Member
+
 === 회원가입
-operation::test/testk[snippets='http-request,http-response,response-fields']
+
+=== /members/signup
+
+.Request
+include::{snippets}/members/signup/http-request.adoc[]
+include::{snippets}/members/signup/request-headers.adoc[]
+include::{snippets}//members/signup/request-fields.adoc[]
+
+.Response
+include::{snippets}/members/signup/http-response.adoc[]
+include::{snippets}/members/signup/response-headers.adoc[]
+include::{snippets}//members/signup/response-fields.adoc[]
+
+=== 로그인
+
+=== /members/login
+
+.Request
+include::{snippets}/members/login/http-request.adoc[]
+include::{snippets}/members/login/request-headers.adoc[]
+include::{snippets}//members/login/request-fields.adoc[]
+
+.Response
+include::{snippets}/members/login/http-response.adoc[]
+include::{snippets}/members/login/response-headers.adoc[]
+include::{snippets}//members/login/response-fields.adoc[]
+
+== Creator
+
+=== 비추천 크리에이터 추가
+
+operation::CreatorControllerTest/notRecommend[snippets='http-request,http-response']
