@@ -27,15 +27,15 @@ operation::MemberContentController/includeCreateOrDeleteBookmark[snippets='http-
 
 === 회원가입
 
-=== /members/signup
-
 operation::members/signup[snippets='http-request,http-response,response-fields']
 
 === 로그인
 
-=== /members/login
-
 operation::members/login[snippets='http-request,http-response,response-fields']
+
+=== 내정보 조회
+
+operation::members/mypage[snippets='http-request,http-response,response-fields']
 
 == Creator
 

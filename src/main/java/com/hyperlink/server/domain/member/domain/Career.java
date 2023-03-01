@@ -2,7 +2,9 @@ package com.hyperlink.server.domain.member.domain;
 
 import com.hyperlink.server.domain.member.exception.CareerNotFoundException;
 import java.util.stream.Stream;
+import lombok.Getter;
 
+@Getter
 public enum Career {
   DEVELOP("develop"),
   BEAUTY("beauty"),

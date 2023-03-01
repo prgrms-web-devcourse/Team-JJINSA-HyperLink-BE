@@ -34,7 +34,7 @@ class JwtTokenProviderTest {
             1995, "man"));
 
     String accessToken = jwtTokenProvider.createAccessToken(saveMember.getId());
-    Assertions.assertThat(authTokenExtractor.extractMemberId(accessToken))
+    Assertions.assertThat(authTokenExtractor.extractMemberId(accessToken).get())
         .isEqualTo(saveMember.getId());
   }
 }

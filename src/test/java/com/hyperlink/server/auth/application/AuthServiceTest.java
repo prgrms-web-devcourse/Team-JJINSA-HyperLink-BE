@@ -48,7 +48,7 @@ class AuthServiceTest {
     LoginRequest loginRequest = new LoginRequest(email);
     LoginResult loginResult = authService.login(loginRequest);
     String accessToken = loginResult.accessToken();
-    assertThat(authTokenExtractor.extractMemberId(accessToken))
+    assertThat(authTokenExtractor.extractMemberId(accessToken).get())
         .isEqualTo(saveMember.getId());
     assertThat(refreshTokenRepository.existsById(loginResult.refreshToken())).isTrue();
   }
@@ -82,7 +82,7 @@ class AuthServiceTest {
     RenewResult renewResult = authService.renewAccessToken(refreshToken.getRefreshToken());
 
     assertThat(saveMember.getId()).isEqualTo(
-        authTokenExtractor.extractMemberId(renewResult.accessToken()));
+        authTokenExtractor.extractMemberId(renewResult.accessToken()).get());
   }
 
   @DisplayName("refreshToken을 통해 accessToken 재발급이 가능하다.")

@@ -9,6 +9,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
+import java.util.Optional;
 import javax.crypto.SecretKey;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -40,15 +41,18 @@ public class AuthTokenExtractor {
     return splitHeaders[TOKEN_VALUE_INDEX];
   }
 
-  public Long extractMemberId(final String accessToken) {
+  public Optional<Long> extractMemberId(final String accessToken) {
     try {
+      if (accessToken == null && !accessToken.isBlank()) {
+        return Optional.empty();
+      }
       String memberId = Jwts.parserBuilder()
           .setSigningKey(SECRET_KEY)
           .build()
           .parseClaimsJws(accessToken)
           .getBody()
           .getSubject();
-      return Long.parseLong(memberId);
+      return Optional.of(Long.parseLong(memberId));
     } catch (final JwtException e) {
       throw new TokenInvalidFormatException();
     }
