@@ -141,9 +141,8 @@ jacocoTestReport {
             fileTree(dir: it, exclude: [
                     "com/hyperlink/server/ServerApplication.*",
                     "com/hyperlink/server/global/profile/controller/ProfileController.*",
-                    "com/hyperlink/server/domain/auth/oauth/**",
-                    "com.hyperlink.server.global.exception.ErrorReportRequest.*",
-                    "com.hyperlink.server.global.exception.GlobalExceptionHandler.*",
+                    "com/hyperlink/server/global/exception/ErrorReportRequest.*",
+                    "com/hyperlink/server/global/exception/GlobalExceptionHandler.*",
                     //oauth
                     "com/hyperlink/server/domain/auth/oauth/dto/GoogleProfileResult.*",
                     "com/hyperlink/server/domain/auth/oauth/dto/GoogleToken.*",
@@ -154,7 +153,9 @@ jacocoTestReport {
 
                     //시간
                     "com/hyperlink/server/domain/member/exception/SignUpTimeOutException.*",
-                    "com/hyperlink/server/domain/token/exception/TokenExpiredException.*",
+                    "com/hyperlink/server/domain/auth/token/exception/TokenExpiredException.*",
+                    "com/hyperlink/server/domain/auth/token/AuthTokenExtractor*",
+
                     //설정 파일
                     "com/hyperlink/server/global/config/LoginMemberIdArgumentResolver.*",
                     "com/hyperlink/server/global/config/WebConfig.*"
@@ -198,6 +199,7 @@ jacocoTestCoverageVerification {
                     //시간초과
                     '*.TokenExpiredException*',
                     '*.SignUpTimeOutException*',
+                    '*.AuthTokenExtractor*',
                     //argumentResolver
                     '*.LoginMemberIdArgumentResolver*',
                     //config

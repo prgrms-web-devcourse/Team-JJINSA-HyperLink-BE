@@ -8,7 +8,6 @@ import com.hyperlink.server.domain.auth.dto.RenewResponse;
 import com.hyperlink.server.domain.auth.dto.RenewResult;
 import com.hyperlink.server.domain.auth.token.RefreshTokenCookieProvider;
 import com.hyperlink.server.domain.auth.token.exception.InValidAccessException;
-import com.hyperlink.server.domain.auth.token.exception.TokenNotExistsException;
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -51,9 +50,6 @@ public class AuthController {
     String authorizationHeader = httpServletRequest.getHeader(HttpHeaders.AUTHORIZATION);
     String googleAccessToken = authService.extractToken(authorizationHeader);
 
-    if (!authService.googleTokenExistsById(googleAccessToken)) {
-      throw new TokenNotExistsException();
-    }
     authService.googleTokenDeleteById(googleAccessToken);
   }
 
