@@ -11,8 +11,8 @@ import com.hyperlink.server.domain.creator.exception.CreatorNotFoundException;
 import com.hyperlink.server.domain.member.domain.MemberRepository;
 import com.hyperlink.server.domain.member.domain.entity.Member;
 import com.hyperlink.server.domain.member.exception.MemberNotFoundException;
-import com.hyperlink.server.domain.memberCreator.domain.MemberCreatorRepository;
-import com.hyperlink.server.domain.memberCreator.domain.entity.MemberCreator;
+import com.hyperlink.server.domain.notRecommendCreator.domain.NotRecommendCreatorRepository;
+import com.hyperlink.server.domain.notRecommendCreator.domain.entity.NotRecommendCreator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,7 +25,7 @@ public class CreatorService {
   private final MemberRepository memberRepository;
   private final CreatorRepository creatorRepository;
   private final CategoryRepository categoryRepository;
-  private final MemberCreatorRepository memberCreatorRepository;
+  private final NotRecommendCreatorRepository notRecommendCreatorRepository;
 
   @Transactional
   public CreatorEnrollResponse enrollCreator(CreatorEnrollRequest creatorEnrollRequest) {
@@ -36,13 +36,13 @@ public class CreatorService {
     return CreatorEnrollResponse.from(savedCreator);
   }
 
-  public MemberCreator notRecommend(Long memberId, Long creatorId) {
+  public NotRecommendCreator notRecommend(Long memberId, Long creatorId) {
     Member member = memberRepository.findById(memberId).orElseThrow(MemberNotFoundException::new);
     Creator creator = creatorRepository.findById(creatorId)
         .orElseThrow(CreatorNotFoundException::new);
-    MemberCreator memberCreator = new MemberCreator(member, creator);
+    NotRecommendCreator notRecommendCreator = new NotRecommendCreator(member, creator);
 
-    return memberCreatorRepository.save(memberCreator);
+    return notRecommendCreatorRepository.save(notRecommendCreator);
 
   }
 }

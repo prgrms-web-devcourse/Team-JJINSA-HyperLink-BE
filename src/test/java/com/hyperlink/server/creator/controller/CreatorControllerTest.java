@@ -20,7 +20,7 @@ import com.hyperlink.server.domain.creator.domain.entity.Creator;
 import com.hyperlink.server.domain.creator.dto.CreatorEnrollRequest;
 import com.hyperlink.server.domain.creator.dto.CreatorEnrollResponse;
 import com.hyperlink.server.domain.member.domain.entity.Member;
-import com.hyperlink.server.domain.memberCreator.domain.entity.MemberCreator;
+import com.hyperlink.server.domain.notRecommendCreator.domain.entity.NotRecommendCreator;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -147,9 +147,9 @@ public class CreatorControllerTest {
         Member member = new Member("email", "nickname", "career", "careerYear", "profileImgUrl");
         Category category = new Category("개발");
         Creator creator = new Creator("name", "profileImgUrl", "descriptions", category);
-        MemberCreator memberCreator = new MemberCreator(member, creator);
+        NotRecommendCreator notRecommendCreator = new NotRecommendCreator(member, creator);
 
-        doReturn(memberCreator).when(creatorService).notRecommend(any(), any());
+        doReturn(notRecommendCreator).when(creatorService).notRecommend(any(), any());
 
         mockMvc.perform(
                 post("/creators/" + creatorId + "/not-recommend")

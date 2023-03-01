@@ -24,7 +24,6 @@ public class CreatorController {
   public CreatorEnrollResponse enrollCreator(
       @RequestBody @Valid CreatorEnrollRequest creatorEnrollRequest) {
     return creatorService.enrollCreator(creatorEnrollRequest);
-
   }
 
   @PostMapping("/creators/{creatorId}/not-recommend")

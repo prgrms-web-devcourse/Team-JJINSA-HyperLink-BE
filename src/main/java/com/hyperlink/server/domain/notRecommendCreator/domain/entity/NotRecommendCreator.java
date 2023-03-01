@@ -1,4 +1,4 @@
-package com.hyperlink.server.domain.memberCreator.domain.entity;
+package com.hyperlink.server.domain.notRecommendCreator.domain.entity;
 
 import com.hyperlink.server.domain.creator.domain.entity.Creator;
 import com.hyperlink.server.domain.member.domain.entity.Member;
@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class MemberCreator {
+public class NotRecommendCreator {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,7 +32,7 @@ public class MemberCreator {
   @JoinColumn(name = "creator_id")
   private Creator creator;
 
-  public MemberCreator(Member member, Creator creator) {
+  public NotRecommendCreator(Member member, Creator creator) {
     this.member = member;
     this.creator = creator;
   }

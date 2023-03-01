@@ -61,7 +61,7 @@ class MemberServiceIntegrationTest {
 
     assertThat(memberRepository.existsById(signUpResult.memberId())).isTrue();
     assertThat(refreshTokenRepository.existsById(signUpResult.refreshToken())).isTrue();
-    assertThat(authTokenExtractor.extractMemberId(signUpResult.accessToken())).isEqualTo(
+    assertThat(authTokenExtractor.extractMemberId(signUpResult.accessToken()).get()).isEqualTo(
         signUpResult.memberId());
   }
 
