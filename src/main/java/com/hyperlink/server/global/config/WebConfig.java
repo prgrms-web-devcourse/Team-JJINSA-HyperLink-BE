@@ -46,9 +46,9 @@ public class WebConfig implements WebMvcConfigurer {
   public void addCorsMappings(final CorsRegistry registry) {
     registry.addMapping("/**") //추후 변동예정.
         .allowedMethods(CORS_ALLOWED_METHODS.split(","))
-        .allowedOrigins("*")
+        .allowedOrigins("http://localhost:5173")
         .allowedHeaders("*")
-        .allowCredentials(false)
+        .allowCredentials(true)
         .exposedHeaders(HttpHeaders.LOCATION, HttpHeaders.SET_COOKIE);
   }
 
