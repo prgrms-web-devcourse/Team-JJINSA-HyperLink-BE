@@ -36,14 +36,15 @@ public class MemberService {
   }
 
   @Transactional
-  public SignUpResult signUp(SignUpRequest signUpRequest) {
-    Member savedMember = memberRepository.save(SignUpRequest.to(signUpRequest));
+  public SignUpResult signUp(SignUpRequest signUpRequest, String profileUrl) {
+    Member savedMember = memberRepository.save(SignUpRequest.to(signUpRequest, profileUrl));
     attentionCategoryService.setAttentionCategory(savedMember, signUpRequest.attentionCategory());
 
     Long memberId = savedMember.getId();
     String accessToken = jwtTokenProvider.createAccessToken(memberId);
     RefreshToken refreshToken = refreshTokenRepository.save(
         new RefreshToken(UUID.randomUUID().toString(), memberId));
+
     return new SignUpResult(memberId, accessToken, refreshToken.getRefreshToken());
   }
 

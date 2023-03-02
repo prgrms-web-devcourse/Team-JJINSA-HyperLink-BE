@@ -58,18 +58,17 @@ public class MemberControllerTest {
 
   @Test
   void signupTest() throws Exception {
-    Category develop = categoryRepository.save(new Category("develop"));
+//    Category develop = categoryRepository.save(new Category("develop"));
     Category beauty = categoryRepository.save(new Category("beauty"));
 
     String email = "rldnd1234@naver.com";
     String accessToken = jwtTokenProvider.createAccessToken(1L);
 
     GoogleAccessToken savedGoogleAccessToken = googleAccessTokenRepository.save(
-        new GoogleAccessToken(accessToken, email));
+        new GoogleAccessToken(accessToken, email, "loalhost"));
 
     SignUpRequest signUpRequest = new SignUpRequest(email, "Chocho", "develop",
-        "10", "localhost", 1995,
-        List.of("develop", "beauty"), "man");
+        "10", 1995, List.of("develop", "beauty"), "man");
 
     mockMvc.perform(MockMvcRequestBuilders
             .post("/members/signup")
@@ -89,7 +88,6 @@ public class MemberControllerTest {
                 fieldWithPath("nickname").type(JsonFieldType.STRING).description("닉네임"),
                 fieldWithPath("career").type(JsonFieldType.STRING).description("직업 분야 "),
                 fieldWithPath("careerYear").type(JsonFieldType.STRING).description("경력"),
-                fieldWithPath("profileUrl").type(JsonFieldType.STRING).description("프로필 이미지 url"),
                 fieldWithPath("birthYear").type(JsonFieldType.NUMBER).description("출생년도"),
                 fieldWithPath("attentionCategory").type(JsonFieldType.ARRAY).description("관심목록"),
                 fieldWithPath("gender").type(JsonFieldType.STRING).description("성별")),

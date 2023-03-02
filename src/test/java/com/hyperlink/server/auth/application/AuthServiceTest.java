@@ -3,8 +3,8 @@ package com.hyperlink.server.auth.application;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.hyperlink.server.domain.auth.application.AuthService;
-import com.hyperlink.server.domain.auth.dto.LoginRequest;
 import com.hyperlink.server.domain.auth.dto.LoginResult;
+import com.hyperlink.server.domain.auth.oauth.GoogleAccessToken;
 import com.hyperlink.server.domain.auth.token.AuthTokenExtractor;
 import com.hyperlink.server.domain.auth.token.RefreshTokenRepository;
 import com.hyperlink.server.domain.member.domain.MemberRepository;
@@ -36,10 +36,11 @@ class AuthServiceTest {
   void loginTest() {
     String email = "rldnd1234@naver.com";
     Member saveMember = memberRepository.save(
-        new Member(email, "Chocho", "develop", "10", "localhost", 1995, "man"));
+        new Member(email, "Chocho", "develop", "10", "profileUrl", 1995, "man"));
 
-    LoginRequest loginRequest = new LoginRequest(email);
-    LoginResult loginResult = authService.login(loginRequest);
+    GoogleAccessToken googleAccessToken = new GoogleAccessToken("1234", email, "profileUrl");
+
+    LoginResult loginResult = authService.login(googleAccessToken);
     String accessToken = loginResult.accessToken();
     assertThat(authTokenExtractor.extractMemberId(accessToken).get())
         .isEqualTo(saveMember.getId());
@@ -53,9 +54,10 @@ class AuthServiceTest {
     Member saveMember = memberRepository.save(
         new Member(email, "Chocho", "develop", "10", "localhost", 1995, "man"));
 
-    LoginRequest loginRequest = new LoginRequest(email);
-    LoginResult loginResult = authService.login(loginRequest);
-    String accessToken = loginResult.accessToken();
+    GoogleAccessToken googleAccessToken = new GoogleAccessToken("1234", email, "profileUrl");
+
+    LoginResult loginResult = authService.login(googleAccessToken);
+    
     assertThat(refreshTokenRepository.existsById(loginResult.refreshToken())).isTrue();
 
     authService.logout(loginResult.refreshToken());

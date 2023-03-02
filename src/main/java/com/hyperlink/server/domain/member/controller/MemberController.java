@@ -1,9 +1,9 @@
 package com.hyperlink.server.domain.member.controller;
 
-import com.hyperlink.server.domain.auth.oauth.GoogleAccessTokenRepository;
+import com.hyperlink.server.domain.auth.application.AuthService;
+import com.hyperlink.server.domain.auth.oauth.GoogleAccessToken;
 import com.hyperlink.server.domain.auth.token.AuthTokenExtractor;
 import com.hyperlink.server.domain.auth.token.RefreshTokenCookieProvider;
-import com.hyperlink.server.domain.auth.token.exception.TokenNotExistsException;
 import com.hyperlink.server.domain.member.application.MemberService;
 import com.hyperlink.server.domain.member.dto.SignUpRequest;
 import com.hyperlink.server.domain.member.dto.SignUpResponse;
@@ -22,16 +22,15 @@ import org.springframework.web.bind.annotation.RestController;
 public class MemberController {
 
   private final AuthTokenExtractor authTokenExtractor;
-  private final GoogleAccessTokenRepository googleAccessTokenRepository;
+  private final AuthService authService;
   private final MemberService memberService;
   private final RefreshTokenCookieProvider refreshTokenCookieProvider;
 
   public MemberController(AuthTokenExtractor authTokenExtractor,
-      GoogleAccessTokenRepository googleAccessTokenRepository,
-      MemberService memberService,
+      AuthService authService, MemberService memberService,
       RefreshTokenCookieProvider refreshTokenCookieProvider) {
     this.authTokenExtractor = authTokenExtractor;
-    this.googleAccessTokenRepository = googleAccessTokenRepository;
+    this.authService = authService;
     this.memberService = memberService;
     this.refreshTokenCookieProvider = refreshTokenCookieProvider;
   }
@@ -39,24 +38,24 @@ public class MemberController {
   @PostMapping("/members/signup")
   public ResponseEntity<SignUpResponse> signup(HttpServletRequest request,
       @RequestBody @Valid SignUpRequest signUpRequest) {
+    GoogleAccessToken googleAccessToken = getGoogleAccessToken(request);
 
-    String authorizationHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
-    String accessToken = authTokenExtractor.extractToken(authorizationHeader);
-    checkGoogleAccessToken(accessToken);
-    SignUpResult signUpResult = memberService.signUp(signUpRequest);
-
+    SignUpResult signUpResult = memberService.signUp(signUpRequest,
+        googleAccessToken.getProfileUrl());
     ResponseCookie cookie = refreshTokenCookieProvider.createCookie(signUpResult.refreshToken());
+
+    authService.googleTokenDeleteById(googleAccessToken.getGoogleAccessToken());
 
     return ResponseEntity.created(URI.create("/mypage"))
         .header(HttpHeaders.SET_COOKIE, cookie.toString()).body(SignUpResponse.from(
             signUpResult.accessToken()));
   }
 
-  private void checkGoogleAccessToken(String googleAccessToken) {
-    if (!googleAccessTokenRepository.existsById(googleAccessToken)) {
-      throw new TokenNotExistsException();
-    }
-    googleAccessTokenRepository.deleteById(googleAccessToken);
-  }
+  private GoogleAccessToken getGoogleAccessToken(HttpServletRequest request) {
+    String authorizationHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
+    String googleAccessToken = authService.extractToken(authorizationHeader);
 
+    return authService.googleTokenFindById(googleAccessToken);
+  }
 }
+

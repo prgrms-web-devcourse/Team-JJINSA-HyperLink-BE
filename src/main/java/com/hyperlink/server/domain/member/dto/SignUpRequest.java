@@ -12,16 +12,14 @@ public record SignUpRequest(
     @NotBlank @Size(max = 30) String nickname,
     @NotBlank @Size(max = 30) String career,
     @NotBlank @Size(max = 30) String careerYear,
-    @NotBlank String profileUrl,
-    @NotNull Integer birthYear,
+    Integer birthYear,
     @NotNull List<String> attentionCategory,
-    @NotBlank String gender
+    String gender
 ) {
 
-  public static Member to(SignUpRequest signUpRequest) {
+  public static Member to(SignUpRequest signUpRequest, String profileUrl) {
     return new Member(signUpRequest.email, signUpRequest.nickname,
         signUpRequest.career, signUpRequest.careerYear,
-        signUpRequest.profileUrl, signUpRequest.birthYear, signUpRequest.gender);
+        profileUrl, signUpRequest.birthYear, signUpRequest.gender);
   }
-
 }
