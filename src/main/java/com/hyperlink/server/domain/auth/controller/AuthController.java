@@ -36,6 +36,8 @@ public class AuthController {
   public ResponseEntity<LoginResponse> login(HttpServletRequest httpServletRequest,
       @RequestBody LoginRequest loginRequest) {
 
+    log.info("###### cookie secure로 변경! :: branch 117");
+    
     checkGoogleAccessToken(httpServletRequest);
     LoginResult loginResult = authService.login(loginRequest);
 
