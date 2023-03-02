@@ -12,7 +12,7 @@ public class AuthSetupForMock {
   @MockBean
   protected AuthTokenExtractor authTokenExtractor;
 
-  protected String authorizationHeader = "Bearer Token";
+  protected String authorizationHeader = "Bearer ${ACCESS_TOKEN}";
 
   protected Long memberId = 1L;
 
