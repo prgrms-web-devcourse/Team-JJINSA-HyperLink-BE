@@ -1,12 +1,11 @@
 package com.hyperlink.server.domain.auth.controller;
 
 import com.hyperlink.server.domain.auth.application.AuthService;
-import com.hyperlink.server.domain.auth.dto.LoginRequest;
 import com.hyperlink.server.domain.auth.dto.LoginResponse;
 import com.hyperlink.server.domain.auth.dto.LoginResult;
+import com.hyperlink.server.domain.auth.oauth.GoogleAccessToken;
 import com.hyperlink.server.domain.auth.token.RefreshTokenCookieProvider;
 import com.hyperlink.server.domain.auth.token.exception.InValidAccessException;
-import com.hyperlink.server.domain.auth.token.exception.TokenNotExistsException;
 import javax.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
@@ -15,7 +14,6 @@ import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -33,15 +31,9 @@ public class AuthController {
   }
 
   @PostMapping("/members/login")
-  public ResponseEntity<LoginResponse> login(HttpServletRequest httpServletRequest,
-      @RequestBody LoginRequest loginRequest) {
-
-    log.info("###### cookie secure로 변경! :: branch 117");
-    log.info("###### test용 김기웅! :: branch 119");
-
-    checkGoogleAccessToken(httpServletRequest);
-    LoginResult loginResult = authService.login(loginRequest);
-
+  public ResponseEntity<LoginResponse> login(HttpServletRequest httpServletRequest) {
+    GoogleAccessToken googleAccessToken = getGoogleAccessToken(httpServletRequest);
+    LoginResult loginResult = authService.login(googleAccessToken);
     ResponseCookie cookie = refreshTokenCookieProvider.createCookie(loginResult.refreshToken());
 
     return ResponseEntity.ok()
@@ -49,22 +41,17 @@ public class AuthController {
         .body(LoginResponse.from(loginResult.accessToken()));
   }
 
-  private void checkGoogleAccessToken(HttpServletRequest httpServletRequest) {
+  private GoogleAccessToken getGoogleAccessToken(HttpServletRequest httpServletRequest) {
     String authorizationHeader = httpServletRequest.getHeader(HttpHeaders.AUTHORIZATION);
     String googleAccessToken = authService.extractToken(authorizationHeader);
 
-    if (!authService.googleTokenExistsById(googleAccessToken)) {
-      throw new TokenNotExistsException();
-    }
-    authService.googleTokenDeleteById(googleAccessToken);
+    return authService.googleTokenFindById(googleAccessToken);
   }
 
   @PostMapping("/members/logout")
   @ResponseStatus(HttpStatus.OK)
   public void logout(@CookieValue(name = "refreshToken", required = false) String refreshToken) {
-
     log.info("#### refreshToken: " + refreshToken);
-
     validateRefreshTokenExists(refreshToken);
 
     authService.logout(refreshToken);

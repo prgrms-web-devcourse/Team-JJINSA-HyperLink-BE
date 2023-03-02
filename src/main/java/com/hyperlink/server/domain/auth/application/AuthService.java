@@ -1,12 +1,13 @@
 package com.hyperlink.server.domain.auth.application;
 
-import com.hyperlink.server.domain.auth.dto.LoginRequest;
 import com.hyperlink.server.domain.auth.dto.LoginResult;
+import com.hyperlink.server.domain.auth.oauth.GoogleAccessToken;
 import com.hyperlink.server.domain.auth.oauth.GoogleAccessTokenRepository;
 import com.hyperlink.server.domain.auth.token.AuthTokenExtractor;
 import com.hyperlink.server.domain.auth.token.JwtTokenProvider;
 import com.hyperlink.server.domain.auth.token.RefreshToken;
 import com.hyperlink.server.domain.auth.token.RefreshTokenRepository;
+import com.hyperlink.server.domain.auth.token.exception.TokenNotExistsException;
 import com.hyperlink.server.domain.member.domain.MemberRepository;
 import com.hyperlink.server.domain.member.exception.MemberNotFoundException;
 import java.util.UUID;
@@ -36,13 +37,14 @@ public class AuthService {
   }
 
 
-  public LoginResult login(LoginRequest loginRequest) {
-
-    Long memberId = memberRepository.findByEmail(loginRequest.email()).orElseThrow(
+  public LoginResult login(GoogleAccessToken googleAccessToken) {
+    Long memberId = memberRepository.findByEmail(googleAccessToken.getEmail()).orElseThrow(
         MemberNotFoundException::new).getId();
     String accessToken = jwtTokenProvider.createAccessToken(memberId);
     RefreshToken savedRefreshToken = refreshTokenRepository.save(
         new RefreshToken(UUID.randomUUID().toString(), memberId));
+
+    googleAccessTokenRepository.deleteById(googleAccessToken.getGoogleAccessToken());
 
     return new LoginResult(accessToken, savedRefreshToken.getRefreshToken());
   }
@@ -55,6 +57,10 @@ public class AuthService {
     return googleAccessTokenRepository.existsById(googleAccessToken);
   }
 
+  public GoogleAccessToken googleTokenFindById(String googleAccessToken) {
+    return googleAccessTokenRepository.findById(googleAccessToken).orElseThrow(
+        TokenNotExistsException::new);
+  }
 
   public void googleTokenDeleteById(String googleAccessToken) {
     googleAccessTokenRepository.deleteById(googleAccessToken);
