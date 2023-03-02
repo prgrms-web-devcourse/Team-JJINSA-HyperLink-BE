@@ -37,7 +37,8 @@ public class AuthController {
       @RequestBody LoginRequest loginRequest) {
 
     log.info("###### cookie secure로 변경! :: branch 117");
-    
+    log.info("###### test용 김기웅! :: branch 119");
+
     checkGoogleAccessToken(httpServletRequest);
     LoginResult loginResult = authService.login(loginRequest);
 
