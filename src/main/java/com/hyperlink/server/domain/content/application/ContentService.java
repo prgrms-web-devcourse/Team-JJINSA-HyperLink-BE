@@ -3,21 +3,18 @@ package com.hyperlink.server.domain.content.application;
 import com.hyperlink.server.domain.category.domain.CategoryRepository;
 import com.hyperlink.server.domain.category.domain.entity.Category;
 import com.hyperlink.server.domain.category.exception.CategoryNotFoundException;
+import com.hyperlink.server.domain.common.ContentDtoFactoryService;
 import com.hyperlink.server.domain.content.domain.ContentRepository;
 import com.hyperlink.server.domain.content.domain.entity.Content;
 import com.hyperlink.server.domain.content.dto.ContentEnrollResponse;
-import com.hyperlink.server.domain.content.dto.ContentResponse;
 import com.hyperlink.server.domain.content.dto.GetContentsCommonResponse;
-import com.hyperlink.server.domain.content.dto.RecommendationCompanyResponse;
 import com.hyperlink.server.domain.content.dto.SearchResponse;
 import com.hyperlink.server.domain.content.exception.ContentNotFoundException;
 import com.hyperlink.server.domain.content.infrastructure.ContentRepositoryCustom;
 import com.hyperlink.server.domain.creator.domain.CreatorRepository;
 import com.hyperlink.server.domain.creator.domain.entity.Creator;
 import com.hyperlink.server.domain.creator.exception.CreatorNotFoundException;
-import com.hyperlink.server.domain.memberContent.application.MemberContentService;
 import com.hyperlink.server.domain.memberHistory.application.MemberHistoryService;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -37,7 +34,7 @@ public class ContentService {
   private final CategoryRepository categoryRepository;
   private final CreatorRepository creatorRepository;
   private final ContentRepositoryCustom contentRepositoryCustom;
-  private final MemberContentService memberContentService;
+  private final ContentDtoFactoryService contentDtoFactoryService;
   private final MemberHistoryService memberHistoryService;
 
   public int getViewCount(Long contentId) {
@@ -60,34 +57,15 @@ public class ContentService {
     Slice<Content> searchResultContents = contentRepositoryCustom.searchByTitleContaining(keywords,
         pageable);
 
-    GetContentsCommonResponse contentResponses = createContentResponses(memberId,
-        searchResultContents);
+    GetContentsCommonResponse contentResponses = contentDtoFactoryService.createContentResponses(
+        memberId, searchResultContents.getContent(), searchResultContents.hasNext());
     return new SearchResponse(contentResponses, keyword,
         searchResultContents.getNumberOfElements());
-  }
-
-  private GetContentsCommonResponse createContentResponses(Long memberId, Slice<Content> contents) {
-    List<ContentResponse> contentResponses = new ArrayList<>();
-    for (Content content : contents) {
-      boolean isBookmarked = memberContentService.isBookmarked(memberId, content.getId());
-      boolean isLiked = content.getLikeCount() > 0;
-      // TODO : 회사 추천 리스트 추가
-      List<RecommendationCompanyResponse> recommendationCompanyResponses = new ArrayList<>();
-
-      ContentResponse contentResponse = new ContentResponse(content.getId(), content.getTitle(),
-          content.getCreator().getName(), content.getContentImgUrl(),
-          content.getLink(), content.getLikeCount(), content.getViewCount(), isBookmarked, isLiked,
-          content.getCreatedAt().toString(), recommendationCompanyResponses);
-      contentResponses.add(contentResponse);
-    }
-
-    return new GetContentsCommonResponse(contentResponses, contents.hasNext());
   }
 
   private List<String> splitSearchKeywords(String keyword) {
     return Arrays.asList(keyword.split(" "));
   }
-
 
   @Transactional
   public Long insertContent(ContentEnrollResponse contentEnrollResponse) {
