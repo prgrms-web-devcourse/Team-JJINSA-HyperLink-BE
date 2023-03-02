@@ -65,7 +65,7 @@ public class CreatorServiceIntegrationTest {
       CreatorEnrollResponse creatorEnrollResponse = creatorService.enrollCreator(
           creatorEnrollRequest);
 
-      Optional<Creator> foundCreator = creatorRepository.findById(creatorEnrollResponse.id());
+      Optional<Creator> foundCreator = creatorRepository.findById(creatorEnrollResponse.creatorId());
       assertThat(foundCreator).isPresent();
       assertThat(foundCreator.get().getName()).isEqualTo(creatorEnrollRequest.name());
     }
