@@ -28,6 +28,7 @@ public class WebConfig implements WebMvcConfigurer {
 
   @Bean
   public FilterRegistrationBean loginFilter() {
+
     FilterRegistrationBean<Filter> filterRegistrationBean = new FilterRegistrationBean<Filter>();
 
     filterRegistrationBean.setFilter(
@@ -35,6 +36,7 @@ public class WebConfig implements WebMvcConfigurer {
     filterRegistrationBean.setOrder(1);
     filterRegistrationBean.addUrlPatterns("/*");
     return filterRegistrationBean;
+
   }
 
   @Override
@@ -44,12 +46,11 @@ public class WebConfig implements WebMvcConfigurer {
 
   @Override
   public void addCorsMappings(final CorsRegistry registry) {
-    registry.addMapping("/**") //추후 변동예정.
+    registry.addMapping("/**")
         .allowedMethods(CORS_ALLOWED_METHODS.split(","))
         .allowedOrigins("http://localhost:5173")
         .allowedHeaders("*")
         .allowCredentials(true)
         .exposedHeaders(HttpHeaders.LOCATION, HttpHeaders.SET_COOKIE);
   }
-
 }

@@ -53,7 +53,6 @@ public class AuthTokenExtractor {
           .getBody()
           .getSubject();
       return Optional.of(Long.parseLong(memberId));
-
     } catch (final JwtException e) {
       throw new TokenInvalidFormatException();
     }
