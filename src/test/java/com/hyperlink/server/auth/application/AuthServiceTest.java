@@ -84,7 +84,7 @@ class AuthServiceTest {
     RefreshToken refreshToken = refreshTokenRepository.save(
         new RefreshToken(UUID.randomUUID().toString(), saveMember.getId()));
 
-    RenewResult renewResult = authService.renewAccessToken(refreshToken.getRefreshToken());
+    RenewResult renewResult = authService.renewTokens(refreshToken.getRefreshToken());
 
     assertThat(saveMember.getId()).isEqualTo(
         authTokenExtractor.extractMemberId(renewResult.accessToken()).get());
@@ -95,7 +95,7 @@ class AuthServiceTest {
   void renewAccessTokenInCorrectTest() {
 
     assertThatThrownBy(() -> {
-      authService.renewAccessToken(UUID.randomUUID().toString());
+      authService.renewTokens(UUID.randomUUID().toString());
     }).isInstanceOf(RefreshTokenNotExistException.class);
   }
 }

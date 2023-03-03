@@ -2,7 +2,9 @@ package com.hyperlink.server.domain.member.domain;
 
 import com.hyperlink.server.domain.member.exception.CareerYearNotFoundException;
 import java.util.stream.Stream;
+import lombok.Getter;
 
+@Getter
 public enum CareerYear {
   LESS_THAN_ONE("lessThanOne"),
   ONE("one"),

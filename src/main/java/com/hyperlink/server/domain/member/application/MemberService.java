@@ -6,8 +6,10 @@ import com.hyperlink.server.domain.auth.token.RefreshToken;
 import com.hyperlink.server.domain.auth.token.RefreshTokenRepository;
 import com.hyperlink.server.domain.member.domain.MemberRepository;
 import com.hyperlink.server.domain.member.domain.entity.Member;
+import com.hyperlink.server.domain.member.dto.MyPageResponse;
 import com.hyperlink.server.domain.member.dto.SignUpRequest;
 import com.hyperlink.server.domain.member.dto.SignUpResult;
+import com.hyperlink.server.domain.member.exception.MemberNotFoundException;
 import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -46,6 +48,12 @@ public class MemberService {
         new RefreshToken(UUID.randomUUID().toString(), memberId));
 
     return new SignUpResult(memberId, accessToken, refreshToken.getRefreshToken());
+  }
+
+  public MyPageResponse myInfo(Long memberId) {
+    Member foundMember = memberRepository.findById(memberId)
+        .orElseThrow(MemberNotFoundException::new);
+    return MyPageResponse.from(foundMember);
   }
 
 }
