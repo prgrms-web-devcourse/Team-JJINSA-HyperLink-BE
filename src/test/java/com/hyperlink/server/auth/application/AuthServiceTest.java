@@ -43,7 +43,8 @@ class AuthServiceTest {
   void loginTest() {
     String email = "rldnd1234@naver.com";
     Member saveMember = memberRepository.save(
-        new Member(email, "Chocho", Career.DEVELOP, CareerYear.MORE_TEN, "localhost", 1995, "man"));
+        new Member(email, "Chocho", Career.DEVELOP, CareerYear.MORE_THAN_TEN, "localhost", 1995,
+            "man"));
 
     GoogleAccessToken googleAccessToken = new GoogleAccessToken("1234", email, "profileUrl");
 
@@ -59,7 +60,8 @@ class AuthServiceTest {
   void logoutTest() {
     String email = "rldnd1234@naver.com";
     Member saveMember = memberRepository.save(
-        new Member(email, "Chocho", Career.ETC, CareerYear.MORE_TEN, "localhost", 1995, "man"));
+        new Member(email, "Chocho", Career.ETC, CareerYear.MORE_THAN_TEN, "localhost", 1995,
+            "man"));
 
     GoogleAccessToken googleAccessToken = new GoogleAccessToken("1234", email, "profileUrl");
 

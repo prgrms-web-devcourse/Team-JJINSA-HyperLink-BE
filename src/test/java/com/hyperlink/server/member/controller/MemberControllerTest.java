@@ -65,11 +65,10 @@ public class MemberControllerTest {
     String accessToken = jwtTokenProvider.createAccessToken(1L);
 
     GoogleAccessToken savedGoogleAccessToken = googleAccessTokenRepository.save(
-
         new GoogleAccessToken(accessToken, email, "loalhost"));
 
     SignUpRequest signUpRequest = new SignUpRequest(email, "Chocho", "develop",
-        "10", 1995, List.of("develop", "beauty"), "man");
+        "ten", 1995, List.of("develop", "beauty"), "man");
 
     mockMvc.perform(MockMvcRequestBuilders
             .post("/members/signup")

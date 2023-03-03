@@ -66,7 +66,8 @@ class AuthControllerTest {
     String email = "rldnd1234@naver.com";
     String profileUrl = "profileurl";
     Member saveMember = memberRepository.save(
-        new Member(email, "Chocho", Career.DEVELOP, CareerYear.MORE_TEN, "localhost", 1995, "man"));
+        new Member(email, "Chocho", Career.DEVELOP, CareerYear.MORE_THAN_TEN, "localhost", 1995,
+            "man"));
 
     String accessToken = jwtTokenProvider.createAccessToken(saveMember.getId());
 
@@ -109,7 +110,8 @@ class AuthControllerTest {
   void logoutCorrectTest() throws Exception {
     String email = "rldnd1234@naver.com";
     Member saveMember = memberRepository.save(
-        new Member(email, "Chocho", Career.DEVELOP, CareerYear.MORE_TEN, "localhost", 1995, "man"));
+        new Member(email, "Chocho", Career.DEVELOP, CareerYear.MORE_THAN_TEN, "localhost", 1995,
+            "man"));
 
     RefreshToken savedRefreshToken = refreshTokenRepository.save(
         new RefreshToken(UUID.randomUUID().toString(), saveMember.getId()));

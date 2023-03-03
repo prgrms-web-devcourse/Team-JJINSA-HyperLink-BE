@@ -144,7 +144,7 @@ public class ContentServiceIntegrationTest {
       @Test
       @DisplayName("사용자의 히스토리 내역에 해당 콘텐츠 데이터가 추가된다")
       void addMemberHistory() {
-        Member member = new Member("email", "nickname", Career.DEVELOP, CareerYear.MORE_TEN,
+        Member member = new Member("email", "nickname", Career.DEVELOP, CareerYear.MORE_THAN_TEN,
             "profileImgUrl");
         memberRepository.save(member);
 

@@ -1,5 +1,6 @@
 package com.hyperlink.server.domain.notRecommendCreator.domain.entity;
 
+import com.hyperlink.server.domain.common.BaseEntity;
 import com.hyperlink.server.domain.creator.domain.entity.Creator;
 import com.hyperlink.server.domain.member.domain.entity.Member;
 import javax.persistence.Column;
@@ -17,7 +18,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class NotRecommendCreator {
+public class NotRecommendCreator extends BaseEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)

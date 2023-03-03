@@ -94,7 +94,6 @@ class GlobalExceptionHandlerTest {
     String accessToken = jwtTokenProvider.createAccessToken(1L);
 
     GoogleAccessToken savedGoogleAccessToken = googleAccessTokenRepository.save(
-
         new GoogleAccessToken(accessToken, email, profileUrl));
     OauthResponse oauthResponse = new OauthResponse(accessToken, true, email);
 

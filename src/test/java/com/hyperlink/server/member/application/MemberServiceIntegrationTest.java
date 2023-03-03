@@ -43,7 +43,7 @@ class MemberServiceIntegrationTest {
   @Test
   void existsMemberByEmailTest() {
     Member saveMember = memberRepository.save(
-        new Member("rldnd1234@naver.com", "Chocho", Career.DEVELOP, CareerYear.MORE_TEN,
+        new Member("rldnd1234@naver.com", "Chocho", Career.DEVELOP, CareerYear.MORE_THAN_TEN,
             "localhost", 1995, "man"));
 
     assertThat(memberService.existsMemberByEmail(saveMember.getEmail())).isTrue();
@@ -56,7 +56,7 @@ class MemberServiceIntegrationTest {
     Category beauty = categoryRepository.save(new Category("beauty"));
 
     SignUpRequest signUpRequest = new SignUpRequest("rldnd1234@naver.com", "Chocho", "develop",
-        "10", 1995, List.of("develop", "beauty"), "man");
+        "ten", 1995, List.of("develop", "beauty"), "man");
 
     SignUpResult signUpResult = memberService.signUp(signUpRequest, "profileUrl");
 
