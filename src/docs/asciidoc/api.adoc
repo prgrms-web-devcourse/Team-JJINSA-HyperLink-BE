@@ -33,7 +33,6 @@ operation::members/signup[snippets='http-request,http-response,response-fields']
 
 operation::members/login[snippets='http-request,http-response,response-fields']
 
-<<<<<<< HEAD
 === 내정보 조회
 
 operation::members/mypage[snippets='http-request,http-response,response-fields']
@@ -42,14 +41,11 @@ operation::members/mypage[snippets='http-request,http-response,response-fields']
 
 operation::members/attention-category[snippets='http-request,http-response,response-fields']
 
-== Creator
-=======
 == History
 === 히스토리 전체 내역 조회
 operation::MemberHistoryControllerTest/getAllHistory[snippets='http-request,http-response,response-fields']
->>>>>>> develop/v0.1
 
 == Creator
 === 비추천 크리에이터 추가
-
+    
 operation::CreatorControllerTest/notRecommend[snippets='http-request,http-response']
