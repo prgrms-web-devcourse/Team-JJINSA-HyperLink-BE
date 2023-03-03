@@ -31,6 +31,4 @@ public class AuthSetupForMock {
     given(authTokenExtractor.extractMemberId(any()))
         .willReturn(optionalId);
   }
-
-
 }
