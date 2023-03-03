@@ -91,6 +91,7 @@ class MemberServiceIntegrationTest {
   @DisplayName("회원의 정보 전달시 member정보가 존재하지 않는 회원이라면 MemberNotFoundException을 던진다.")
   @Test
   void myPageInCorrectTest() {
-    assertThatThrownBy(() -> memberService.myInfo(1L)).isInstanceOf(MemberNotFoundException.class);
+    assertThatThrownBy(() -> memberService.myInfo(1000L)).isInstanceOf(
+        MemberNotFoundException.class);
   }
 }

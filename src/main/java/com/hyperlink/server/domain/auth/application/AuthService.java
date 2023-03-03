@@ -68,7 +68,7 @@ public class AuthService {
     googleAccessTokenRepository.deleteById(googleAccessToken);
   }
 
-  public RenewResult renewAccessToken(final String refreshToken) {
+  public RenewResult renewTokens(final String refreshToken) {
     RefreshToken oldRefreshToken = refreshTokenRepository.findById(refreshToken)
         .orElseThrow(RefreshTokenNotExistException::new);
 
