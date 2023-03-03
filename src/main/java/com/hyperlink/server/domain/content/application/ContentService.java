@@ -7,6 +7,7 @@ import com.hyperlink.server.domain.content.domain.ContentRepository;
 import com.hyperlink.server.domain.content.domain.entity.Content;
 import com.hyperlink.server.domain.content.dto.ContentEnrollResponse;
 import com.hyperlink.server.domain.content.dto.ContentResponse;
+import com.hyperlink.server.domain.content.dto.GetContentsCommonResponse;
 import com.hyperlink.server.domain.content.dto.RecommendationCompanyResponse;
 import com.hyperlink.server.domain.content.dto.SearchResponse;
 import com.hyperlink.server.domain.content.exception.ContentNotFoundException;
@@ -56,14 +57,16 @@ public class ContentService {
 
   public SearchResponse search(Long memberId, String keyword, Pageable pageable) {
     List<String> keywords = splitSearchKeywords(keyword);
-    Slice<Content> searchResultContents = contentRepositoryCustom.searchByTitleContaining(keywords, pageable);
+    Slice<Content> searchResultContents = contentRepositoryCustom.searchByTitleContaining(keywords,
+        pageable);
 
-    List<ContentResponse> contentResponses = createContentResponses(memberId, searchResultContents);
-    return new SearchResponse(contentResponses, searchResultContents.hasNext(), keyword,
+    GetContentsCommonResponse contentResponses = createContentResponses(memberId,
+        searchResultContents);
+    return new SearchResponse(contentResponses, keyword,
         searchResultContents.getNumberOfElements());
   }
 
-  private List<ContentResponse> createContentResponses(Long memberId, Slice<Content> contents) {
+  private GetContentsCommonResponse createContentResponses(Long memberId, Slice<Content> contents) {
     List<ContentResponse> contentResponses = new ArrayList<>();
     for (Content content : contents) {
       boolean isBookmarked = memberContentService.isBookmarked(memberId, content.getId());
@@ -78,7 +81,7 @@ public class ContentService {
       contentResponses.add(contentResponse);
     }
 
-    return contentResponses;
+    return new GetContentsCommonResponse(contentResponses, contents.hasNext());
   }
 
   private List<String> splitSearchKeywords(String keyword) {
