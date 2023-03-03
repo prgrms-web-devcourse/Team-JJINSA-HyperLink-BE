@@ -50,7 +50,7 @@ class MemberServiceIntegrationTest {
   @Test
   void existsMemberByEmailTest() {
     Member saveMember = memberRepository.save(
-        new Member("rldnd1234@naver.com", "Chocho", Career.DEVELOP, CareerYear.MORE_TEN,
+        new Member("rldnd1234@naver.com", "Chocho", Career.DEVELOP, CareerYear.MORE_THAN_TEN,
             "localhost", 1995, "man"));
 
     assertThat(memberService.existsMemberByEmail(saveMember.getEmail())).isTrue();
@@ -60,14 +60,12 @@ class MemberServiceIntegrationTest {
   @DisplayName("회원가입을 할 수 있다.")
   @Test
   void signUpTest() {
-    Category develop = categoryRepository.save(new Category("develop"));
     Category beauty = categoryRepository.save(new Category("beauty"));
 
     SignUpRequest signUpRequest = new SignUpRequest("rldnd1234@naver.com", "Chocho", "develop",
-        "10", 1995,
-        List.of("develop", "beauty"), "man");
+        "ten", 1995, List.of("develop", "beauty"), "man");
 
-    SignUpResult signUpResult = memberService.signUp(signUpRequest, "localhost");
+    SignUpResult signUpResult = memberService.signUp(signUpRequest, "profileUrl");
 
     assertThat(memberRepository.existsById(signUpResult.memberId())).isTrue();
     assertThat(refreshTokenRepository.existsById(signUpResult.refreshToken())).isTrue();
@@ -79,7 +77,7 @@ class MemberServiceIntegrationTest {
   @Test
   void myPageCorrectTest() {
     Member saveMember = memberRepository.save(
-        new Member("rldnd1234@naver.com", "Chocho", Career.DEVELOP, CareerYear.MORE_TEN,
+        new Member("rldnd1234@naver.com", "Chocho", Career.DEVELOP, CareerYear.MORE_THAN_TEN,
             "localhost", 1995, "man"));
     MyPageResponse myPageResponse = memberService.myInfo(saveMember.getId());
 

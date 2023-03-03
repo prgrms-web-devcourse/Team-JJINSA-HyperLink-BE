@@ -6,6 +6,7 @@ public record ContentResponse(
     Long contentId,
     String title,
     String creatorName,
+    Long creatorId,
     String contentImgUrl,
     String link,
     int likeCount,

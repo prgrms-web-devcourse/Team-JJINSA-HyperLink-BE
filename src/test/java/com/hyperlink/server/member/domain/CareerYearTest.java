@@ -23,18 +23,18 @@ class CareerYearTest {
 
   static Stream<Arguments> StringAndCareerYearProvider() {
     return Stream.of(
-        arguments("less1", CareerYear.LESS_ONE),
-        arguments("1", CareerYear.ONE),
-        arguments("2", CareerYear.TWO),
-        arguments("3", CareerYear.THREE),
-        arguments("4", CareerYear.FOUR),
-        arguments("5", CareerYear.FIVE),
-        arguments("6", CareerYear.SIX),
-        arguments("7", CareerYear.SEVEN),
-        arguments("8", CareerYear.EIGHT),
-        arguments("9", CareerYear.NINE),
-        arguments("10", CareerYear.TEN),
-        arguments("more10", CareerYear.MORE_TEN));
+        arguments("lessThanOne", CareerYear.LESS_THAN_ONE),
+        arguments("one", CareerYear.ONE),
+        arguments("two", CareerYear.TWO),
+        arguments("three", CareerYear.THREE),
+        arguments("four", CareerYear.FOUR),
+        arguments("five", CareerYear.FIVE),
+        arguments("six", CareerYear.SIX),
+        arguments("seven", CareerYear.SEVEN),
+        arguments("eight", CareerYear.EIGHT),
+        arguments("nine", CareerYear.NINE),
+        arguments("ten", CareerYear.TEN),
+        arguments("moreThanTen", CareerYear.MORE_THAN_TEN));
   }
 
   @DisplayName("CareerYear에 잘못된 value값을 전달한다면, CareerYearNotFoundException을 던진다.")

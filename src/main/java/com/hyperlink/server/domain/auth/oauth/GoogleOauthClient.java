@@ -69,9 +69,9 @@ public class GoogleOauthClient {
           new GoogleAccessToken(accessToken, googleProfileResult.email(),
               googleProfileResult.picture()));
 
-      boolean joinCheck = memberService.existsMemberByEmail(googleProfileResult.email());
+      boolean wasSignedUp = memberService.existsMemberByEmail(googleProfileResult.email());
       return ResponseEntity.ok(
-          new OauthResponse(accessToken, joinCheck, googleProfileResult.email()));
+          new OauthResponse(accessToken, wasSignedUp, googleProfileResult.email()));
     } catch (JsonProcessingException exception) {
       throw new JsonProcessingCustomException();
     }

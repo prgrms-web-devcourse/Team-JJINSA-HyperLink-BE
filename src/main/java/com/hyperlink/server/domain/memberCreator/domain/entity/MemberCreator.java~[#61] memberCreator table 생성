@@ -1,7 +1,6 @@
-package com.hyperlink.server.domain.memberHistory.domain.entity;
+package com.hyperlink.server.domain.memberCreator.domain.entity;
 
-import com.hyperlink.server.domain.common.BaseEntity;
-import com.hyperlink.server.domain.content.domain.entity.Content;
+import com.hyperlink.server.domain.creator.domain.entity.Creator;
 import com.hyperlink.server.domain.member.domain.entity.Member;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -18,11 +17,11 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class MemberHistory extends BaseEntity {
+public class MemberCreator {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  @Column(name = "member_history_id")
+  @Column(name = "member_creator_id")
   private Long id;
 
   @ManyToOne(fetch = FetchType.LAZY)
@@ -30,11 +29,6 @@ public class MemberHistory extends BaseEntity {
   private Member member;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "content_id")
-  private Content content;
-
-  public MemberHistory(Member member, Content content) {
-    this.member = member;
-    this.content = content;
-  }
+  @JoinColumn(name = "creator_id")
+  private Creator creator;
 }
