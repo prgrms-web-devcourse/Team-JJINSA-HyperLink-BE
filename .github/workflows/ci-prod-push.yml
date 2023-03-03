@@ -47,7 +47,7 @@ jobs:
         run: echo "${{secrets.APPLICATIONPRODUCTION}}" | base64 --decode > src/main/resources/application.yml
 
       - name: application-test.yml 설정
-        run: echo "${{secrets.APPLICATION}}" | base64 --decode > src/test/resources/application-test.yml
+        run: echo "${{secrets.APPLICATIONTEST}}" | base64 --decode > src/test/resources/application-test.yml
 
       - name: ./gradlew 권한 설정
         run: chmod +x ./gradlew
