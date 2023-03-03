@@ -29,9 +29,11 @@ public class LoginMemberIdArgumentResolver implements HandlerMethodArgumentResol
   public Optional<Long> resolveArgument(final MethodParameter parameter,
       final ModelAndViewContainer mavContainer,
       final NativeWebRequest webRequest, final WebDataBinderFactory binderFactory) {
-
-    String accessToken = webRequest.getHeader("Authorization");
-
+    String authorizationHeader = webRequest.getHeader("Authorization");
+    if (authorizationHeader == null || authorizationHeader.isBlank()) {
+      return Optional.empty();
+    }
+    String accessToken = authorizationHeader.split("Bearer ")[TOKEN_VALUE_INDEX];
     return authTokenExtractor.extractMemberId(accessToken);
   }
 }
