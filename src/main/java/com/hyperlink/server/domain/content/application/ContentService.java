@@ -54,7 +54,7 @@ public class ContentService {
 
   public SearchResponse search(Long memberId, String keyword, Pageable pageable) {
     List<String> keywords = splitSearchKeywords(keyword);
-    Slice<Content> searchResultContents = contentRepositoryCustom.searchByTitleContaining(keywords,
+    Slice<Content> searchResultContents = contentRepositoryCustom.searchByTitleContainingOrderByLatest(keywords,
         pageable);
 
     GetContentsCommonResponse contentResponses = contentDtoFactoryService.createContentResponses(

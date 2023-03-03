@@ -46,7 +46,7 @@ public class ContentController {
       @RequestParam("page") @NotNull int page,
       @RequestParam("size") @NotNull int size) {
     Long memberId = optionalMemberId.orElseThrow(TokenNotExistsException::new);
-    Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+    Pageable pageable = PageRequest.of(page, size);
     return contentService.search(memberId, keyword, pageable);
   }
 

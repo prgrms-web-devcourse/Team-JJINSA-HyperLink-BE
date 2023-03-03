@@ -6,7 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.hyperlink.server.domain.category.domain.CategoryRepository;
 import com.hyperlink.server.domain.category.domain.entity.Category;
@@ -19,11 +18,10 @@ import com.hyperlink.server.domain.content.dto.SearchResponse;
 import com.hyperlink.server.domain.content.exception.ContentNotFoundException;
 import com.hyperlink.server.domain.creator.domain.CreatorRepository;
 import com.hyperlink.server.domain.creator.domain.entity.Creator;
+import com.hyperlink.server.domain.creator.exception.CreatorNotFoundException;
 import com.hyperlink.server.domain.member.domain.MemberRepository;
 import com.hyperlink.server.domain.member.domain.entity.Member;
 import com.hyperlink.server.domain.memberHistory.application.MemberHistoryService;
-import com.hyperlink.server.domain.creator.exception.CreatorNotFoundException;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -98,7 +96,7 @@ public class ContentServiceIntegrationTest {
       contentRepository.save(content);
       int inquiryCountBeforeAdd = content.getViewCount();
 
-      contentService.addView(null, content.getId());
+      contentService.addView(Optional.empty(), content.getId());
 
       int findInquiry = contentService.getViewCount(content.getId());
 
@@ -218,7 +216,7 @@ public class ContentServiceIntegrationTest {
 
       @Override
       public void run() {
-        contentService.addView(null, contentId);
+        contentService.addView(Optional.empty(), contentId);
         countDownLatch.countDown();
       }
     }
