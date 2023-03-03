@@ -1,11 +1,15 @@
 package com.hyperlink.server.domain.creator.controller;
 
+import com.hyperlink.server.domain.auth.token.exception.TokenNotExistsException;
 import com.hyperlink.server.domain.creator.application.CreatorService;
 import com.hyperlink.server.domain.creator.dto.CreatorEnrollRequest;
 import com.hyperlink.server.domain.creator.dto.CreatorEnrollResponse;
+import com.hyperlink.server.global.config.LoginMemberId;
+import java.util.Optional;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,8 +26,17 @@ public class CreatorController {
   @PostMapping("/admin/creators")
   @ResponseStatus(HttpStatus.CREATED)
   public CreatorEnrollResponse enrollCreator(
+      @LoginMemberId Optional<Long> memberId,
       @RequestBody @Valid CreatorEnrollRequest creatorEnrollRequest) {
+    memberId.orElseThrow(TokenNotExistsException::new);
     return creatorService.enrollCreator(creatorEnrollRequest);
+  }
+
+  @DeleteMapping("/admin/creators/{creatorId}")
+  @ResponseStatus(HttpStatus.OK)
+  public void deleteCreator(@LoginMemberId Optional<Long> memberId,
+      @PathVariable("creatorId") Long creatorId) {
+    creatorService.deleteCreator(creatorId);
   }
 
   @PostMapping("/creators/{creatorId}/not-recommend")

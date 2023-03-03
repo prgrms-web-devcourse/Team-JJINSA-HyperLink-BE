@@ -1,6 +1,8 @@
 package com.hyperlink.server.creator.application;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -12,6 +14,7 @@ import com.hyperlink.server.domain.creator.domain.CreatorRepository;
 import com.hyperlink.server.domain.creator.domain.entity.Creator;
 import com.hyperlink.server.domain.creator.dto.CreatorEnrollRequest;
 import com.hyperlink.server.domain.creator.dto.CreatorEnrollResponse;
+import com.hyperlink.server.domain.creator.exception.CreatorNotFoundException;
 import com.hyperlink.server.domain.member.domain.MemberRepository;
 import com.hyperlink.server.domain.notRecommendCreator.domain.NotRecommendCreatorRepository;
 import java.util.Optional;
@@ -46,9 +49,9 @@ public class CreatorServiceMockTest {
     @Test
     @DisplayName("성공하면 크리에이터를 생성한다.")
     public void success() throws Exception {
-      Category developCategory = new Category("develop");
+      Category developCategory = new Category("개발");
       CreatorEnrollRequest creatorEnrollRequest = new CreatorEnrollRequest("크리에이터 이름",
-          "profileImgUrl", "크리에이터입니다.", "develop");
+          "profileImgUrl", "크리에이터입니다.", developCategory.getName());
       Creator creator = CreatorEnrollRequest.toCreator(creatorEnrollRequest, developCategory);
 
       when(categoryRepository.findByName(developCategory.getName())).thenReturn(
@@ -82,4 +85,32 @@ public class CreatorServiceMockTest {
     }
   }
 
+  @Nested
+  @DisplayName("크리에이터 삭제 메서드는")
+  class CreatorDeleteTest {
+    @Test
+    @DisplayName("성공하면 크리에이터를 삭제한다.")
+    public void success() throws Exception {
+      long existCreatorId = 1L;
+      CreatorService creatorService = new CreatorService(memberRepository, creatorRepository, categoryRepository,
+          notRecommendCreatorRepository);
+
+      creatorService.deleteCreator(existCreatorId);
+
+      verify(creatorRepository, times(1)).deleteById(existCreatorId);
+    }
+
+    @Test
+    @DisplayName("실패하면 CreatorNotFoundException을 발생한다.")
+    public void fail() {
+      long notExistCreatorId = 1L;
+      CreatorService creatorService = new CreatorService(memberRepository, creatorRepository, categoryRepository,
+          notRecommendCreatorRepository);
+
+      doThrow(new CreatorNotFoundException()).when(creatorRepository).deleteById(notExistCreatorId);
+
+      Assertions.assertThrows(CreatorNotFoundException.class,
+          () -> creatorService.deleteCreator(notExistCreatorId));
+    }
+  }
 }

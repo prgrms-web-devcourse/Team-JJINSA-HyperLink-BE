@@ -47,5 +47,14 @@ operation::MemberHistoryControllerTest/getAllHistory[snippets='http-request,http
 
 == Creator
 === 비추천 크리에이터 추가
-    
+
+
 operation::CreatorControllerTest/notRecommend[snippets='http-request,http-response']
+
+== Admin
+=== 크리에이터 삭제
+operation::CreatorControllerTest/deleteCreator[snippets='http-request,http-response']
+
+=== 크리에이터 추가
+operation::CreatorControllerTest/enrollCreator[snippets='http-request,http-response']
+

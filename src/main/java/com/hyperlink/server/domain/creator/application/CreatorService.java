@@ -14,12 +14,14 @@ import com.hyperlink.server.domain.member.exception.MemberNotFoundException;
 import com.hyperlink.server.domain.notRecommendCreator.domain.NotRecommendCreatorRepository;
 import com.hyperlink.server.domain.notRecommendCreator.domain.entity.NotRecommendCreator;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class CreatorService {
 
   private final MemberRepository memberRepository;
@@ -44,5 +46,14 @@ public class CreatorService {
 
     return notRecommendCreatorRepository.save(notRecommendCreator);
 
+  }
+
+  @Transactional
+  public void deleteCreator(Long creatorId) {
+    try {
+      creatorRepository.deleteById(creatorId);
+    } catch(EmptyResultDataAccessException e) {
+      throw new CreatorNotFoundException();
+    }
   }
 }
