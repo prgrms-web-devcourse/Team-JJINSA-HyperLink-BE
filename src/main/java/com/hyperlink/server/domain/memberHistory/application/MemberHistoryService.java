@@ -40,6 +40,7 @@ public class MemberHistoryService {
     List<Content> contents = findMemberHistory.get().map(MemberHistory::getContent)
         .toList();
 
-    return contentDtoFactoryService.createContentResponses(memberId, contents, findMemberHistory.hasNext());
+    return contentDtoFactoryService.createContentResponses(memberId, contents,
+        findMemberHistory.hasNext());
   }
 }

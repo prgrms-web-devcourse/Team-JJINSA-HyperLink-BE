@@ -3,6 +3,8 @@ package com.hyperlink.server.domain.auth.controller;
 import com.hyperlink.server.domain.auth.application.AuthService;
 import com.hyperlink.server.domain.auth.dto.LoginResponse;
 import com.hyperlink.server.domain.auth.dto.LoginResult;
+import com.hyperlink.server.domain.auth.dto.RenewResponse;
+import com.hyperlink.server.domain.auth.dto.RenewResult;
 import com.hyperlink.server.domain.auth.oauth.GoogleAccessToken;
 import com.hyperlink.server.domain.auth.token.RefreshTokenCookieProvider;
 import com.hyperlink.server.domain.auth.token.exception.InValidAccessException;
@@ -13,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CookieValue;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
@@ -55,6 +58,19 @@ public class AuthController {
     validateRefreshTokenExists(refreshToken);
 
     authService.logout(refreshToken);
+  }
+
+  @GetMapping("/members/access-token")
+  public ResponseEntity<RenewResponse> renewToken(
+      @CookieValue(name = "refreshToken", required = false) String refreshToken) {
+    validateRefreshTokenExists(refreshToken);
+    RenewResult renewResult = authService.renewAccessToken(refreshToken);
+
+    ResponseCookie cookie = refreshTokenCookieProvider.createCookie(renewResult.refreshToken());
+
+    return ResponseEntity.ok()
+        .header(HttpHeaders.SET_COOKIE, cookie.toString())
+        .body(RenewResponse.from(renewResult.accessToken()));
   }
 
   private void validateRefreshTokenExists(final String refreshToken) {

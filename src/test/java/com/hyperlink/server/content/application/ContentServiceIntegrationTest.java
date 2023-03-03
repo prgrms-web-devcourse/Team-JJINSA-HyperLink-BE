@@ -6,7 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.hyperlink.server.domain.category.domain.CategoryRepository;
 import com.hyperlink.server.domain.category.domain.entity.Category;
@@ -19,11 +18,12 @@ import com.hyperlink.server.domain.content.dto.SearchResponse;
 import com.hyperlink.server.domain.content.exception.ContentNotFoundException;
 import com.hyperlink.server.domain.creator.domain.CreatorRepository;
 import com.hyperlink.server.domain.creator.domain.entity.Creator;
+import com.hyperlink.server.domain.creator.exception.CreatorNotFoundException;
+import com.hyperlink.server.domain.member.domain.Career;
+import com.hyperlink.server.domain.member.domain.CareerYear;
 import com.hyperlink.server.domain.member.domain.MemberRepository;
 import com.hyperlink.server.domain.member.domain.entity.Member;
 import com.hyperlink.server.domain.memberHistory.application.MemberHistoryService;
-import com.hyperlink.server.domain.creator.exception.CreatorNotFoundException;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
@@ -144,7 +144,8 @@ public class ContentServiceIntegrationTest {
       @Test
       @DisplayName("사용자의 히스토리 내역에 해당 콘텐츠 데이터가 추가된다")
       void addMemberHistory() {
-        Member member = new Member("email", "nickname", "career", "3", "profileImgUrl");
+        Member member = new Member("email", "nickname", Career.DEVELOP, CareerYear.MORE_THAN_TEN,
+            "profileImgUrl");
         memberRepository.save(member);
 
         Content content = new Content("title", "contentImgUrl", "link", creator, category);
@@ -180,7 +181,8 @@ public class ContentServiceIntegrationTest {
       @Test
       @DisplayName("조회수 추가를 요청했을 때")
       void manyRequestView() throws InterruptedException {
-        List<Thread> workers = Stream.generate(() -> new Thread(new Worker(countDownLatch, contentId)))
+        List<Thread> workers = Stream.generate(
+                () -> new Thread(new Worker(countDownLatch, contentId)))
             .limit(memberCount)
             .toList();
         workers.forEach(Thread::start);

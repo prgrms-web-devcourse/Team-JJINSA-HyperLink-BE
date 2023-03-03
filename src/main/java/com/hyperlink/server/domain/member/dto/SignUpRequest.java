@@ -1,6 +1,8 @@
 package com.hyperlink.server.domain.member.dto;
 
 
+import com.hyperlink.server.domain.member.domain.Career;
+import com.hyperlink.server.domain.member.domain.CareerYear;
 import com.hyperlink.server.domain.member.domain.entity.Member;
 import java.util.List;
 import javax.validation.constraints.NotBlank;
@@ -19,7 +21,8 @@ public record SignUpRequest(
 
   public static Member to(SignUpRequest signUpRequest, String profileUrl) {
     return new Member(signUpRequest.email, signUpRequest.nickname,
-        signUpRequest.career, signUpRequest.careerYear,
+        Career.selectCareer(signUpRequest.career),
+        CareerYear.selectCareerYear(signUpRequest.careerYear),
         profileUrl, signUpRequest.birthYear, signUpRequest.gender);
   }
 }

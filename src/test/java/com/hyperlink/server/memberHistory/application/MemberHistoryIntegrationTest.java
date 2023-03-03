@@ -10,6 +10,8 @@ import com.hyperlink.server.domain.content.dto.ContentResponse;
 import com.hyperlink.server.domain.content.dto.GetContentsCommonResponse;
 import com.hyperlink.server.domain.creator.domain.CreatorRepository;
 import com.hyperlink.server.domain.creator.domain.entity.Creator;
+import com.hyperlink.server.domain.member.domain.Career;
+import com.hyperlink.server.domain.member.domain.CareerYear;
 import com.hyperlink.server.domain.member.domain.MemberRepository;
 import com.hyperlink.server.domain.member.domain.entity.Member;
 import com.hyperlink.server.domain.memberHistory.application.MemberHistoryService;
@@ -61,7 +63,8 @@ class MemberHistoryIntegrationTest {
   @Test
   @DisplayName("히스토리 추가 메소드는 DB에 memberId, contentId가 저장된다")
   void insertMemberHistoryTest() {
-    Member member = new Member("email", "nickname", "career", "3", "profileImgUrl");
+    Member member = new Member("email", "nickname", Career.DEVELOP, CareerYear.FOUR,
+        "profileImgUrl");
     memberRepository.save(member);
 
     Content content = new Content("title", "contentImgUrl", "link", creator, category);
@@ -84,7 +87,7 @@ class MemberHistoryIntegrationTest {
 
     @BeforeEach
     void setUp() {
-      member = new Member("email", "nickname", "career", "3", "profileImgUrl");
+      member = new Member("email", "nickname", Career.DEVELOP, CareerYear.THREE, "profileImgUrl");
       memberRepository.save(member);
 
       LocalDateTime now = LocalDateTime.now();
@@ -119,5 +122,4 @@ class MemberHistoryIntegrationTest {
       assertThat(contentResponses).hasSize(2);
     }
   }
-
 }
