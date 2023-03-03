@@ -2,7 +2,9 @@ package com.hyperlink.server.creator.application;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.hyperlink.server.domain.category.domain.CategoryRepository;
 import com.hyperlink.server.domain.category.domain.entity.Category;
@@ -57,9 +59,9 @@ public class CreatorServiceIntegrationTest {
     @Test
     @DisplayName("성공하면 크리에이터로 등록된다.")
     public void success() throws Exception {
-      Category develop = new Category("develop");
+      Category develop = new Category("개발");
       CreatorEnrollRequest creatorEnrollRequest = new CreatorEnrollRequest("크리에이터 이름",
-          "profileImgUrl", "크리에이터입니다.", "develop");
+          "profileImgUrl", "크리에이터입니다.", develop.getName());
 
       categoryRepository.save(develop);
       CreatorEnrollResponse creatorEnrollResponse = creatorService.enrollCreator(
@@ -74,7 +76,7 @@ public class CreatorServiceIntegrationTest {
     @DisplayName("없는 카테고리 이름으로 등록하면 CategoryNotFoundException이 발생한다.")
     public void fail() throws Exception {
       CreatorEnrollRequest creatorEnrollRequest = new CreatorEnrollRequest("크리에이터 이름",
-          "profileImgUrl", "크리에이터입니다.", "develop");
+          "profileImgUrl", "크리에이터입니다.", "개발");
 
       assertThatThrownBy(() -> creatorService.enrollCreator(creatorEnrollRequest))
           .isInstanceOf(CategoryNotFoundException.class);
@@ -132,6 +134,33 @@ public class CreatorServiceIntegrationTest {
 
       assertThrows(CreatorNotFoundException.class, () ->
           creatorService.notRecommend(memberId, creatorId));
+    }
+  }
+
+
+  @Nested
+  @DisplayName("크리에이터 삭제 메서드는")
+  class CreatorDeleteTest {
+
+    @Test
+    @DisplayName("성공하면 크리에이터를 삭제한다.")
+    public void success() throws Exception {
+      Category develop = new Category("개발");
+      categoryRepository.save(develop);
+      Creator creator = new Creator("개발크리에이터", "profileImgUrl", "description", develop);
+      creatorRepository.save(creator);
+
+      creatorService.deleteCreator(creator.getId());
+
+      assertFalse(creatorRepository.existsById(creator.getId()));
+    }
+
+    @Test
+    @DisplayName("크리에이터가 없으면 크리에이터를 삭제하지 못하고 CreatorNotFoundException이 발생한다.")
+    public void fail() throws Exception {
+      Long creatorId = -1L;
+
+      assertThrows(CreatorNotFoundException.class, () -> creatorService.deleteCreator(creatorId));
     }
   }
 
