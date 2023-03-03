@@ -65,6 +65,7 @@ public class ContentControllerTest {
       void addInquiryOfContentTest() throws Exception {
         mockMvc.perform(
                 patch("/contents/" + contentId + "/view")
+                //                    .header("AccessToken", accessToken)
             )
             .andExpect(status().isOk())
             .andDo(
@@ -72,6 +73,10 @@ public class ContentControllerTest {
                     "ContentControllerTest/addInquiryOfContent",
                     preprocessRequest(prettyPrint()),
                     preprocessResponse(prettyPrint()),
+                    requestHeaders(
+                        // TODO : jwt
+//                        headerWithName("AccessToken").description("jwt header")
+                    ),
                     responseFields(
                         fieldWithPath("viewCount").type(JsonFieldType.NUMBER)
                             .description("조회수 추가 완료 후 최종 조회수")
