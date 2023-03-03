@@ -27,10 +27,10 @@ public class AttentionCategoryService {
 
   @Transactional
   public AttentionCategoryResponse changeAttentionCategory(Member member,
-      List<String> attentionCategory) {
+      List<String> attentionCategorys) {
 
     List<String> savedAttentionCategory = new ArrayList<>();
-    attentionCategory.stream().forEach(categoryName -> {
+    attentionCategorys.stream().forEach(categoryName -> {
       Category category = categoryRepository.findByName(categoryName)
           .orElseThrow(CategoryNotFoundException::new);
       attentionCategoryRepository.save(new AttentionCategory(member, category));

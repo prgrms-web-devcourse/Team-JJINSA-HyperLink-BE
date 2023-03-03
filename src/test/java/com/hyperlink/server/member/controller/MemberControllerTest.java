@@ -65,7 +65,7 @@ public class MemberControllerTest {
 
   @Test
   void signupTest() throws Exception {
-    Category develop = categoryRepository.save(new Category("develop"));
+//    Category develop = categoryRepository.save(new Category("develop"));
     Category beauty = categoryRepository.save(new Category("beauty"));
 
     String email = "rldnd1234@naver.com";

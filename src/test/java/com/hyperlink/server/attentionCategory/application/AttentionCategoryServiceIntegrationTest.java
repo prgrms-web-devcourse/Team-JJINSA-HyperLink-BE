@@ -37,7 +37,8 @@ class AttentionCategoryServiceIntegrationTest {
   @Test
   void setAttentionCategoryCorrectTest() {
 
-    Category develop = categoryRepository.save(new Category("develop"));
+//    Category develop = categoryRepository.save(new Category("develop"));
+    Category develop = categoryRepository.findByName("develop").get();
     Category beauty = categoryRepository.save(new Category("beauty"));
     List<String> attentionCategorys = Arrays.asList("develop", "beauty");
     Member savedMember = memberRepository.save(
@@ -61,7 +62,7 @@ class AttentionCategoryServiceIntegrationTest {
   @Test
   void setAttentionCategoryInCorrectTest() {
 
-    Category develop = categoryRepository.save(new Category("develop"));
+//    Category develop = categoryRepository.save(new Category("develop"));
     Category beauty = categoryRepository.save(new Category("beauty"));
     List<String> attentionCategorys = Arrays.asList("food", "beauty");
     Member savedMember = memberRepository.save(
