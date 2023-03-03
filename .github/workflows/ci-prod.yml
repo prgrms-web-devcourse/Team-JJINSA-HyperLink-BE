@@ -35,13 +35,13 @@ jobs:
         run: |
           mkdir src/test/resources
           touch src/main/resources/application.yml
-          touch src/test/resources/application-test.yml
+          touch src/test/resources/application.yml
 
       - name: application-prod.yml 설정
         run: echo "${{secrets.APPLICATIONPRODUCTION}}" | base64 --decode > src/main/resources/application.yml
 
       - name: application-test.yml 설정
-        run: echo "${{secrets.APPLICATIONTEST}}" | base64 --decode > src/test/resources/application-test.yml
+        run: echo "${{secrets.APPLICATIONTEST}}" | base64 --decode > src/test/resources/application.yml
 
       - name: ./gradlew 권한 설정
         run: chmod +x ./gradlew
