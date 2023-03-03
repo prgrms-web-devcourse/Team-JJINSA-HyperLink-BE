@@ -58,18 +58,18 @@ public class MemberControllerTest {
 
   @Test
   void signupTest() throws Exception {
-    Category develop = categoryRepository.save(new Category("develop"));
+//    Category develop = categoryRepository.save(new Category("develop"));
     Category beauty = categoryRepository.save(new Category("beauty"));
 
     String email = "rldnd1234@naver.com";
     String accessToken = jwtTokenProvider.createAccessToken(1L);
 
     GoogleAccessToken savedGoogleAccessToken = googleAccessTokenRepository.save(
-        new GoogleAccessToken(accessToken, email, "localhost"));
+
+        new GoogleAccessToken(accessToken, email, "loalhost"));
 
     SignUpRequest signUpRequest = new SignUpRequest(email, "Chocho", "develop",
-        "10", 1995,
-        List.of("develop", "beauty"), "man");
+        "10", 1995, List.of("develop", "beauty"), "man");
 
     mockMvc.perform(MockMvcRequestBuilders
             .post("/members/signup")

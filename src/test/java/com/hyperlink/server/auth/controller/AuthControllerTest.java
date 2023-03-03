@@ -8,14 +8,12 @@ import static org.springframework.restdocs.operation.preprocess.Preprocessors.pr
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessResponse;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
-import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.hyperlink.server.domain.auth.dto.LoginRequest;
 import com.hyperlink.server.domain.auth.oauth.GoogleAccessToken;
 import com.hyperlink.server.domain.auth.oauth.GoogleAccessTokenRepository;
 import com.hyperlink.server.domain.auth.token.JwtTokenProvider;
@@ -66,22 +64,21 @@ class AuthControllerTest {
   @Test
   void loginCorrectTest() throws Exception {
     String email = "rldnd1234@naver.com";
+    String profileUrl = "profileurl";
     Member saveMember = memberRepository.save(
         new Member(email, "Chocho", Career.DEVELOP, CareerYear.MORE_TEN, "localhost", 1995, "man"));
 
-    LoginRequest loginRequest = new LoginRequest(email);
     String accessToken = jwtTokenProvider.createAccessToken(saveMember.getId());
 
     GoogleAccessToken savedGoogleAccessToken = googleAccessTokenRepository.save(
-        new GoogleAccessToken(accessToken, email, "localhost"));
+        new GoogleAccessToken(accessToken, email, profileUrl));
 
     mockMvc.perform(MockMvcRequestBuilders
             .post("/members/login")
             .header(HttpHeaders.AUTHORIZATION,
                 "Bearer " + savedGoogleAccessToken.getGoogleAccessToken())
             .contentType(MediaType.APPLICATION_JSON)
-            .accept(MediaType.APPLICATION_JSON)
-            .content(objectMapper.writeValueAsString(loginRequest)))
+            .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andDo(print())
@@ -89,8 +86,6 @@ class AuthControllerTest {
             preprocessRequest(prettyPrint()),
             preprocessResponse(prettyPrint()),
             requestHeaders(headerWithName(HttpHeaders.AUTHORIZATION).description("AccessToken")),
-            requestFields(
-                fieldWithPath("email").type(JsonFieldType.STRING).description("이메일")),
             responseHeaders(headerWithName(HttpHeaders.SET_COOKIE).description("RefreshToken")),
             responseFields(
                 fieldWithPath("accessToken").type(JsonFieldType.STRING).description("AccessToken")))
@@ -100,14 +95,10 @@ class AuthControllerTest {
   @DisplayName("로그인시 accessToken이 존재하지않는다면 401을 반환한다.")
   @Test
   void loginInCorrectTest() throws Exception {
-    String email = "rldnd1234@naver.com";
-    LoginRequest loginRequest = new LoginRequest(email);
-
     mockMvc.perform(MockMvcRequestBuilders
             .post("/members/login")
             .contentType(MediaType.APPLICATION_JSON)
-            .accept(MediaType.APPLICATION_JSON)
-            .content(objectMapper.writeValueAsString(loginRequest)))
+            .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isUnauthorized())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andDo(print());

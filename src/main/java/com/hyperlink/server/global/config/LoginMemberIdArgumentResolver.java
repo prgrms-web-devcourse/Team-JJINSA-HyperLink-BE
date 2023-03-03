@@ -1,6 +1,7 @@
 package com.hyperlink.server.global.config;
 
 import com.hyperlink.server.domain.auth.token.AuthTokenExtractor;
+import java.util.Optional;
 import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.support.WebDataBinderFactory;
@@ -21,14 +22,16 @@ public class LoginMemberIdArgumentResolver implements HandlerMethodArgumentResol
   @Override
   public boolean supportsParameter(final MethodParameter parameter) {
     return parameter.hasParameterAnnotation(LoginMemberId.class)
-        && parameter.getParameterType().equals(Long.class);
+        && parameter.getParameterType().equals(Optional.class);
   }
 
   @Override
-  public Long resolveArgument(final MethodParameter parameter,
+  public Optional<Long> resolveArgument(final MethodParameter parameter,
       final ModelAndViewContainer mavContainer,
       final NativeWebRequest webRequest, final WebDataBinderFactory binderFactory) {
-    String accessToken = webRequest.getHeader("Authorization").split("Bearer ")[TOKEN_VALUE_INDEX];
+
+    String accessToken = webRequest.getHeader("Authorization");
+
     return authTokenExtractor.extractMemberId(accessToken);
   }
 }

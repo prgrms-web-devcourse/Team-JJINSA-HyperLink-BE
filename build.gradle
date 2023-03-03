@@ -50,9 +50,6 @@ dependencies {
     implementation 'io.jsonwebtoken:jjwt-impl:0.11.2'
     implementation 'io.jsonwebtoken:jjwt-jackson:0.11.2'
 
-    // actuator
-    implementation 'org.springframework.boot:spring-boot-starter-actuator'
-
     // flyway
     implementation 'org.flywaydb:flyway-core'
     implementation 'org.flywaydb:flyway-mysql'
@@ -76,6 +73,12 @@ dependencies {
     //querydsl
     implementation "com.querydsl:querydsl-jpa:${queryDslVersion}"
     annotationProcessor "com.querydsl:querydsl-apt:${queryDslVersion}"
+
+    // apache kafka
+    implementation 'org.springframework.kafka:spring-kafka'
+
+    // amqp
+    implementation 'org.springframework.boot:spring-boot-starter-amqp'
 }
 
 def querydslDir = "$buildDir/generated/querydsl"
@@ -122,7 +125,6 @@ task copyDocument(type: Copy) {
 build {
     dependsOn copyDocument
 }
-
 
 jacocoTestReport {
     reports {
@@ -204,7 +206,6 @@ jacocoTestCoverageVerification {
                     '*.LoginMemberIdArgumentResolver*',
                     //config
                     '*.WebConfig*',
-
             ] + Qdomains
         }
     }

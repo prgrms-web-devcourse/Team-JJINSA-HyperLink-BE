@@ -16,6 +16,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hyperlink.server.domain.content.application.ContentService;
 import com.hyperlink.server.domain.content.controller.ContentController;
 import com.hyperlink.server.domain.content.dto.ContentResponse;
+import com.hyperlink.server.domain.content.dto.GetContentsCommonResponse;
 import com.hyperlink.server.domain.content.dto.RecommendationCompanyResponse;
 import com.hyperlink.server.domain.content.dto.SearchResponse;
 import java.util.List;
@@ -65,6 +66,7 @@ public class ContentControllerTest {
       void addInquiryOfContentTest() throws Exception {
         mockMvc.perform(
                 patch("/contents/" + contentId + "/view")
+                //                    .header("AccessToken", accessToken)
             )
             .andExpect(status().isOk())
             .andDo(
@@ -72,6 +74,10 @@ public class ContentControllerTest {
                     "ContentControllerTest/addInquiryOfContent",
                     preprocessRequest(prettyPrint()),
                     preprocessResponse(prettyPrint()),
+                    requestHeaders(
+                        // TODO : jwt
+//                        headerWithName("AccessToken").description("jwt header")
+                    ),
                     responseFields(
                         fieldWithPath("viewCount").type(JsonFieldType.NUMBER)
                             .description("조회수 추가 완료 후 최종 조회수")
@@ -124,7 +130,9 @@ public class ContentControllerTest {
             "https://okky.kr/articles/503803", 4,
             100, false, false, "2023-02-17T12:30.334", recommendationCompanyResponses);
         List<ContentResponse> contentResponses = List.of(contentResponse);
-        SearchResponse searchResponse = new SearchResponse(contentResponses, true, keyword, 4);
+        GetContentsCommonResponse getContentsCommonResponse = new GetContentsCommonResponse(
+            contentResponses, true);
+        SearchResponse searchResponse = new SearchResponse(getContentsCommonResponse, keyword, 4);
 
         Long memberId = 1L;
         Pageable pageable = PageRequest.of(Integer.parseInt(page), Integer.parseInt(size));
