@@ -53,8 +53,11 @@ include::{snippets}/members/login/http-response.adoc[]
 include::{snippets}/members/login/response-headers.adoc[]
 include::{snippets}//members/login/response-fields.adoc[]
 
-== Creator
+== History
+=== 히스토리 전체 내역 조회
+operation::MemberHistoryControllerTest/getAllHistory[snippets='http-request,http-response,response-fields']
 
+== Creator
 === 비추천 크리에이터 추가
 
 operation::CreatorControllerTest/notRecommend[snippets='http-request,http-response']

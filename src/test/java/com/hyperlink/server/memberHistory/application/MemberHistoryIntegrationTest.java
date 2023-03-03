@@ -6,6 +6,8 @@ import com.hyperlink.server.domain.category.domain.CategoryRepository;
 import com.hyperlink.server.domain.category.domain.entity.Category;
 import com.hyperlink.server.domain.content.domain.ContentRepository;
 import com.hyperlink.server.domain.content.domain.entity.Content;
+import com.hyperlink.server.domain.content.dto.ContentResponse;
+import com.hyperlink.server.domain.content.dto.GetContentsCommonResponse;
 import com.hyperlink.server.domain.creator.domain.CreatorRepository;
 import com.hyperlink.server.domain.creator.domain.entity.Creator;
 import com.hyperlink.server.domain.member.domain.MemberRepository;
@@ -13,12 +15,18 @@ import com.hyperlink.server.domain.member.domain.entity.Member;
 import com.hyperlink.server.domain.memberHistory.application.MemberHistoryService;
 import com.hyperlink.server.domain.memberHistory.domain.entity.MemberHistory;
 import com.hyperlink.server.domain.memberHistory.domain.entity.MemberHistoryRepository;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
@@ -61,9 +69,55 @@ class MemberHistoryIntegrationTest {
 
     memberHistoryService.insertMemberHistory(member.getId(), content.getId());
 
-    List<MemberHistory> findMemberHistory = memberHistoryRepository.findByMemberId(member.getId());
+    List<MemberHistory> findMemberHistory = memberHistoryRepository.findAllByMemberId(
+        member.getId());
     assertThat(findMemberHistory.get(0).getMember()).isEqualTo(member);
     assertThat(findMemberHistory.get(0).getContent()).isEqualTo(content);
+  }
+
+  @Nested
+  @DisplayName("히스토리 전체 조회 메소드는")
+  class GetAllHistoryTest {
+
+    Member member;
+    List<Content> contents = new ArrayList<>();
+
+    @BeforeEach
+    void setUp() {
+      member = new Member("email", "nickname", "career", "3", "profileImgUrl");
+      memberRepository.save(member);
+
+      LocalDateTime now = LocalDateTime.now();
+      contents.add(new Content("개발", "ImgUrl", "link", creator, category));
+      contents.add(new Content("개발짱", "ImgUrl", "link", creator, category));
+      contents.add(new Content("짱개발짱", "ImgUrl", "link", creator, category));
+      contents.add(new Content("개발자의 성장하는 삶", "ImgUrl", "link", creator, category));
+      contents.add(new Content("키가 쑥쑥 성장판", "ImgUrl", "link", creator, category));
+      contents.add(new Content("짱코딩짱", "ImgUrl", "link", creator, category));
+
+      contentRepository.saveAll(contents);
+
+      for (Content content : contents) {
+        MemberHistory memberHistory = new MemberHistory(member, content);
+        memberHistoryRepository.save(memberHistory);
+      }
+    }
+
+    @Test
+    @DisplayName("전체 히스토리 리스트를 요청에 맞는 size로 응답한다")
+    void getAllHistoryTest() {
+      Long memberId = member.getId();
+      final int page = 0;
+      final int size = 2;
+      Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+
+      GetContentsCommonResponse findAllHistory = memberHistoryService.getAllHistory(memberId,
+          pageable);
+      List<ContentResponse> contentResponses = findAllHistory.contents();
+
+      assertThat(findAllHistory.hasNext()).isTrue();
+      assertThat(contentResponses).hasSize(2);
+    }
   }
 
 }
