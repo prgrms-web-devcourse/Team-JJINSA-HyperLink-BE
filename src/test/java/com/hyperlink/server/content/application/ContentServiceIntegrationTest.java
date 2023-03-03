@@ -26,6 +26,7 @@ import com.hyperlink.server.domain.creator.exception.CreatorNotFoundException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.AfterAll;
@@ -124,7 +125,7 @@ public class ContentServiceIntegrationTest {
       @Test
       @DisplayName("조회수가 +1 처리되고, 히스토리 내역에 추가된 데이터가 없다")
       void addViewPlusOneAndNothingChangeHistory() {
-        Long memberId = null;
+        Optional<Long> memberId = Optional.empty();
         Content content = new Content("title", "contentImgUrl", "link", creator, category);
         content = contentRepository.save(content);
         int beforeViewCount = content.getViewCount();
@@ -150,7 +151,7 @@ public class ContentServiceIntegrationTest {
         Content content = new Content("title", "contentImgUrl", "link", creator, category);
         content = contentRepository.save(content);
 
-        contentService.addView(member.getId(), content.getId());
+        contentService.addView(Optional.of(member.getId()), content.getId());
 
         verify(memberHistoryService, times(1)).insertMemberHistory(any(), any());
       }

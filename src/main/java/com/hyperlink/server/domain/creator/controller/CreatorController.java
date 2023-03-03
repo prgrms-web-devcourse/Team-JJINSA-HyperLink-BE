@@ -1,8 +1,11 @@
 package com.hyperlink.server.domain.creator.controller;
 
+import com.hyperlink.server.domain.auth.token.exception.TokenNotExistsException;
 import com.hyperlink.server.domain.creator.application.CreatorService;
 import com.hyperlink.server.domain.creator.dto.CreatorEnrollRequest;
 import com.hyperlink.server.domain.creator.dto.CreatorEnrollResponse;
+import com.hyperlink.server.global.config.LoginMemberId;
+import java.util.Optional;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -28,10 +31,9 @@ public class CreatorController {
 
   @PostMapping("/creators/{creatorId}/not-recommend")
   @ResponseStatus(HttpStatus.OK)
-  public void notRecommend(@PathVariable("creatorId") Long creatorId) {
-    // TODO : JWT
-    Long memberId = 1L;
+  public void notRecommend(@LoginMemberId Optional<Long> optionalMemberId,
+      @PathVariable("creatorId") Long creatorId) {
+    Long memberId = optionalMemberId.orElseThrow(TokenNotExistsException::new);
     creatorService.notRecommend(memberId, creatorId);
-
   }
 }

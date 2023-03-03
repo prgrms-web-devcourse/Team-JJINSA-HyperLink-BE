@@ -72,7 +72,7 @@ public class ContentControllerTest extends AuthSetupForMock {
       void addInquiryOfContentTest() throws Exception {
         mockMvc.perform(
                 patch("/contents/" + contentId + "/view")
-                //                    .header("AccessToken", accessToken)
+                .header(HttpHeaders.AUTHORIZATION, authorizationHeader)
             )
             .andExpect(status().isOk())
             .andDo(
@@ -81,8 +81,7 @@ public class ContentControllerTest extends AuthSetupForMock {
                     preprocessRequest(prettyPrint()),
                     preprocessResponse(prettyPrint()),
                     requestHeaders(
-                        // TODO : jwt
-//                        headerWithName("AccessToken").description("jwt header")
+                        headerWithName(HttpHeaders.AUTHORIZATION).description("jwt header")
                     ),
                     responseFields(
                         fieldWithPath("viewCount").type(JsonFieldType.NUMBER)

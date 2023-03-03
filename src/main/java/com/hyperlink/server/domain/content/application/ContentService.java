@@ -17,6 +17,7 @@ import com.hyperlink.server.domain.creator.exception.CreatorNotFoundException;
 import com.hyperlink.server.domain.memberHistory.application.MemberHistoryService;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
@@ -45,11 +46,10 @@ public class ContentService {
   }
 
   @Transactional
-  public void addView(Long memberId, Long contentId) {
+  public void addView(Optional<Long> optionalMemberId, Long contentId) {
     contentRepository.updateViewCount(contentId);
-    if (memberId != null) {
-      memberHistoryService.insertMemberHistory(memberId, contentId);
-    }
+    optionalMemberId.ifPresent(
+        memberId -> memberHistoryService.insertMemberHistory(memberId, contentId));
   }
 
   public SearchResponse search(Long memberId, String keyword, Pageable pageable) {
@@ -76,7 +76,7 @@ public class ContentService {
 
     Content content = ContentEnrollResponse.toContent(contentEnrollResponse, creator, category);
     boolean exist = contentRepository.existsByLink(content.getLink());
-    if(exist) {
+    if (exist) {
       log.info("이미 존재하는 컨텐츠입니다. {}", contentEnrollResponse);
       return -1L;
     }
