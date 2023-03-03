@@ -4,16 +4,8 @@ name: hyperlink CI
 # Controls when the action will run. Triggers the workflow on push or pull request
 # events but only for the dev branch
 on:
-  push:
-    branches: develop/v0.*
   pull_request:
     branches: develop/v0.*
-    
-env:
-  DEPLOY_ZIP_FILE: hyperlink-deploy.zip
-  S3_DEPLOY_BUCKET: hyperlink-deploy
-  DEPLOY_GROUP_NAME: hyperlink-deploy-group
-  DEPLOY_APPLICATION_NAME: hyperlink-deploy
   
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -50,27 +42,4 @@ jobs:
         run: chmod +x ./gradlew
 
       - name: 빌드
-        run: SPRING_PROFILES_ACTIVE=[set1] ./gradlew clean build -x test -x :asciidoctor -x jacocoTestCoverageVerification
-
-      - name: aws 세팅
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ap-northeast-2
-
-      - name: Zip 파일 생성
-        run: |
-          mkdir -p before-deploy/
-          cp appspec.yml before-deploy/
-          cp scripts/*.sh before-deploy/
-          cp build/libs/*.jar before-deploy/
-          cd before-deploy && zip -r before-deploy *
-          cd ../ && mkdir -p deploy
-          mv before-deploy/before-deploy.zip deploy/$DEPLOY_ZIP_FILE
-          
-      - name: S3 업로드
-        run: aws s3 cp --region ap-northeast-2 ./deploy/$DEPLOY_ZIP_FILE s3://$S3_DEPLOY_BUCKET/server/build.zip
-
-      - name: code deploy
-        run: aws deploy create-deployment --application-name $DEPLOY_APPLICATION_NAME --deployment-config-name CodeDeployDefault.OneAtATime --deployment-group-name $DEPLOY_GROUP_NAME --s3-location bucket=$S3_DEPLOY_BUCKET,bundleType=zip,key=server/build.zip
+        run: ./gradlew clean build -x test -x :asciidoctor -x jacocoTestCoverageVerification

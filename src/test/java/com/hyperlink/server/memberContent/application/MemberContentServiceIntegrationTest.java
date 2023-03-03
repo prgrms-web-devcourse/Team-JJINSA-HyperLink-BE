@@ -50,7 +50,8 @@ public class MemberContentServiceIntegrationTest {
 
   @BeforeEach
   void setUp() {
-    member = new Member("email", "nickname", Career.DEVELOP, CareerYear.MORE_TEN, "profileImgUrl");
+    member = new Member("email", "nickname", Career.DEVELOP, CareerYear.MORE_THAN_TEN,
+        "profileImgUrl");
     Category category = new Category("개발");
     Creator creator = new Creator("name", "profile", "description", category);
     content = new Content("title", "contentImgUrl", "link", creator, category);

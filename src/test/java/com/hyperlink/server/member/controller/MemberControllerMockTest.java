@@ -17,8 +17,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hyperlink.server.AuthSetupForMock;
 import com.hyperlink.server.domain.attentionCategory.dto.AttentionCategoryRequest;
 import com.hyperlink.server.domain.attentionCategory.dto.AttentionCategoryResponse;
+import com.hyperlink.server.domain.auth.application.AuthService;
 import com.hyperlink.server.domain.auth.oauth.GoogleAccessTokenRepository;
-import com.hyperlink.server.domain.auth.token.JwtTokenProvider;
 import com.hyperlink.server.domain.auth.token.RefreshTokenCookieProvider;
 import com.hyperlink.server.domain.member.application.MemberService;
 import com.hyperlink.server.domain.member.controller.MemberController;
@@ -43,7 +43,6 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 @WebMvcTest(controllers = MemberController.class)
 public class MemberControllerMockTest extends AuthSetupForMock {
 
-
   @MockBean
   GoogleAccessTokenRepository googleAccessTokenRepository;
 
@@ -51,13 +50,13 @@ public class MemberControllerMockTest extends AuthSetupForMock {
   RefreshTokenCookieProvider refreshTokenCookieProvider;
 
   @MockBean
+  AuthService authService;
+
+  @MockBean
   MemberService memberService;
 
   @MockBean
   LoginMemberIdArgumentResolver loginMemberIdArgumentResolver;
-
-  @MockBean
-  JwtTokenProvider jwtTokenProvider;
 
   @Autowired
   MockMvc mockMvc;

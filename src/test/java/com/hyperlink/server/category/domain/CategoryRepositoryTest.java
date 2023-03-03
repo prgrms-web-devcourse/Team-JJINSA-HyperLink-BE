@@ -23,11 +23,11 @@ public class CategoryRepositoryTest {
   @Test
   @DisplayName("카테고리를 이름으로 검색할 수 있다.")
   void find_category_by_name() {
-//    Category developCategory = new Category("develop");
-//    categoryRepository.save(developCategory);
+    Category beauty = new Category("beauty");
+    categoryRepository.save(beauty);
 
-    Optional<Category> categoryOptional = categoryRepository.findByName("develop");
+    Optional<Category> categoryOptional = categoryRepository.findByName(beauty.getName());
     assertThat(categoryOptional).isPresent();
-    assertThat(categoryOptional.get().getName()).isEqualTo("develop");
+    assertThat(categoryOptional.get().getName()).isEqualTo(beauty.getName());
   }
 }

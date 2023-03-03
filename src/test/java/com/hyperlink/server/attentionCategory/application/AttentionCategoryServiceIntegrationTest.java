@@ -36,13 +36,11 @@ class AttentionCategoryServiceIntegrationTest {
   @DisplayName("관심목록을 추가할 수 있다.")
   @Test
   void setAttentionCategoryCorrectTest() {
-
-//    Category develop = categoryRepository.save(new Category("develop"));
     Category develop = categoryRepository.findByName("develop").get();
     Category beauty = categoryRepository.save(new Category("beauty"));
     List<String> attentionCategorys = Arrays.asList("develop", "beauty");
     Member savedMember = memberRepository.save(
-        new Member("rldnd5555@gmail.com", "chocho", Career.DEVELOP, CareerYear.MORE_TEN, "url",
+        new Member("rldnd5555@gmail.com", "chocho", Career.DEVELOP, CareerYear.MORE_THAN_TEN, "url",
             1990, "man"));
 
     attentionCategoryService.changeAttentionCategory(savedMember, attentionCategorys);
@@ -66,7 +64,7 @@ class AttentionCategoryServiceIntegrationTest {
     Category beauty = categoryRepository.save(new Category("beauty"));
     List<String> attentionCategorys = Arrays.asList("food", "beauty");
     Member savedMember = memberRepository.save(
-        new Member("rldnd5555@gmail.com", "chocho", Career.DEVELOP, CareerYear.MORE_TEN, "url",
+        new Member("rldnd5555@gmail.com", "chocho", Career.DEVELOP, CareerYear.MORE_THAN_TEN, "url",
             1990, "man"));
     Assertions.assertThatThrownBy(() ->
         attentionCategoryService.changeAttentionCategory(savedMember, attentionCategorys)

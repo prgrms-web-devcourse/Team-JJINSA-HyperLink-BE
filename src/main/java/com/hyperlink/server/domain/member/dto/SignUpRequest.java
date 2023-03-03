@@ -14,9 +14,9 @@ public record SignUpRequest(
     @NotBlank @Size(max = 30) String nickname,
     @NotBlank @Size(max = 30) String career,
     @NotBlank @Size(max = 30) String careerYear,
-    @NotNull Integer birthYear,
+    Integer birthYear,
     @NotNull List<String> attentionCategory,
-    @NotBlank String gender
+    String gender
 ) {
 
   public static Member to(SignUpRequest signUpRequest, String profileUrl) {
@@ -25,5 +25,4 @@ public record SignUpRequest(
         CareerYear.selectCareerYear(signUpRequest.careerYear),
         profileUrl, signUpRequest.birthYear, signUpRequest.gender);
   }
-
 }

@@ -53,6 +53,7 @@ public class MemberService {
     String accessToken = jwtTokenProvider.createAccessToken(memberId);
     RefreshToken refreshToken = refreshTokenRepository.save(
         new RefreshToken(UUID.randomUUID().toString(), memberId));
+
     return new SignUpResult(memberId, accessToken, refreshToken.getRefreshToken());
   }
 
