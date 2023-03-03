@@ -1,5 +1,6 @@
 package com.hyperlink.server.domain.creator.controller;
 
+import com.hyperlink.server.domain.auth.token.exception.TokenNotExistsException;
 import com.hyperlink.server.domain.creator.application.CreatorService;
 import com.hyperlink.server.domain.creator.dto.CreatorEnrollRequest;
 import com.hyperlink.server.domain.creator.dto.CreatorEnrollResponse;
@@ -27,6 +28,7 @@ public class CreatorController {
   public CreatorEnrollResponse enrollCreator(
       @LoginMemberId Optional<Long> memberId,
       @RequestBody @Valid CreatorEnrollRequest creatorEnrollRequest) {
+    memberId.orElseThrow(TokenNotExistsException::new);
     return creatorService.enrollCreator(creatorEnrollRequest);
   }
 
