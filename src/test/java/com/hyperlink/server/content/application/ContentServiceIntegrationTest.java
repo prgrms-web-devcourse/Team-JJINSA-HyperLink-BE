@@ -47,12 +47,14 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.annotation.Rollback;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
 @TestInstance(Lifecycle.PER_CLASS)
 @SpringBootTest
 @Transactional
 @DisplayName("ContentService 통합 테스트")
+@ActiveProfiles("test")
 public class ContentServiceIntegrationTest {
 
   @Autowired
