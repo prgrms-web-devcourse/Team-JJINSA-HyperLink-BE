@@ -26,7 +26,7 @@ public class CreatorService {
   private final CreatorRepository creatorRepository;
   private final CategoryRepository categoryRepository;
   private final NotRecommendCreatorRepository notRecommendCreatorRepository;
-  
+
   @Transactional
   public CreatorEnrollResponse enrollCreator(CreatorEnrollRequest creatorEnrollRequest) {
     Category category = categoryRepository.findByName(creatorEnrollRequest.categoryName())

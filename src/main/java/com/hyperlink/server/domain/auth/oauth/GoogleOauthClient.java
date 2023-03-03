@@ -13,15 +13,14 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
-@Controller
+@RestController
 public class GoogleOauthClient {
 
   private static final String TOKEN_TYPE = "Bearer ";
@@ -55,7 +54,6 @@ public class GoogleOauthClient {
     this.googleAccessTokenRepository = googleAccessTokenRepository;
   }
 
-  @ResponseBody
   @GetMapping("/members/oauth/code/google")
   public ResponseEntity<OauthResponse> authGoogle(@RequestParam String code) {
     try {
@@ -68,12 +66,12 @@ public class GoogleOauthClient {
           GoogleProfileResult.class);
 
       googleAccessTokenRepository.save(
-          new GoogleAccessToken(accessToken, googleProfileResult.email()));
-
-      boolean joinCheck = memberService.existsMemberByEmail(googleProfileResult.email());
-      return ResponseEntity.ok(
-          new OauthResponse(accessToken, joinCheck, googleProfileResult.email(),
+          new GoogleAccessToken(accessToken, googleProfileResult.email(),
               googleProfileResult.picture()));
+
+      boolean wasSignedUp = memberService.existsMemberByEmail(googleProfileResult.email());
+      return ResponseEntity.ok(
+          new OauthResponse(accessToken, wasSignedUp, googleProfileResult.email()));
     } catch (JsonProcessingException exception) {
       throw new JsonProcessingCustomException();
     }

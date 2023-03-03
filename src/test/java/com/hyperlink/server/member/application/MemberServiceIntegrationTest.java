@@ -41,7 +41,7 @@ class MemberServiceIntegrationTest {
   @Test
   void existsMemberByEmailTest() {
     Member saveMember = memberRepository.save(
-        new Member("rldnd1234@naver.com", "Chocho", "develop", "10", "localhost", 1995));
+        new Member("rldnd1234@naver.com", "Chocho", "develop", "10", "localhost", 1995, "man"));
 
     assertThat(memberService.existsMemberByEmail(saveMember.getEmail())).isTrue();
     assertThat(memberService.existsMemberByEmail("rldnd")).isFalse();
@@ -50,19 +50,18 @@ class MemberServiceIntegrationTest {
   @DisplayName("회원가입을 할 수 있다.")
   @Test
   void signUpTest() {
-    Category develop = categoryRepository.save(new Category("develop"));
     Category beauty = categoryRepository.save(new Category("beauty"));
 
     SignUpRequest signUpRequest = new SignUpRequest("rldnd1234@naver.com", "Chocho", "develop",
-        "10", "localhost", 1995,
-        List.of("develop", "beauty"));
+        "10", 1995, List.of("develop", "beauty"), "man");
 
-    SignUpResult signUpResult = memberService.signUp(signUpRequest);
+    SignUpResult signUpResult = memberService.signUp(signUpRequest, "profileUrl");
 
     assertThat(memberRepository.existsById(signUpResult.memberId())).isTrue();
     assertThat(refreshTokenRepository.existsById(signUpResult.refreshToken())).isTrue();
-    assertThat(authTokenExtractor.extractMemberId(signUpResult.accessToken())).isEqualTo(
+    assertThat(authTokenExtractor.extractMemberId(signUpResult.accessToken()).get()).isEqualTo(
         signUpResult.memberId());
   }
+
 
 }

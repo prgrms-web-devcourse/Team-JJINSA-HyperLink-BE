@@ -1,4 +1,4 @@
-package com.hyperlink.server.token;
+package com.hyperlink.server.auth.token;
 
 import com.hyperlink.server.domain.auth.token.AuthTokenExtractor;
 import com.hyperlink.server.domain.auth.token.JwtTokenProvider;
@@ -28,10 +28,10 @@ class JwtTokenProviderTest {
   @Test
   void createAccessTokenTest() {
     Member saveMember = memberRepository.save(
-        new Member("rldnd1234@naver.com", "Chocho", "develop", "10", "localhost", 1995));
+        new Member("rldnd1234@naver.com", "Chocho", "develop", "10", "localhost", 1995, "man"));
 
     String accessToken = jwtTokenProvider.createAccessToken(saveMember.getId());
-    Assertions.assertThat(authTokenExtractor.extractMemberId(accessToken))
+    Assertions.assertThat(authTokenExtractor.extractMemberId(accessToken).get())
         .isEqualTo(saveMember.getId());
   }
 }

@@ -1,16 +1,16 @@
 buildscript {
-	ext {
-		queryDslVersion = "5.0.0"
-	}
+    ext {
+        queryDslVersion = "5.0.0"
+    }
 }
 
 plugins {
-	id 'java'
-	id 'org.springframework.boot' version '2.7.8'
-	id 'io.spring.dependency-management' version '1.0.15.RELEASE'
-	id 'org.asciidoctor.jvm.convert' version '3.3.2'
-	id 'jacoco'
-	id "com.ewerk.gradle.plugins.querydsl" version "1.0.10"
+    id 'java'
+    id 'org.springframework.boot' version '2.7.8'
+    id 'io.spring.dependency-management' version '1.0.15.RELEASE'
+    id 'org.asciidoctor.jvm.convert' version '3.3.2'
+    id 'jacoco'
+    id "com.ewerk.gradle.plugins.querydsl" version "1.0.10"
 }
 
 group = 'com.hyper-link'
@@ -50,9 +50,6 @@ dependencies {
     implementation 'io.jsonwebtoken:jjwt-impl:0.11.2'
     implementation 'io.jsonwebtoken:jjwt-jackson:0.11.2'
 
-    // actuator
-    implementation 'org.springframework.boot:spring-boot-starter-actuator'
-
     // flyway
     implementation 'org.flywaydb:flyway-core'
     implementation 'org.flywaydb:flyway-mysql'
@@ -60,7 +57,7 @@ dependencies {
     // lombok
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
-    
+
     // test
     testCompileOnly 'org.projectlombok:lombok'
     testAnnotationProcessor 'org.projectlombok:lombok'
@@ -76,21 +73,27 @@ dependencies {
     //querydsl
     implementation "com.querydsl:querydsl-jpa:${queryDslVersion}"
     annotationProcessor "com.querydsl:querydsl-apt:${queryDslVersion}"
+
+    // apache kafka
+    implementation 'org.springframework.kafka:spring-kafka'
+
+	// amqp
+	implementation 'org.springframework.boot:spring-boot-starter-amqp'
 }
 
 def querydslDir = "$buildDir/generated/querydsl"
 querydsl {
-	jpa = true
-	querydslSourcesDir = querydslDir
+    jpa = true
+    querydslSourcesDir = querydslDir
 }
 sourceSets {
-	main.java.srcDir querydslDir
+    main.java.srcDir querydslDir
 }
 configurations {
-	querydsl.extendsFrom compileClasspath
+    querydsl.extendsFrom compileClasspath
 }
 compileQuerydsl {
-	options.annotationProcessorPath = configurations.querydsl
+    options.annotationProcessorPath = configurations.querydsl
 }
 
 tasks.named('test') {
@@ -100,7 +103,7 @@ tasks.named('test') {
 }
 
 jar {
-	enabled = false
+    enabled = false
 }
 
 tasks.named('asciidoctor') {
@@ -123,58 +126,55 @@ build {
     dependsOn copyDocument
 }
 
-
 jacocoTestReport {
-	reports {
-		xml.enabled false
-		csv.enabled false
-		html.destination file("${buildDir}/jacocoHtml")
-	}
+    reports {
+        xml.enabled false
+        csv.enabled false
+        html.destination file("${buildDir}/jacocoHtml")
+    }
 
-	def Qdomains = []
-	for(qPattern in "**/QA" .. "**/QZ"){
-		Qdomains.add(qPattern+"*")
-	}
+    def Qdomains = []
+    for (qPattern in "**/QA".."**/QZ") {
+        Qdomains.add(qPattern + "*")
+    }
 
-	afterEvaluate {
-		classDirectories.setFrom(files(classDirectories.files.collect {
-			fileTree(dir: it, exclude: [
-					"com/hyperlink/server/ServerApplication.*",
-					"com/hyperlink/server/global/profile/controller/ProfileController.*",
-					"com/hyperlink/server/domain/auth/oauth/**",
-					"com.hyperlink.server.global.exception.ErrorReportRequest.*",
-					"com.hyperlink.server.global.exception.GlobalExceptionHandler.*"
-			] + Qdomains)
-		}))
-	}
+    afterEvaluate {
+        classDirectories.setFrom(files(classDirectories.files.collect {
+            fileTree(dir: it, exclude: [
+                    "com/hyperlink/server/ServerApplication.*",
+                    "com/hyperlink/server/global/profile/controller/ProfileController.*",
+                    "com/hyperlink/server/global/exception/ErrorReportRequest.*",
+                    "com/hyperlink/server/global/exception/GlobalExceptionHandler.*"
+            ] + Qdomains)
+        }))
+    }
 
-	finalizedBy 'jacocoTestCoverageVerification'
+    finalizedBy 'jacocoTestCoverageVerification'
 }
 
 jacocoTestCoverageVerification {
-	def Qdomains = []
-	for (qPattern in '*.QA'..'*.QZ') {
-		Qdomains.add(qPattern + '*')
-	}
-	violationRules {
-		rule {
-			enabled = true
-			element = 'CLASS'
+    def Qdomains = []
+    for (qPattern in '*.QA'..'*.QZ') {
+        Qdomains.add(qPattern + '*')
+    }
+    violationRules {
+        rule {
+            enabled = true
+            element = 'CLASS'
 
-			limit {
-				counter = 'LINE'
-				value = 'COVEREDRATIO'
-				minimum = 0.80
-			}
+            limit {
+                counter = 'LINE'
+                value = 'COVEREDRATIO'
+                minimum = 0.80
+            }
 
-			excludes = [
-			        '*.ProfileController*',
-					'*.ServerApplication*',
-					'*.oauth*',
-					'*.ErrorReportRequest*',
-					"*.GlobalExceptionHandler*"
-
-			] + Qdomains
-		}
-	}
+            excludes = [
+                    '*.ProfileController*',
+                    '*.ServerApplication*',
+                    '*.oauth*',
+                    '*.ErrorReportRequest*',
+                    "*.GlobalExceptionHandler*"
+            ] + Qdomains
+        }
+    }
 }
