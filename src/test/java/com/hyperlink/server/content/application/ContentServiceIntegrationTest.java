@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -325,6 +326,66 @@ public class ContentServiceIntegrationTest {
 
         assertThrows(CategoryNotFoundException.class,
             () -> contentService.insertContent(contentEnrollResponse));
+      }
+    }
+  }
+
+  @Nested
+  @DisplayName("[Admin] 컨텐츠 활성화 메서드는")
+  class ActivateContent {
+
+    @TestInstance(Lifecycle.PER_CLASS)
+    @TestMethodOrder(OrderAnnotation.class)
+    @Rollback(value = false)
+    @Nested
+    @DisplayName("[성공] 활성화 버튼은 누르면")
+    class Success {
+
+      Content savedContent;
+
+      @BeforeAll
+      void setUp() {
+        savedContent = contentRepository.save(
+            new Content("개발글은 이렇게!!!!!", "contentImgUrl", "link", creator, category));
+      }
+
+      @Order(1)
+      @Test
+      @DisplayName("컨텐츠의 is_viewable을 true로 변경하고")
+      void makeIsViewablePropertyTrue() {
+        contentService.activateContent(savedContent.getId());
+        Content content = contentRepository.findById(savedContent.getId()).get();
+
+        Assertions.assertTrue(content.isViewable());
+      }
+
+      @Order(2)
+      @Test
+      @DisplayName("true를 갖는다.")
+      void checkIsViewablePropertyTrue() {
+        Content content = contentRepository.findById(savedContent.getId()).get();
+        Assertions.assertTrue(content.isViewable());
+      }
+
+
+      @AfterAll
+      void tearDown() {
+        contentRepository.deleteById(savedContent.getId());
+      }
+
+    }
+
+    @Nested
+    @DisplayName("[실패]")
+    class Fail {
+      @Test
+      @DisplayName("유효하지 않은 content id에 대해서는 ContentNotFoundException 을 발생한다.")
+      void throwContentNotFoundExceptionWhenInvalidContentId() {
+        Long invalidContentId = -1L;
+
+        Assertions.assertThrows(ContentNotFoundException.class,
+            () -> contentService.activateContent(invalidContentId));
+
       }
     }
   }
