@@ -4,6 +4,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
@@ -20,13 +21,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hyperlink.server.AuthSetupForMock;
-import com.hyperlink.server.domain.auth.token.JwtTokenProvider;
 import com.hyperlink.server.domain.category.domain.entity.Category;
 import com.hyperlink.server.domain.creator.application.CreatorService;
 import com.hyperlink.server.domain.creator.controller.CreatorController;
 import com.hyperlink.server.domain.creator.domain.entity.Creator;
 import com.hyperlink.server.domain.creator.dto.CreatorEnrollRequest;
 import com.hyperlink.server.domain.creator.dto.CreatorEnrollResponse;
+import com.hyperlink.server.domain.creator.exception.CreatorNotFoundException;
 import com.hyperlink.server.domain.member.domain.Career;
 import com.hyperlink.server.domain.member.domain.CareerYear;
 import com.hyperlink.server.domain.member.domain.entity.Member;
@@ -46,7 +47,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 
 @WebMvcTest(CreatorController.class)
@@ -61,8 +61,6 @@ public class CreatorControllerTest extends AuthSetupForMock {
   MockMvc mockMvc;
   @Autowired
   ObjectMapper objectMapper;
-  @MockBean
-  JwtTokenProvider jwtTokenProvider;
 
   @Nested
   @DisplayName("크리에이터 생성 API는")
@@ -259,6 +257,31 @@ public class CreatorControllerTest extends AuthSetupForMock {
                     headerWithName("Authorization").description("accessToken")
                 )
             ));
+      }
+    }
+
+    @Nested
+    @DisplayName("유효하지 않은 크리에이터 id가 들어오면")
+    class Fail {
+
+      @BeforeEach
+      void setUp() {
+        authSetup();
+      }
+
+      @Test
+      @DisplayName("해당 크리에이터를 삭제하지 않고 NOT FOUND를 응답한다")
+      void deleteCreatorReturnNotFound() throws Exception {
+        Long creatorId = 1L;
+        doThrow(new CreatorNotFoundException()).when(creatorService).deleteCreator(creatorId);
+
+        mockMvc.perform(delete("/admin/creators/" + creatorId)
+                .header(HttpHeaders.AUTHORIZATION, authorizationHeader)
+                .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isNotFound())
+            .andExpect(response -> Assertions.assertTrue(
+                response.getResolvedException() instanceof CreatorNotFoundException))
+            .andDo(print());
       }
     }
   }
