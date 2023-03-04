@@ -58,3 +58,6 @@ operation::CreatorControllerTest/deleteCreator[snippets='http-request,http-respo
 === 크리에이터 추가
 operation::CreatorControllerTest/enrollCreator[snippets='http-request,http-response']
 
+=== 컨텐츠 활성화
+operation::ContentControllerTest/activateContent[snippets='http-request,http-response']
+
