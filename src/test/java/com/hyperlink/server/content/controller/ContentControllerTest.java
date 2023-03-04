@@ -1,27 +1,35 @@
 package com.hyperlink.server.content.controller;
 
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
+import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.patch;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessRequest;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessResponse;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.hyperlink.server.AuthSetupForMock;
 import com.hyperlink.server.domain.content.application.ContentService;
 import com.hyperlink.server.domain.content.controller.ContentController;
 import com.hyperlink.server.domain.content.dto.ContentResponse;
 import com.hyperlink.server.domain.content.dto.GetContentsCommonResponse;
 import com.hyperlink.server.domain.content.dto.RecommendationCompanyResponse;
 import com.hyperlink.server.domain.content.dto.SearchResponse;
+import com.hyperlink.server.domain.content.exception.ContentNotFoundException;
 import java.util.List;
 import javax.validation.ValidationException;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -35,6 +43,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -42,7 +52,7 @@ import org.springframework.test.web.servlet.MockMvc;
 @MockBean(JpaMetamodelMappingContext.class)
 @AutoConfigureRestDocs
 @AutoConfigureMockMvc
-public class ContentControllerTest {
+public class ContentControllerTest extends AuthSetupForMock {
 
   @MockBean
   ContentService contentService;
@@ -197,4 +207,63 @@ public class ContentControllerTest {
     }
   }
 
+  @Nested
+  @DisplayName("[Admin] 컨텐츠 활성화 API는")
+  class ActivateContent {
+
+    @BeforeEach
+    void setUp() {
+      authSetup();
+    }
+
+    @Nested
+    @DisplayName("올바른 ContentId가 들어오면")
+    class Success {
+
+      @Test
+      @DisplayName("해당 글을 Viewable로 변경한다.")
+      void makeContentViewable() throws Exception {
+        Long contentId = 1L;
+
+        doNothing().when(contentService).activateContent(contentId);
+
+        mockMvc.perform(post("/admin/contents/" + contentId + "/activate")
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, authorizationHeader))
+            .andExpect(status().isOk())
+            .andDo(print())
+            .andDo(document(
+                "ContentControllerTest/activateContent",
+                preprocessRequest(prettyPrint()),
+                preprocessResponse(prettyPrint()),
+                requestHeaders(
+                    headerWithName(HttpHeaders.AUTHORIZATION).description("AccessToken")
+                )
+            ));
+      }
+    }
+
+    @Nested
+    @DisplayName("올바르지 않은 ContentId가 들어오면")
+    class Fail {
+
+      @Test
+      @DisplayName("404 NOT FOUND를 반환하고 ContentNotFoundException이 발생한다.")
+      void activateIsViewableFail404ContentNotFoundException() throws Exception {
+        Long contentId = 1L;
+
+        doThrow(new ContentNotFoundException()).when(contentService).activateContent(contentId);
+
+        mockMvc.perform(post("/admin/contents/" + contentId + "/activate")
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, authorizationHeader))
+            .andExpect(status().isNotFound())
+            .andExpect(response -> Assertions.assertTrue(
+                response.getResolvedException() instanceof ContentNotFoundException))
+            .andDo(print());
+      }
+    }
+
+
+  }
 }
