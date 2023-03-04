@@ -17,6 +17,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class WebConfig implements WebMvcConfigurer {
 
   private static final String CORS_ALLOWED_METHODS = "GET,POST,HEAD,PUT,PATCH,DELETE,TRACE,OPTIONS";
+  private static final String FRONT_DOMAIN = "https://hyperlink-five.vercel.app";
 
   private final AuthTokenExtractor authTokenExtractor;
   private final JwtTokenProvider jwtTokenProvider;
@@ -48,7 +49,7 @@ public class WebConfig implements WebMvcConfigurer {
   public void addCorsMappings(final CorsRegistry registry) {
     registry.addMapping("/**")
         .allowedMethods(CORS_ALLOWED_METHODS.split(","))
-        .allowedOrigins("http://localhost:5173")
+        .allowedOrigins(FRONT_DOMAIN)
         .allowedHeaders("*")
         .allowCredentials(true)
         .exposedHeaders(HttpHeaders.LOCATION, HttpHeaders.SET_COOKIE);
