@@ -36,6 +36,7 @@ public class CreatorController {
   @ResponseStatus(HttpStatus.OK)
   public void deleteCreator(@LoginMemberId Optional<Long> memberId,
       @PathVariable("creatorId") Long creatorId) {
+    memberId.orElseThrow(TokenNotExistsException::new);
     creatorService.deleteCreator(creatorId);
   }
 
