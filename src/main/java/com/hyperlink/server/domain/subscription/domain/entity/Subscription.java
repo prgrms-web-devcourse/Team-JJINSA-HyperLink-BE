@@ -32,4 +32,9 @@ public class Subscription extends BaseEntity {
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "creator_id")
   private Creator creator;
+
+  public Subscription(Member member, Creator creator) {
+    this.member = member;
+    this.creator = creator;
+  }
 }
