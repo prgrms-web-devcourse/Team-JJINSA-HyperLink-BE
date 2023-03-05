@@ -41,7 +41,7 @@ public class AuthController {
 
     return ResponseEntity.ok()
         .header(HttpHeaders.SET_COOKIE, cookie.toString())
-        .body(LoginResponse.from(loginResult.accessToken()));
+        .body(LoginResponse.from(loginResult.admin(), loginResult.accessToken()));
   }
 
   private GoogleAccessToken getGoogleAccessToken(HttpServletRequest httpServletRequest) {
@@ -70,7 +70,7 @@ public class AuthController {
 
     return ResponseEntity.ok()
         .header(HttpHeaders.SET_COOKIE, cookie.toString())
-        .body(RenewResponse.from(renewResult.accessToken()));
+        .body(RenewResponse.from(renewResult.admin(), renewResult.accessToken()));
   }
 
   private void validateRefreshTokenExists(final String refreshToken) {

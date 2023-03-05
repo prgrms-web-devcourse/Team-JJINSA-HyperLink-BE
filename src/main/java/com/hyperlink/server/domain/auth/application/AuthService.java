@@ -11,6 +11,7 @@ import com.hyperlink.server.domain.auth.token.RefreshTokenRepository;
 import com.hyperlink.server.domain.auth.token.exception.RefreshTokenNotExistException;
 import com.hyperlink.server.domain.auth.token.exception.TokenNotExistsException;
 import com.hyperlink.server.domain.member.domain.MemberRepository;
+import com.hyperlink.server.domain.member.domain.entity.Member;
 import com.hyperlink.server.domain.member.exception.MemberNotFoundException;
 import java.util.UUID;
 import org.springframework.stereotype.Service;
@@ -38,17 +39,18 @@ public class AuthService {
     return authTokenExtractor.extractToken(authorizationHeader);
   }
 
-
   public LoginResult login(GoogleAccessToken googleAccessToken) {
-    Long memberId = memberRepository.findByEmail(googleAccessToken.getEmail()).orElseThrow(
-        MemberNotFoundException::new).getId();
+    Member foundMember = memberRepository.findByEmail(googleAccessToken.getEmail()).orElseThrow(
+        MemberNotFoundException::new);
+    Long memberId = foundMember.getId();
     String accessToken = jwtTokenProvider.createAccessToken(memberId);
     RefreshToken savedRefreshToken = refreshTokenRepository.save(
         new RefreshToken(UUID.randomUUID().toString(), memberId));
 
     googleAccessTokenRepository.deleteById(googleAccessToken.getGoogleAccessToken());
 
-    return new LoginResult(accessToken, savedRefreshToken.getRefreshToken());
+    return new LoginResult(foundMember.getIsAdmin(), accessToken,
+        savedRefreshToken.getRefreshToken());
   }
 
   public void logout(String refreshToken) {
@@ -73,10 +75,14 @@ public class AuthService {
         .orElseThrow(RefreshTokenNotExistException::new);
 
     Long memberId = oldRefreshToken.getMemberId();
+    Member foundMember = memberRepository.findById(memberId)
+        .orElseThrow(MemberNotFoundException::new);
+
     String newAccessToken = jwtTokenProvider.createAccessToken(memberId);
     RefreshToken newRefreshToken = refreshTokenRepository.save(
         new RefreshToken(UUID.randomUUID().toString(), memberId));
 
-    return new RenewResult(newAccessToken, newRefreshToken.getRefreshToken());
+    return new RenewResult(foundMember.getIsAdmin(), newAccessToken,
+        newRefreshToken.getRefreshToken());
   }
 }

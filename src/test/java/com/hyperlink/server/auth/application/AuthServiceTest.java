@@ -53,6 +53,7 @@ class AuthServiceTest {
     assertThat(authTokenExtractor.extractMemberId(accessToken).get())
         .isEqualTo(saveMember.getId());
     assertThat(refreshTokenRepository.existsById(loginResult.refreshToken())).isTrue();
+    assertThat(loginResult.admin()).isEqualTo(saveMember.getIsAdmin());
   }
 
   @DisplayName("로그아웃이 가능하다.")
@@ -88,6 +89,8 @@ class AuthServiceTest {
 
     assertThat(saveMember.getId()).isEqualTo(
         authTokenExtractor.extractMemberId(renewResult.accessToken()).get());
+
+    assertThat(saveMember.getIsAdmin()).isEqualTo(renewResult.admin());
   }
 
   @DisplayName("refreshToken을 통해 accessToken 재발급이 가능하다.")
