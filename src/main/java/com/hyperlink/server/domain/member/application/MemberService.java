@@ -7,8 +7,12 @@ import com.hyperlink.server.domain.attentionCategory.dto.AttentionCategoryRespon
 import com.hyperlink.server.domain.auth.token.JwtTokenProvider;
 import com.hyperlink.server.domain.auth.token.RefreshToken;
 import com.hyperlink.server.domain.auth.token.RefreshTokenRepository;
+import com.hyperlink.server.domain.member.domain.Career;
+import com.hyperlink.server.domain.member.domain.CareerYear;
 import com.hyperlink.server.domain.member.domain.MemberRepository;
 import com.hyperlink.server.domain.member.domain.entity.Member;
+import com.hyperlink.server.domain.member.dto.MembersUpdateRequest;
+import com.hyperlink.server.domain.member.dto.MembersUpdateResponse;
 import com.hyperlink.server.domain.member.dto.MyPageResponse;
 import com.hyperlink.server.domain.member.dto.SignUpRequest;
 import com.hyperlink.server.domain.member.dto.SignUpResult;
@@ -74,4 +78,14 @@ public class MemberService {
     return attentionCategoryResponse;
   }
 
+  @Transactional
+  public MembersUpdateResponse changeProfile(Long memberId,
+      MembersUpdateRequest membersUpdateRequest) {
+    Member foundMember = memberRepository.findById(memberId)
+        .orElseThrow(MemberNotFoundException::new);
+    Member changedMember = foundMember.changeMember(membersUpdateRequest.nickname(),
+        Career.selectCareer(membersUpdateRequest.career()),
+        CareerYear.selectCareerYear(membersUpdateRequest.careerYear()));
+    return MembersUpdateResponse.from(changedMember);
+  }
 }

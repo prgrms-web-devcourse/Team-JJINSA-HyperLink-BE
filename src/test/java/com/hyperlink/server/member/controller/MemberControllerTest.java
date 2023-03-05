@@ -35,10 +35,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.annotation.Transactional;
 
+@ActiveProfiles("test")
 @Transactional
 @AutoConfigureRestDocs
 @AutoConfigureMockMvc
@@ -65,7 +67,7 @@ public class MemberControllerTest {
 
   @Test
   void signupTest() throws Exception {
-//    Category develop = categoryRepository.save(new Category("develop"));
+    Category develop = categoryRepository.save(new Category("develop"));
     Category beauty = categoryRepository.save(new Category("beauty"));
 
     String email = "rldnd1234@naver.com";

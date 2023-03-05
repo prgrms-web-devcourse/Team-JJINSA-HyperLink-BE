@@ -82,6 +82,14 @@ public class Member extends BaseEntity {
     this.gender = gender;
   }
 
+  public Member changeMember(String nickname, Career career, CareerYear careerYear) {
+    this.nickname = nickname;
+    this.career = career;
+    this.careerYear = careerYear;
+
+    return this;
+  }
+
   public void changeProfileImgUrl(String profileImgUrl) {
     this.profileImgUrl = profileImgUrl;
   }

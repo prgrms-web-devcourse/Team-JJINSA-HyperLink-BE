@@ -24,6 +24,8 @@ import com.hyperlink.server.domain.auth.oauth.GoogleAccessTokenRepository;
 import com.hyperlink.server.domain.auth.token.RefreshTokenCookieProvider;
 import com.hyperlink.server.domain.member.application.MemberService;
 import com.hyperlink.server.domain.member.controller.MemberController;
+import com.hyperlink.server.domain.member.dto.MembersUpdateRequest;
+import com.hyperlink.server.domain.member.dto.MembersUpdateResponse;
 import com.hyperlink.server.domain.member.dto.MyPageResponse;
 import com.hyperlink.server.domain.member.dto.ProfileImgResponse;
 import com.hyperlink.server.domain.member.s3.AwsS3Service;
@@ -141,5 +143,40 @@ public class MemberControllerMockTest extends AuthSetupForMock {
             responseFields(
                 fieldWithPath("profileUrl").type(JsonFieldType.STRING)
                     .description("변경된 ProfileImgUrl"))));
+  }
+
+  @Test
+  void changeProfileTest() throws Exception {
+    authSetup();
+
+    String nickname = "master";
+    String career = "develop";
+    String careerYear = "one";
+
+    MembersUpdateRequest membersUpdateRequest = new MembersUpdateRequest(nickname, career,
+        careerYear);
+
+    MembersUpdateResponse membersUpdateResponse = new MembersUpdateResponse(nickname, career,
+        careerYear);
+
+    given(memberService.changeProfile(memberId, membersUpdateRequest)).willReturn(
+        membersUpdateResponse);
+
+    mockMvc.perform(MockMvcRequestBuilders
+            .put("/members/update")
+            .header(HttpHeaders.AUTHORIZATION, authorizationHeader)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(membersUpdateRequest)))
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andDo(print())
+        .andDo(document("members/update",
+            preprocessRequest(prettyPrint()),
+            preprocessResponse(prettyPrint()),
+            requestHeaders(headerWithName(HttpHeaders.AUTHORIZATION).description("AccessToken")),
+            responseFields(
+                fieldWithPath("nickname").type(JsonFieldType.STRING).description("닉네임"),
+                fieldWithPath("career").type(JsonFieldType.STRING).description("직업 분야"),
+                fieldWithPath("careerYear").type(JsonFieldType.STRING).description("경력"))));
   }
 }

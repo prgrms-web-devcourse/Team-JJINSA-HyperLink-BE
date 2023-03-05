@@ -41,20 +41,29 @@ operation::members/mypage[snippets='http-request,http-response,response-fields']
 
 operation::members/attention-category[snippets='http-request,http-response,response-fields']
 
+=== 프로필 변경
+
+operation::members/update[snippets='http-request,http-response,response-fields']
+
 == History
+
 === 히스토리 전체 내역 조회
+
 operation::MemberHistoryControllerTest/getAllHistory[snippets='http-request,http-response,response-fields']
 
 == Creator
-=== 비추천 크리에이터 추가
 
+=== 비추천 크리에이터 추가
 
 operation::CreatorControllerTest/notRecommend[snippets='http-request,http-response']
 
 == Admin
+
 === 크리에이터 삭제
+
 operation::CreatorControllerTest/deleteCreator[snippets='http-request,http-response']
 
 === 크리에이터 추가
+
 operation::CreatorControllerTest/enrollCreator[snippets='http-request,http-response']
 
