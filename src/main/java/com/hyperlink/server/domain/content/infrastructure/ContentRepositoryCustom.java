@@ -74,7 +74,7 @@ public class ContentRepositoryCustom {
   public Slice<Content> retrievePopularContentsByCreator(Long creatorId, Pageable pageable) {
     List<Content> contents = queryFactory
         .selectFrom(content)
-        .where(content.creator.id.eq(creatorId))
+        .where(eqCreatorId(creatorId))
         .orderBy(popularOrderType())
         .offset(pageable.getOffset())
         .limit(pageable.getPageSize() + 1)
@@ -86,7 +86,7 @@ public class ContentRepositoryCustom {
   public Slice<Content> retrieveRecentContentsByCreator(Long creatorId, Pageable pageable) {
     List<Content> contents = queryFactory
         .selectFrom(content)
-        .where(content.creator.id.eq(creatorId))
+        .where(eqCreatorId(creatorId))
         .orderBy(recentOrderType())
         .offset(pageable.getOffset())
         .limit(pageable.getPageSize() + 1)
@@ -111,6 +111,10 @@ public class ContentRepositoryCustom {
 
   private OrderSpecifier<LocalDateTime> recentOrderType() {
     return content.createdAt.desc();
+  }
+
+  private BooleanExpression eqCreatorId(Long creatorId) {
+    return content.creator.id.eq(creatorId);
   }
 
   private BooleanExpression eqCategoryId(Long categoryId) {

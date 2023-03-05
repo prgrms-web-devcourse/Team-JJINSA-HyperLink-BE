@@ -14,7 +14,7 @@ public record ContentResponse(
     boolean isBookmarked,
     boolean isLiked,
     String createdAt,
-    List<RecommendationCompanyResponse> recommendationCompanies
+    List<RecommendationCompanyResponse> recommendations
 ) {
 
 }
