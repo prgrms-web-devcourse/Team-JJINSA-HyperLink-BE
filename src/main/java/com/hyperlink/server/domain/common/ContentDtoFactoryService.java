@@ -20,6 +20,9 @@ public class ContentDtoFactoryService {
       boolean hasNext) {
     List<ContentResponse> contentResponses = new ArrayList<>();
     for (Content content : contents) {
+      /**
+       * @description memberId에 null이 들어올 수 있음 null이라면 isBookmarked에서 false 반환
+       */
       boolean isBookmarked = memberContentService.isBookmarked(memberId, content.getId());
       boolean isLiked = content.getLikeCount() > 0;
       // TODO : 회사 추천 리스트 추가

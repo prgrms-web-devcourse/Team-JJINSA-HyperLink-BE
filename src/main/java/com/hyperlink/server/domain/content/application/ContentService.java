@@ -10,6 +10,7 @@ import com.hyperlink.server.domain.content.dto.ContentEnrollResponse;
 import com.hyperlink.server.domain.content.dto.GetContentsCommonResponse;
 import com.hyperlink.server.domain.content.dto.SearchResponse;
 import com.hyperlink.server.domain.content.exception.ContentNotFoundException;
+import com.hyperlink.server.domain.content.exception.InvalidSortException;
 import com.hyperlink.server.domain.content.infrastructure.ContentRepositoryCustom;
 import com.hyperlink.server.domain.creator.domain.CreatorRepository;
 import com.hyperlink.server.domain.creator.domain.entity.Creator;
@@ -84,6 +85,37 @@ public class ContentService {
     }
     contentRepository.save(content);
     return content.getId();
+  }
+
+  public GetContentsCommonResponse retrieveTrendContents(Long memberId, String categoryName,
+      String sort, Pageable pageable) {
+    Category category = categoryRepository.findByName(categoryName)
+        .orElseThrow(CategoryNotFoundException::new);
+
+    Slice<Content> contents = switch (sort) {
+      case "recent" ->
+          contentRepositoryCustom.retrieveRecentTrendContentsByCategory(category.getId(), pageable);
+      case "popular" ->
+          contentRepositoryCustom.retrievePopularTrendContentsByCategory(category.getId(),
+              pageable);
+      default -> throw new InvalidSortException();
+    };
+
+    return contentDtoFactoryService.createContentResponses(memberId, contents.getContent(),
+        contents.hasNext());
+  }
+
+  public GetContentsCommonResponse retrieveCreatorContents(Long memberId, Long creatorId,
+      String sort, Pageable pageable) {
+    Slice<Content> contents = switch (sort) {
+      case "recent" -> contentRepositoryCustom.retrieveRecentContentsByCreator(creatorId, pageable);
+      case "popular" ->
+          contentRepositoryCustom.retrievePopularContentsByCreator(creatorId, pageable);
+      default -> throw new InvalidSortException();
+    };
+
+    return contentDtoFactoryService.createContentResponses(memberId, contents.getContent(),
+        contents.hasNext());
   }
 
   @Transactional
