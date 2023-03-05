@@ -1,6 +1,7 @@
 package com.hyperlink.server.global.exception;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.ConstraintViolationException;
 import javax.validation.ValidationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -8,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
@@ -39,6 +41,18 @@ public class GlobalExceptionHandler {
   @ExceptionHandler(HttpMessageNotReadableException.class)
   public ResponseEntity<ErrorResponse> handleInvalidRequestBody() {
     ErrorResponse errorResponse = new ErrorResponse("잘못된 형식의 Request Body 입니다!");
+    return ResponseEntity.badRequest().body(errorResponse);
+  }
+
+  @ExceptionHandler(ConstraintViolationException.class)
+  public ResponseEntity<ErrorResponse> handleInvalidRequestParam() {
+    ErrorResponse errorResponse = new ErrorResponse("잘못된 형식의 Query String 혹은 Path Parameter 입니다.");
+    return ResponseEntity.badRequest().body(errorResponse);
+  }
+
+  @ExceptionHandler(MissingServletRequestParameterException.class)
+  public ResponseEntity<ErrorResponse> handleMissingRequestParam() {
+    ErrorResponse errorResponse = new ErrorResponse("Query String 혹은 Path Parameter가 누락되었습니다.");
     return ResponseEntity.badRequest().body(errorResponse);
   }
 
