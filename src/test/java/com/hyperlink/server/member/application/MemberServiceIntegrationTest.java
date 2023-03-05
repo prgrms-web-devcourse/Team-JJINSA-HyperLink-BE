@@ -3,11 +3,9 @@ package com.hyperlink.server.member.application;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import com.hyperlink.server.domain.attentionCategory.domain.AttentionCategoryRepository;
 import com.hyperlink.server.domain.attentionCategory.dto.AttentionCategoryRequest;
 import com.hyperlink.server.domain.attentionCategory.dto.AttentionCategoryResponse;
 import com.hyperlink.server.domain.auth.token.AuthTokenExtractor;
-import com.hyperlink.server.domain.auth.token.JwtTokenProvider;
 import com.hyperlink.server.domain.auth.token.RefreshTokenRepository;
 import com.hyperlink.server.domain.category.domain.CategoryRepository;
 import com.hyperlink.server.domain.category.domain.entity.Category;
@@ -28,10 +26,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
-@ActiveProfiles("test")
 @Transactional
 @SpringBootTest
 class MemberServiceIntegrationTest {
@@ -50,11 +46,6 @@ class MemberServiceIntegrationTest {
 
   @Autowired
   private AuthTokenExtractor authTokenExtractor;
-
-  @Autowired
-  private JwtTokenProvider jwtTokenProvider;
-  @Autowired
-  private AttentionCategoryRepository attentionCategoryRepository;
 
   @DisplayName("주어진 이메일정보로 가입 멤버 존재여부를 확인할 수 있다.")
   @Test
