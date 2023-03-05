@@ -79,6 +79,9 @@ dependencies {
 
     // amqp
     implementation 'org.springframework.boot:spring-boot-starter-amqp'
+
+    //aws S3
+    implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
 }
 
 def querydslDir = "$buildDir/generated/querydsl"
@@ -153,10 +156,15 @@ jacocoTestReport {
                     "com/hyperlink/server/domain/auth/oauth/GoogleOauthClient.*",
                     "com/hyperlink/server/domain/auth/oauth/JsonProcessingCustomException.*",
 
-                    //시간
+                    //유효기간 관련 예외 및 로직
                     "com/hyperlink/server/domain/member/exception/SignUpTimeOutException.*",
                     "com/hyperlink/server/domain/auth/token/exception/TokenExpiredException.*",
                     "com/hyperlink/server/domain/auth/token/AuthTokenExtractor*",
+
+                    // s3
+                    "com/hyperlink/server/domain/member/s3/AwsS3Service*",
+                    "com/hyperlink/server/domain/member/exception/ProfileImgUploadFailException*",
+                    "com/hyperlink/server/global/config/AwsS3Config.*",
 
                     //설정 파일
                     "com/hyperlink/server/global/config/LoginMemberIdArgumentResolver.*",
@@ -206,6 +214,10 @@ jacocoTestCoverageVerification {
                     '*.LoginMemberIdArgumentResolver*',
                     //config
                     '*.WebConfig*',
+                    //s3
+                    '*AwsS3Service*',
+                    '*ProfileImgUploadFailException*',
+                    '*AwsS3Config*'
             ] + Qdomains
         }
     }
