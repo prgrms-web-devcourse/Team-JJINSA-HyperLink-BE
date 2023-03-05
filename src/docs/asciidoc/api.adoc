@@ -17,6 +17,10 @@ operation::ContentControllerTest/addInquiryOfContent[snippets='http-request,http
 
 operation::ContentControllerTest/search[snippets='http-request,http-response,response-fields']
 
+=== 조회
+
+operation::ContentControllerTest/retrieve[snippets="http-request,http-response"]
+
 == MemberContent
 
 === 북마크 추가/삭제
