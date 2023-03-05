@@ -3,6 +3,7 @@ package com.hyperlink.server.content.application;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -14,6 +15,8 @@ import com.hyperlink.server.domain.content.application.ContentService;
 import com.hyperlink.server.domain.content.domain.ContentRepository;
 import com.hyperlink.server.domain.content.domain.entity.Content;
 import com.hyperlink.server.domain.content.dto.ContentEnrollResponse;
+import com.hyperlink.server.domain.content.dto.ContentResponse;
+import com.hyperlink.server.domain.content.dto.GetContentsCommonResponse;
 import com.hyperlink.server.domain.content.dto.SearchResponse;
 import com.hyperlink.server.domain.content.exception.ContentNotFoundException;
 import com.hyperlink.server.domain.creator.domain.CreatorRepository;
@@ -29,7 +32,6 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -356,7 +358,7 @@ public class ContentServiceIntegrationTest {
         contentService.activateContent(savedContent.getId());
         Content content = contentRepository.findById(savedContent.getId()).get();
 
-        Assertions.assertTrue(content.isViewable());
+        assertTrue(content.isViewable());
       }
 
       @Order(2)
@@ -364,7 +366,7 @@ public class ContentServiceIntegrationTest {
       @DisplayName("true를 갖는다.")
       void checkIsViewablePropertyTrue() {
         Content content = contentRepository.findById(savedContent.getId()).get();
-        Assertions.assertTrue(content.isViewable());
+        assertTrue(content.isViewable());
       }
 
 
@@ -383,9 +385,126 @@ public class ContentServiceIntegrationTest {
       void throwContentNotFoundExceptionWhenInvalidContentId() {
         Long invalidContentId = -1L;
 
-        Assertions.assertThrows(ContentNotFoundException.class,
+        assertThrows(ContentNotFoundException.class,
             () -> contentService.activateContent(invalidContentId));
 
+      }
+    }
+  }
+
+  @Nested
+  @DisplayName("컨텐츠 조회 메서드는")
+  class Retrieve {
+
+    Content content1;
+    Content content2;
+    Content content3;
+    Content content4;
+
+    @BeforeEach
+    void setUp() {
+      Creator creator2 = new Creator("코딩팩토리", "profileUrl", "description", category);
+      creatorRepository.save(creator2);
+
+      content1 = contentRepository.save(
+          new Content("제목1", "contentImgUrl1", "link1", creator, category));
+      content2 = contentRepository.save(
+          new Content("제목2", "contentImgUrl2", "link2", creator, category));
+      content3 = contentRepository.save(
+          new Content("제목3", "contentImgUrl3", "link3", creator, category));
+      content4 = contentRepository.save(
+          new Content("제목4", "contentImgUrl4", "link4", creator2, category));
+
+    }
+
+    @Nested
+    @DisplayName("트렌드를")
+    class TrendContent {
+
+      @Test
+      @DisplayName("최신순으로 조회할 수 있다.")
+      void retrieveRecent() {
+        GetContentsCommonResponse getContentsCommonResponse = contentService.retrieveTrendContents(
+            null, "개발", "recent", PageRequest.of(0, 10));
+
+        List<ContentResponse> contents = getContentsCommonResponse.contents();
+        assertThat(contents).hasSize(4);
+        assertThat(contents.get(0).createdAt()).isLessThanOrEqualTo(
+            contents.get(contents.size() - 1).createdAt());
+      }
+
+      @Test
+      @DisplayName("인기순으로 조회할 수 있다.")
+      void retrievePopular() {
+        Member member = memberRepository.save(new Member("email", "nickname", Career.DEVELOP,
+            CareerYear.LESS_THAN_ONE, "profileImgUrl"));
+        memberRepository.save(member);
+        contentService.addView(member.getId(), content4.getId());
+        contentService.addView(member.getId(), content4.getId());
+        contentService.addView(member.getId(), content4.getId());
+
+        contentService.addView(member.getId(), content3.getId());
+        contentService.addView(member.getId(), content3.getId());
+
+        GetContentsCommonResponse getContentsCommonResponse = contentService.retrieveTrendContents(
+            null, "개발", "popular", PageRequest.of(0, 10));
+
+        List<ContentResponse> contents = getContentsCommonResponse.contents();
+        assertThat(contents).hasSize(4);
+        assertThat(contents.get(0).title()).isEqualTo("제목4");
+        assertThat(contents.get(1).title()).isEqualTo("제목3");
+      }
+
+      @Nested
+      @DisplayName("[실패]")
+      class Fail {
+        @Test
+        @DisplayName("카테고리가 잘못 입력되면 CategoryNotFoundException을 발생한다.")
+        void throwCategoryNotFoundExceptionForInvalidCategory() {
+          String categoryName = "invalidCategory";
+
+          assertThrows(CategoryNotFoundException.class,
+              () -> contentService.retrieveTrendContents(null, categoryName, "recent",
+                  PageRequest.of(0, 10)));
+        }
+
+      }
+    }
+
+    @Nested
+    @DisplayName("크리에이터의 글을")
+    class CreatorContent {
+      @Test
+      @DisplayName("최신순으로 조회할 수 있다.")
+      void retrieveRecent() {
+        GetContentsCommonResponse getContentsCommonResponse = contentService.retrieveCreatorContents(
+            null, creator.getId(), "recent", PageRequest.of(0, 10));
+
+        List<ContentResponse> contents = getContentsCommonResponse.contents();
+        assertThat(contents).hasSize(3);
+        assertThat(contents.get(0).createdAt()).isLessThanOrEqualTo(
+            contents.get(contents.size() - 1).createdAt());
+      }
+
+      @Test
+      @DisplayName("인기순으로 조회할 수 있다.")
+      void retrievePopular() {
+        Member member = memberRepository.save(new Member("email", "nickname", Career.DEVELOP,
+            CareerYear.LESS_THAN_ONE, "profileImgUrl"));
+        memberRepository.save(member);
+        contentService.addView(member.getId(), content4.getId());
+        contentService.addView(member.getId(), content4.getId());
+        contentService.addView(member.getId(), content4.getId());
+
+        contentService.addView(member.getId(), content3.getId());
+        contentService.addView(member.getId(), content3.getId());
+
+        GetContentsCommonResponse getContentsCommonResponse = contentService.retrieveCreatorContents(
+            null, creator.getId(), "popular", PageRequest.of(0, 10));
+
+        List<ContentResponse> contents = getContentsCommonResponse.contents();
+        assertThat(contents).hasSize(3);
+        assertThat(contents.get(0).title()).isEqualTo("제목3");
       }
     }
   }
