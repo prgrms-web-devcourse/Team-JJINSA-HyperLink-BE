@@ -71,6 +71,40 @@ public class ContentRepositoryCustom {
     return getSlice(pageable, contents);
   }
 
+  public Slice<Content> retrievePopularTrendContentsForCategories(List<Long> categoryIds, Pageable pageable) {
+    BooleanBuilder categoryConditionBuilder = new BooleanBuilder();
+    for(Long categoryId : categoryIds) {
+      categoryConditionBuilder.or(content.category.id.eq(categoryId));
+    }
+
+    List<Content> contents = queryFactory
+        .selectFrom(content)
+        .where(categoryConditionBuilder, beforeNDays(PAST_DAYS))
+        .orderBy(popularOrderType())
+        .offset(pageable.getOffset())
+        .limit(pageable.getPageSize() + 1)
+        .fetch();
+
+    return getSlice(pageable, contents);
+  }
+
+  public Slice<Content> retrieveRecentTrendContentsForCategories(List<Long> categoryIds, Pageable pageable) {
+    BooleanBuilder categoryConditionBuilder = new BooleanBuilder();
+    for(Long categoryId : categoryIds) {
+      categoryConditionBuilder.or(content.category.id.eq(categoryId));
+    }
+
+    List<Content> contents = queryFactory
+        .selectFrom(content)
+        .where(categoryConditionBuilder)
+        .orderBy(recentOrderType())
+        .offset(pageable.getOffset())
+        .limit(pageable.getPageSize() + 1)
+        .fetch();
+
+    return getSlice(pageable, contents);
+  }
+
   public Slice<Content> retrievePopularContentsByCreator(Long creatorId, Pageable pageable) {
     List<Content> contents = queryFactory
         .selectFrom(content)
@@ -118,18 +152,7 @@ public class ContentRepositoryCustom {
   }
 
   private BooleanExpression eqCategoryId(Long categoryId) {
-    if (validateWhetherAllTypeOrNot(categoryId)) {
-      return null;
-    }
     return content.category.id.eq(categoryId);
-  }
-
-  private boolean validateWhetherAllTypeOrNot(Long categoryId) {
-    if (categoryId == 0) {
-      // 전체 카테고리 id == 0
-      return true;
-    }
-    return false;
   }
 
   private BooleanExpression beforeNDays(long day) {

@@ -1,5 +1,6 @@
 package com.hyperlink.server.domain.content.application;
 
+import com.hyperlink.server.domain.attentionCategory.domain.AttentionCategoryRepository;
 import com.hyperlink.server.domain.category.domain.CategoryRepository;
 import com.hyperlink.server.domain.category.domain.entity.Category;
 import com.hyperlink.server.domain.category.exception.CategoryNotFoundException;
@@ -17,6 +18,7 @@ import com.hyperlink.server.domain.creator.domain.entity.Creator;
 import com.hyperlink.server.domain.creator.exception.CreatorNotFoundException;
 import com.hyperlink.server.domain.memberContent.application.MemberContentService;
 import com.hyperlink.server.domain.memberHistory.application.MemberHistoryService;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -35,6 +37,7 @@ public class ContentService {
   private final ContentRepository contentRepository;
   private final CategoryRepository categoryRepository;
   private final CreatorRepository creatorRepository;
+  private final AttentionCategoryRepository attentionCategoryRepository;
   private final ContentRepositoryCustom contentRepositoryCustom;
   private final MemberContentService memberContentService;
   private final ContentDtoFactoryService contentDtoFactoryService;
@@ -98,6 +101,27 @@ public class ContentService {
       case "popular" ->
           contentRepositoryCustom.retrievePopularTrendContentsByCategory(category.getId(),
               pageable);
+      default -> throw new InvalidSortException();
+    };
+
+    return contentDtoFactoryService.createContentResponses(memberId, contents.getContent(),
+        contents.hasNext());
+  }
+
+  public GetContentsCommonResponse retrieveTrendAllCategoriesContents(Long memberId,
+      String sort, Pageable pageable) {
+    List<Long> categoryIds = new ArrayList<>();
+    if(memberId == null) {
+      categoryIds = categoryRepository.findAllCategoryIds();
+    } else {
+      categoryIds = attentionCategoryRepository.findAttentionCategoryIdsByMemberId(memberId);
+    }
+
+    Slice<Content> contents = switch (sort) {
+      case "recent" ->
+          contentRepositoryCustom.retrieveRecentTrendContentsForCategories(categoryIds, pageable);
+      case "popular" ->
+          contentRepositoryCustom.retrievePopularTrendContentsForCategories(categoryIds, pageable);
       default -> throw new InvalidSortException();
     };
 

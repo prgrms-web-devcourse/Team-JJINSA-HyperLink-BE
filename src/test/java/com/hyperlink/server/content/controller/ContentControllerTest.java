@@ -41,6 +41,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.EmptySource;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -300,7 +301,7 @@ public class ContentControllerTest extends AuthSetupForMock {
 
       @ParameterizedTest
       @MethodSource("createInput")
-      @DisplayName("[category]와 [sort] 를 입력받으면 인기순 트렌드를 조회한다.")
+      @DisplayName("[category]와 [sort] 를 입력받으면 인기순, 최신순 트렌드를 조회한다.")
       void retrievePopularTrend(String category, Long creatorId, String sort) throws Exception {
         List<RecommendationCompanyResponse> recommendationCompanyResponses = List.of(
             new RecommendationCompanyResponse("네이버", "https://naverlogo.com"));
@@ -378,6 +379,84 @@ public class ContentControllerTest extends AuthSetupForMock {
             );
       }
 
+      @ParameterizedTest
+      @ValueSource(strings = {"popular", "recent"})
+      @DisplayName("전체 카테고리에 대해서 인기순, 최신순 트렌드를 조회한다.")
+      void retrieveTrendForAllCategories(String sort) throws Exception {
+        List<RecommendationCompanyResponse> recommendationCompanyResponses = List.of(
+            new RecommendationCompanyResponse("네이버", "https://naverlogo.com"));
+        List<RecommendationCompanyResponse> recommendationCompanyResponses2 = List.of(
+            new RecommendationCompanyResponse("네이버", "https://naverlogo.com"),
+            new RecommendationCompanyResponse("카카오", "https://kakaologo.com"));
+        ContentResponse contentResponse = new ContentResponse(1L, "개발자의 삶", "개발왕김딴딴", 2L,
+            "https://img1.com", "https://okky.kr/articles/503803", 4,
+            100, false, false, "2023-02-17T12:30.334", recommendationCompanyResponses);
+        ContentResponse contentResponse2 = new ContentResponse(2L, "당신은 개발자가 맞는가?", "개발왕김딴딴", 2L,
+            "https://img2.com", "https://okky.kr/articles/503343", 1,
+            35, false, false, "2023-02-17T12:30.334", recommendationCompanyResponses2);
+        List<ContentResponse> contentResponses = List.of(contentResponse, contentResponse2);
+        GetContentsCommonResponse getContentsCommonResponse = new GetContentsCommonResponse(
+            contentResponses, true);
+
+        Long memberId = 1L;
+        Pageable pageable = PageRequest.of(Integer.parseInt(page), Integer.parseInt(size));
+
+        doReturn(getContentsCommonResponse).when(contentService)
+            .retrieveTrendAllCategoriesContents(memberId, sort, pageable);
+
+        mockMvc.perform(
+                get("/contents/all")
+                    .param("sort", sort)
+                    .param("page", page)
+                    .param("size", size)
+                    .header(HttpHeaders.AUTHORIZATION, authorizationHeader)
+                    .characterEncoding("UTF-8")
+            ).andExpect(status().isOk())
+            .andDo(print())
+            .andDo(
+                document(
+                    "ContentControllerTest/retrieve",
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint()),
+                    requestHeaders(
+                        headerWithName(HttpHeaders.AUTHORIZATION).description("AccessToken")
+                    ),
+                    responseFields(
+                        fieldWithPath("contents.[].contentId").type(JsonFieldType.NUMBER)
+                            .description("컨텐츠 id"),
+                        fieldWithPath("contents.[].title").type(JsonFieldType.STRING)
+                            .description("컨텐츠 제목"),
+                        fieldWithPath("contents.[].creatorName").type(JsonFieldType.STRING)
+                            .description("크리에이터 이름"),
+                        fieldWithPath("contents.[].creatorId").type(JsonFieldType.NUMBER)
+                            .description("크리에이터 id"),
+                        fieldWithPath("contents.[].contentImgUrl").type(JsonFieldType.STRING)
+                            .description("컨텐츠 이미지 URL"),
+                        fieldWithPath("contents.[].link").type(JsonFieldType.STRING)
+                            .description("컨텐츠 연결 외부 링크"),
+                        fieldWithPath("contents.[].likeCount").type(JsonFieldType.NUMBER)
+                            .description("좋아요 개수"),
+                        fieldWithPath("contents.[].viewCount").type(JsonFieldType.NUMBER)
+                            .description("조회수 개수"),
+                        fieldWithPath("contents.[].isBookmarked").type(JsonFieldType.BOOLEAN)
+                            .description("북마크 여부"),
+                        fieldWithPath("contents.[].isLiked").type(JsonFieldType.BOOLEAN)
+                            .description("좋아요 여부"),
+                        fieldWithPath("contents.[].createdAt").type(JsonFieldType.STRING)
+                            .description("컨텐츠 생성 날짜"),
+                        fieldWithPath("contents.[].recommendations").type(
+                            JsonFieldType.ARRAY).description("추천 배열"),
+                        fieldWithPath("contents.[].recommendations.[].bannerName").type(
+                            JsonFieldType.STRING).description("배너명"),
+                        fieldWithPath(
+                            "contents.[].recommendations.[].bannerLogoImgUrl").type(
+                            JsonFieldType.STRING).description("배너 로고 URL"),
+                        fieldWithPath("hasNext").type(JsonFieldType.BOOLEAN)
+                            .description("다음 페이지 존재여부")
+                    )
+                )
+            );
+      }
     }
 
     @TestInstance(Lifecycle.PER_CLASS)

@@ -78,6 +78,17 @@ public class ContentController {
         PageRequest.of(page, size));
   }
 
+  @GetMapping("/contents/all")
+  @ResponseStatus(HttpStatus.OK)
+  public GetContentsCommonResponse getAllCategoriesContents(@LoginMemberId Optional<Long> optionalMemberId,
+      @RequestParam("page") @NotNull int page,
+      @RequestParam("size") @NotNull int size,
+      @RequestParam("sort") @NotBlank String sort) {
+    Long memberId = optionalMemberId.orElse(null);
+    return contentService.retrieveTrendAllCategoriesContents(
+        memberId, sort, PageRequest.of(page, size));
+  }
+
   @PostMapping("/admin/contents/{contentId}/activate")
   @ResponseStatus(HttpStatus.OK)
   public void activateContent(@LoginMemberId Optional<Long> optionalMemberId,

@@ -8,6 +8,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import com.hyperlink.server.domain.attentionCategory.domain.AttentionCategoryRepository;
+import com.hyperlink.server.domain.attentionCategory.domain.entity.AttentionCategory;
 import com.hyperlink.server.domain.category.domain.CategoryRepository;
 import com.hyperlink.server.domain.category.domain.entity.Category;
 import com.hyperlink.server.domain.category.exception.CategoryNotFoundException;
@@ -69,6 +71,8 @@ public class ContentServiceIntegrationTest {
   CategoryRepository categoryRepository;
   @Autowired
   MemberRepository memberRepository;
+  @Autowired
+  AttentionCategoryRepository attentionCategoryRepository;
   @MockBean
   MemberHistoryService memberHistoryService;
 
@@ -400,11 +404,14 @@ public class ContentServiceIntegrationTest {
     Content content2;
     Content content3;
     Content content4;
+    Member member;
 
     @BeforeEach
     void setUp() {
       Creator creator2 = new Creator("코딩팩토리", "profileUrl", "description", category);
       creatorRepository.save(creator2);
+      Category category2 = new Category("패션");
+      categoryRepository.save(category2);
 
       content1 = contentRepository.save(
           new Content("제목1", "contentImgUrl1", "link1", creator, category));
@@ -413,62 +420,140 @@ public class ContentServiceIntegrationTest {
       content3 = contentRepository.save(
           new Content("제목3", "contentImgUrl3", "link3", creator, category));
       content4 = contentRepository.save(
-          new Content("제목4", "contentImgUrl4", "link4", creator2, category));
-
+          new Content("제목4", "contentImgUrl4", "link4", creator2, category2));
+      member = new Member("memberEmail", "nickname", Career.DEVELOP,
+          CareerYear.LESS_THAN_ONE,
+          "profileImgUrl");
+      memberRepository.save(member);
+      attentionCategoryRepository.save(new AttentionCategory(member, category));
     }
 
     @Nested
     @DisplayName("트렌드를")
     class TrendContent {
 
-      @Test
-      @DisplayName("최신순으로 조회할 수 있다.")
-      void retrieveRecent() {
-        GetContentsCommonResponse getContentsCommonResponse = contentService.retrieveTrendContents(
-            null, "개발", "recent", PageRequest.of(0, 10));
+      @Nested
+      @DisplayName("카테고리 별로")
+      class ByCategory {
+        @Test
+        @DisplayName("최신순으로 조회할 수 있다.")
+        void retrieveRecent() {
+          GetContentsCommonResponse getContentsCommonResponse = contentService.retrieveTrendContents(
+              null, "개발", "recent", PageRequest.of(0, 10));
 
-        List<ContentResponse> contents = getContentsCommonResponse.contents();
-        assertThat(contents).hasSize(4);
-        assertThat(contents.get(0).createdAt()).isLessThanOrEqualTo(
-            contents.get(contents.size() - 1).createdAt());
-      }
+          List<ContentResponse> contents = getContentsCommonResponse.contents();
+          assertThat(contents).hasSize(3);
+          assertThat(contents.get(0).createdAt()).isLessThanOrEqualTo(
+              contents.get(contents.size() - 1).createdAt());
+        }
 
-      @Test
-      @DisplayName("인기순으로 조회할 수 있다.")
-      void retrievePopular() {
-        Member member = memberRepository.save(new Member("email", "nickname", Career.DEVELOP,
-            CareerYear.LESS_THAN_ONE, "profileImgUrl"));
-        memberRepository.save(member);
-        contentService.addView(member.getId(), content4.getId());
-        contentService.addView(member.getId(), content4.getId());
-        contentService.addView(member.getId(), content4.getId());
+        @Test
+        @DisplayName("인기순으로 조회할 수 있다.")
+        void retrievePopular() {
+          contentService.addView(member.getId(), content3.getId());
+          contentService.addView(member.getId(), content3.getId());
 
-        contentService.addView(member.getId(), content3.getId());
-        contentService.addView(member.getId(), content3.getId());
+          GetContentsCommonResponse getContentsCommonResponse = contentService.retrieveTrendContents(
+              null, "개발", "popular", PageRequest.of(0, 10));
 
-        GetContentsCommonResponse getContentsCommonResponse = contentService.retrieveTrendContents(
-            null, "개발", "popular", PageRequest.of(0, 10));
+          List<ContentResponse> contents = getContentsCommonResponse.contents();
+          assertThat(contents).hasSize(3);
+          assertThat(contents.get(0).title()).isEqualTo("제목3");
+          assertThat(contents.get(1).title()).isEqualTo("제목1");
+        }
 
-        List<ContentResponse> contents = getContentsCommonResponse.contents();
-        assertThat(contents).hasSize(4);
-        assertThat(contents.get(0).title()).isEqualTo("제목4");
-        assertThat(contents.get(1).title()).isEqualTo("제목3");
+        @Nested
+        @DisplayName("[실패]")
+        class Fail {
+          @Test
+          @DisplayName("카테고리가 잘못 입력되면 CategoryNotFoundException을 발생한다.")
+          void throwCategoryNotFoundExceptionForInvalidCategory() {
+            String categoryName = "invalidCategory";
+
+            assertThrows(CategoryNotFoundException.class,
+                () -> contentService.retrieveTrendContents(null, categoryName, "recent",
+                    PageRequest.of(0, 10)));
+          }
+
+        }
       }
 
       @Nested
-      @DisplayName("[실패]")
-      class Fail {
-        @Test
-        @DisplayName("카테고리가 잘못 입력되면 CategoryNotFoundException을 발생한다.")
-        void throwCategoryNotFoundExceptionForInvalidCategory() {
-          String categoryName = "invalidCategory";
+      @DisplayName("전체 카테고리 조회 시")
+      class AllCategory {
 
-          assertThrows(CategoryNotFoundException.class,
-              () -> contentService.retrieveTrendContents(null, categoryName, "recent",
-                  PageRequest.of(0, 10)));
+        @Nested
+        @DisplayName("로그인하지 않은 유저라면")
+        class IsNotLogin {
+          @Test
+          @DisplayName("카테고리 전체에 대해 최신순으로 조회할 수 있다.")
+          public void retrieveForAttentionCategoryByRecent() throws Exception {
+            GetContentsCommonResponse getContentsCommonResponse = contentService.retrieveTrendAllCategoriesContents(
+                null, "recent", PageRequest.of(0, 10));
+
+            List<ContentResponse> contents = getContentsCommonResponse.contents();
+            assertThat(contents).hasSize(4);
+            assertThat(contents.get(0).createdAt()).isLessThanOrEqualTo(
+                contents.get(contents.size() - 1).createdAt());
+          }
+
+          @Test
+          @DisplayName("카테고리 전체에 대해 인기순으로 조회할 수 있다.")
+          public void retrieveForAttentionCategoryByPopular() throws Exception {
+            contentService.addView(member.getId(), content4.getId());
+            contentService.addView(member.getId(), content4.getId());
+            contentService.addView(member.getId(), content4.getId());
+
+            contentService.addView(member.getId(), content3.getId());
+            contentService.addView(member.getId(), content3.getId());
+
+            GetContentsCommonResponse getContentsCommonResponse = contentService.retrieveTrendAllCategoriesContents(
+                null, "popular", PageRequest.of(0, 10));
+
+            List<ContentResponse> contents = getContentsCommonResponse.contents();
+            assertThat(contents).hasSize(4);
+            assertThat(contents.get(0).title()).isEqualTo("제목4");
+            assertThat(contents.get(1).title()).isEqualTo("제목3");
+          }
         }
 
+        @Nested
+        @DisplayName("로그인한 유저라면")
+        class IsLogin {
+          @Test
+          @DisplayName("유저의 관심 카테고리 전체에 대해 최신순으로 조회할 수 있다.")
+          public void retrieveForAttentionCategoryByRecent() throws Exception {
+            GetContentsCommonResponse getContentsCommonResponse = contentService.retrieveTrendAllCategoriesContents(
+                member.getId(), "recent", PageRequest.of(0, 10));
+
+            List<ContentResponse> contents = getContentsCommonResponse.contents();
+            assertThat(contents).hasSize(3);
+            assertThat(contents.get(0).createdAt()).isLessThanOrEqualTo(
+                contents.get(contents.size() - 1).createdAt());
+          }
+
+          @Test
+          @DisplayName("유저의 관심 카테고리 전체에 대해 인기순으로 조회할 수 있다.")
+          public void retrieveForAttentionCategoryByPopular() throws Exception {
+            contentService.addView(member.getId(), content4.getId());
+            contentService.addView(member.getId(), content4.getId());
+            contentService.addView(member.getId(), content4.getId());
+
+            contentService.addView(member.getId(), content3.getId());
+            contentService.addView(member.getId(), content3.getId());
+
+            GetContentsCommonResponse getContentsCommonResponse = contentService.retrieveTrendAllCategoriesContents(
+                member.getId(), "popular", PageRequest.of(0, 10));
+
+            List<ContentResponse> contents = getContentsCommonResponse.contents();
+            assertThat(contents).hasSize(3);
+            assertThat(contents.get(0).title()).isEqualTo("제목3");
+            assertThat(contents.get(1).title()).isEqualTo("제목1");
+          }
+        }
       }
+
+
     }
 
     @Nested
