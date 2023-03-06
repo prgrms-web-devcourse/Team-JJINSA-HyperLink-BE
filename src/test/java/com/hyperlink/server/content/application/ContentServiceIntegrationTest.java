@@ -338,7 +338,7 @@ public class ContentServiceIntegrationTest {
     @TestMethodOrder(OrderAnnotation.class)
     @Rollback(value = false)
     @Nested
-    @DisplayName("[성공] 활성화 버튼은 누르면")
+    @DisplayName("[성공] 활성화 버튼을 누르면")
     class Success {
 
       Content savedContent;
