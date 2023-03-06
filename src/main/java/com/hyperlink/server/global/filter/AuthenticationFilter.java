@@ -42,7 +42,6 @@ public class AuthenticationFilter implements Filter {
     String requestURI = httpRequest.getRequestURI();
     HttpServletResponse httpResponse = (HttpServletResponse) response;
     String requestMethod = httpRequest.getMethod();
-
     if (!requestMethod.equals("OPTIONS") && isLoginCheckPath(requestURI)) {
       hasAuthorization((httpRequest));
       try {

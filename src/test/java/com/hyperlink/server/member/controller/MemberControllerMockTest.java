@@ -1,5 +1,6 @@
 package com.hyperlink.server.member.controller;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
@@ -9,6 +10,7 @@ import static org.springframework.restdocs.operation.preprocess.Preprocessors.pr
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -23,6 +25,8 @@ import com.hyperlink.server.domain.auth.token.RefreshTokenCookieProvider;
 import com.hyperlink.server.domain.member.application.MemberService;
 import com.hyperlink.server.domain.member.controller.MemberController;
 import com.hyperlink.server.domain.member.dto.MyPageResponse;
+import com.hyperlink.server.domain.member.dto.ProfileImgResponse;
+import com.hyperlink.server.domain.member.s3.AwsS3Service;
 import com.hyperlink.server.global.config.LoginMemberIdArgumentResolver;
 import java.util.Arrays;
 import java.util.List;
@@ -35,9 +39,11 @@ import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+@ActiveProfiles("test")
 @AutoConfigureRestDocs
 @MockBean(JpaMetamodelMappingContext.class)
 @WebMvcTest(controllers = MemberController.class)
@@ -57,6 +63,9 @@ public class MemberControllerMockTest extends AuthSetupForMock {
 
   @MockBean
   LoginMemberIdArgumentResolver loginMemberIdArgumentResolver;
+
+  @MockBean
+  AwsS3Service awsS3Service;
 
   @Autowired
   MockMvc mockMvc;
@@ -108,5 +117,29 @@ public class MemberControllerMockTest extends AuthSetupForMock {
             responseFields(
                 fieldWithPath("attentionCategory").type(JsonFieldType.ARRAY)
                     .description("관심 카테고리 목록"))));
+  }
+
+  @Test
+  void changeProfileImgTest() throws Exception {
+    authSetup();
+
+    ProfileImgResponse profileImgResponse = new ProfileImgResponse("profileUrl");
+
+    given(awsS3Service.changeProfileImg(any(), any()))
+        .willReturn(profileImgResponse);
+
+    mockMvc.perform(
+            multipart("/members/profile-image").file("profileImage", "profileImage".getBytes())
+                .header(HttpHeaders.AUTHORIZATION, authorizationHeader))
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andDo(print())
+        .andDo(document("members/profile-image",
+            preprocessRequest(prettyPrint()),
+            preprocessResponse(prettyPrint()),
+            requestHeaders(headerWithName(HttpHeaders.AUTHORIZATION).description("AccessToken")),
+            responseFields(
+                fieldWithPath("profileUrl").type(JsonFieldType.STRING)
+                    .description("변경된 ProfileImgUrl"))));
   }
 }
