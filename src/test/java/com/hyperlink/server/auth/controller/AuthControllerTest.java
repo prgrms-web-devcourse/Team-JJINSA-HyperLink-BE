@@ -89,6 +89,7 @@ class AuthControllerTest {
             requestHeaders(headerWithName(HttpHeaders.AUTHORIZATION).description("AccessToken")),
             responseHeaders(headerWithName(HttpHeaders.SET_COOKIE).description("RefreshToken")),
             responseFields(
+                fieldWithPath("admin").type(JsonFieldType.BOOLEAN).description("관리자 여부"),
                 fieldWithPath("accessToken").type(JsonFieldType.STRING).description("AccessToken")))
         );
   }

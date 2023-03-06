@@ -10,12 +10,19 @@ import org.springframework.stereotype.Component;
 public class RefreshTokenCookieProvider {
 
   protected static final String REFRESH_TOKEN = "refreshToken";
+  private static final int REMOVE_MAX_AGE = 0;
 
   private final Long expiredTimeMillis = 360000L;
 
   public ResponseCookie createCookie(final String refreshToken) {
     return createTokenCookieBuilder(refreshToken)
         .maxAge(Duration.ofMillis(expiredTimeMillis))
+        .build();
+  }
+
+  public ResponseCookie createLogoutCookie() {
+    return createTokenCookieBuilder("")
+        .maxAge(REMOVE_MAX_AGE)
         .build();
   }
 

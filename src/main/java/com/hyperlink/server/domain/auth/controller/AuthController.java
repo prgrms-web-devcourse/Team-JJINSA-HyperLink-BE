@@ -11,13 +11,11 @@ import com.hyperlink.server.domain.auth.token.exception.InValidAccessException;
 import javax.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
@@ -41,7 +39,7 @@ public class AuthController {
 
     return ResponseEntity.ok()
         .header(HttpHeaders.SET_COOKIE, cookie.toString())
-        .body(LoginResponse.from(loginResult.accessToken()));
+        .body(LoginResponse.from(loginResult.admin(), loginResult.accessToken()));
   }
 
   private GoogleAccessToken getGoogleAccessToken(HttpServletRequest httpServletRequest) {
@@ -52,12 +50,16 @@ public class AuthController {
   }
 
   @PostMapping("/members/logout")
-  @ResponseStatus(HttpStatus.OK)
-  public void logout(@CookieValue(name = "refreshToken", required = false) String refreshToken) {
+  public ResponseEntity<Void> logout(
+      @CookieValue(name = "refreshToken", required = false) String refreshToken) {
     log.info("#### refreshToken: " + refreshToken);
     validateRefreshTokenExists(refreshToken);
 
     authService.logout(refreshToken);
+
+    return ResponseEntity.ok()
+        .header(HttpHeaders.SET_COOKIE, refreshTokenCookieProvider.createLogoutCookie().toString())
+        .build();
   }
 
   @GetMapping("/members/access-token")
@@ -70,7 +72,7 @@ public class AuthController {
 
     return ResponseEntity.ok()
         .header(HttpHeaders.SET_COOKIE, cookie.toString())
-        .body(RenewResponse.from(renewResult.accessToken()));
+        .body(RenewResponse.from(renewResult.admin(), renewResult.accessToken()));
   }
 
   private void validateRefreshTokenExists(final String refreshToken) {
