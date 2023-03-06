@@ -6,6 +6,8 @@ import com.hyperlink.server.domain.attentionCategory.domain.entity.AttentionCate
 import com.hyperlink.server.domain.category.domain.CategoryRepository;
 import com.hyperlink.server.domain.category.domain.entity.Category;
 import com.hyperlink.server.domain.category.exception.CategoryNotFoundException;
+import com.hyperlink.server.domain.member.domain.Career;
+import com.hyperlink.server.domain.member.domain.CareerYear;
 import com.hyperlink.server.domain.member.domain.MemberRepository;
 import com.hyperlink.server.domain.member.domain.entity.Member;
 import java.util.Arrays;
@@ -34,14 +36,14 @@ class AttentionCategoryServiceIntegrationTest {
   @DisplayName("관심목록을 추가할 수 있다.")
   @Test
   void setAttentionCategoryCorrectTest() {
-
-    Category develop = categoryRepository.save(new Category("develop"));
+    Category develop = categoryRepository.findByName("develop").get();
     Category beauty = categoryRepository.save(new Category("beauty"));
     List<String> attentionCategorys = Arrays.asList("develop", "beauty");
     Member savedMember = memberRepository.save(
-        new Member("rldnd5555@gmail.com", "chocho", "develop", "3", "url", 1990, "man"));
+        new Member("rldnd5555@gmail.com", "chocho", Career.DEVELOP, CareerYear.MORE_THAN_TEN, "url",
+            1990, "man"));
 
-    attentionCategoryService.setAttentionCategory(savedMember, attentionCategorys);
+    attentionCategoryService.changeAttentionCategory(savedMember, attentionCategorys);
     List<AttentionCategory> allAttentionCategory = attentionCategoryRepository.findAll();
 
     List<Category> result = allAttentionCategory.stream()
@@ -58,13 +60,14 @@ class AttentionCategoryServiceIntegrationTest {
   @Test
   void setAttentionCategoryInCorrectTest() {
 
-    Category develop = categoryRepository.save(new Category("develop"));
+//    Category develop = categoryRepository.save(new Category("develop"));
     Category beauty = categoryRepository.save(new Category("beauty"));
     List<String> attentionCategorys = Arrays.asList("food", "beauty");
     Member savedMember = memberRepository.save(
-        new Member("rldnd5555@gmail.com", "chocho", "develop", "3", "url", 1990, "man"));
+        new Member("rldnd5555@gmail.com", "chocho", Career.DEVELOP, CareerYear.MORE_THAN_TEN, "url",
+            1990, "man"));
     Assertions.assertThatThrownBy(() ->
-        attentionCategoryService.setAttentionCategory(savedMember, attentionCategorys)
+        attentionCategoryService.changeAttentionCategory(savedMember, attentionCategorys)
     ).isInstanceOf(
         CategoryNotFoundException.class);
   }

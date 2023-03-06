@@ -3,10 +3,9 @@ package com.hyperlink.server.category.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.Optional;
 import com.hyperlink.server.domain.category.domain.CategoryRepository;
 import com.hyperlink.server.domain.category.domain.entity.Category;
-import org.assertj.core.api.Assertions;
+import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,11 +23,11 @@ public class CategoryRepositoryTest {
   @Test
   @DisplayName("카테고리를 이름으로 검색할 수 있다.")
   void find_category_by_name() {
-    Category developCategory = new Category("develop");
-    categoryRepository.save(developCategory);
+    Category beauty = new Category("beauty");
+    categoryRepository.save(beauty);
 
-    Optional<Category> categoryOptional = categoryRepository.findByName(developCategory.getName());
+    Optional<Category> categoryOptional = categoryRepository.findByName(beauty.getName());
     assertThat(categoryOptional).isPresent();
-    assertThat(categoryOptional.get().getName()).isEqualTo(developCategory.getName());
+    assertThat(categoryOptional.get().getName()).isEqualTo(beauty.getName());
   }
 }

@@ -14,6 +14,7 @@ import com.hyperlink.server.domain.content.infrastructure.ContentRepositoryCusto
 import com.hyperlink.server.domain.creator.domain.CreatorRepository;
 import com.hyperlink.server.domain.creator.domain.entity.Creator;
 import com.hyperlink.server.domain.creator.exception.CreatorNotFoundException;
+import com.hyperlink.server.domain.memberContent.application.MemberContentService;
 import com.hyperlink.server.domain.memberHistory.application.MemberHistoryService;
 import java.util.Arrays;
 import java.util.List;
@@ -35,6 +36,7 @@ public class ContentService {
   private final CategoryRepository categoryRepository;
   private final CreatorRepository creatorRepository;
   private final ContentRepositoryCustom contentRepositoryCustom;
+  private final MemberContentService memberContentService;
   private final ContentDtoFactoryService contentDtoFactoryService;
   private final MemberHistoryService memberHistoryService;
 

@@ -40,13 +40,14 @@ public class AuthenticationFilter implements Filter {
     HttpServletRequest httpRequest = (HttpServletRequest) request;
     String requestURI = httpRequest.getRequestURI();
     HttpServletResponse httpResponse = (HttpServletResponse) response;
+    String requestMethod = httpRequest.getMethod();
 
-    if (isLoginCheckPath(requestURI)) {
+    if (!requestMethod.equals("OPTIONS") && isLoginCheckPath(requestURI)) {
       hasAuthorization((httpRequest));
       try {
         final String authorizationHeader = httpRequest.getHeader(HttpHeaders.AUTHORIZATION);
         final String accessToken = authTokenExtractor.extractToken(authorizationHeader);
-        jwtTokenProvider.validateExpiredToken(accessToken);
+        authTokenExtractor.validateExpiredToken(accessToken);
       } catch (TokenExpiredException e) {
         httpResponse.setStatus(HttpStatus.UNAUTHORIZED.value());
         return;

@@ -22,7 +22,7 @@ public class RefreshTokenCookieProvider {
   private ResponseCookieBuilder createTokenCookieBuilder(final String value) {
     return ResponseCookie.from(REFRESH_TOKEN, value)
         .httpOnly(true)
-        .secure(false) //branch 117 변경
+        .secure(true)
         .path("/")
         .sameSite(SameSite.NONE.attributeValue());
   }

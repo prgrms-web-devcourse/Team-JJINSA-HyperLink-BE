@@ -17,6 +17,5 @@ public class GoogleAccessToken {
     this.googleAccessToken = googleAccessToken;
     this.email = email;
     this.profileUrl = profileUrl;
-
   }
 }

@@ -2,6 +2,7 @@ package com.hyperlink.server.creator.controller;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
@@ -9,6 +10,10 @@ import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.docu
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessRequest;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessResponse;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -22,9 +27,12 @@ import com.hyperlink.server.domain.creator.controller.CreatorController;
 import com.hyperlink.server.domain.creator.domain.entity.Creator;
 import com.hyperlink.server.domain.creator.dto.CreatorEnrollRequest;
 import com.hyperlink.server.domain.creator.dto.CreatorEnrollResponse;
+import com.hyperlink.server.domain.member.domain.Career;
+import com.hyperlink.server.domain.member.domain.CareerYear;
 import com.hyperlink.server.domain.member.domain.entity.Member;
 import com.hyperlink.server.domain.notRecommendCreator.domain.entity.NotRecommendCreator;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -36,7 +44,9 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 
 @WebMvcTest(CreatorController.class)
@@ -63,6 +73,11 @@ public class CreatorControllerTest extends AuthSetupForMock {
     @DisplayName("[실패] 크리에이터 생성 요청 중")
     class Fail {
 
+      @BeforeEach
+      void setUp() {
+        authSetup();
+      }
+
       @Test
       @DisplayName("크리에이터 이름이 누락되면 BadRequest를 응답한다.")
       public void blankInName() throws Exception {
@@ -72,6 +87,7 @@ public class CreatorControllerTest extends AuthSetupForMock {
 
         mockMvc.perform(
                 post("/admin/creators")
+                    .header(HttpHeaders.AUTHORIZATION, authorizationHeader)
                     .content(objectMapper.writeValueAsString(creatorEnrollRequest))
                     .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isBadRequest())
@@ -89,6 +105,7 @@ public class CreatorControllerTest extends AuthSetupForMock {
 
         mockMvc.perform(
                 post("/admin/creators")
+                    .header(HttpHeaders.AUTHORIZATION, authorizationHeader)
                     .content(objectMapper.writeValueAsString(creatorEnrollRequest))
                     .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isBadRequest())
@@ -106,6 +123,7 @@ public class CreatorControllerTest extends AuthSetupForMock {
 
         mockMvc.perform(
                 post("/admin/creators")
+                    .header(HttpHeaders.AUTHORIZATION, authorizationHeader)
                     .content(objectMapper.writeValueAsString(creatorEnrollRequest))
                     .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isBadRequest())
@@ -117,6 +135,11 @@ public class CreatorControllerTest extends AuthSetupForMock {
     @Nested
     @DisplayName("[성공] 크리에이터 생성 요청 중")
     class Success {
+
+      @BeforeEach
+      void setUp() {
+        authSetup();
+      }
 
       @Test
       @DisplayName("모든 요청 값이 올바르면 Created를 응답하고 CreatorEnrollResponse를 반환한다.")
@@ -130,10 +153,35 @@ public class CreatorControllerTest extends AuthSetupForMock {
 
         mockMvc.perform(
                 post("/admin/creators")
+                    .header(HttpHeaders.AUTHORIZATION, authorizationHeader)
                     .content(objectMapper.writeValueAsString(creatorEnrollRequest))
                     .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isCreated())
-            .andDo(print());
+            .andDo(print())
+            .andDo(document("CreatorControllerTest/enrollCreator",
+                requestHeaders(
+                    headerWithName("Authorization").description("AccessToken")
+                ),
+                requestFields(
+                    fieldWithPath("name").type(JsonFieldType.STRING).description("크리에이터 이름"),
+                    fieldWithPath("profileImgUrl").type(JsonFieldType.STRING)
+                        .description("크리에이터 프로필 이미지"),
+                    fieldWithPath("description").type(JsonFieldType.STRING)
+                        .description("크리에이터 소개글"),
+                    fieldWithPath("categoryName").type(JsonFieldType.STRING)
+                        .description("크리에이터의 카테고리 이름")
+                ),
+                responseFields(
+                    fieldWithPath("creatorId").type(JsonFieldType.NUMBER).description("크리에이터 id"),
+                    fieldWithPath("name").type(JsonFieldType.STRING).description("크리에이터 이름"),
+                    fieldWithPath("profileImgUrl").type(JsonFieldType.STRING)
+                        .description("크리에이터 프로필 이미지"),
+                    fieldWithPath("description").type(JsonFieldType.STRING)
+                        .description("크리에이터 소개글"),
+                    fieldWithPath("categoryName").type(JsonFieldType.STRING)
+                        .description("크리에이터의 카테고리 이름")
+                )
+            ));
       }
     }
   }
@@ -152,7 +200,8 @@ public class CreatorControllerTest extends AuthSetupForMock {
         authSetup();
 
         long creatorId = 10L;
-        Member member = new Member("email", "nickname", "career", "careerYear", "profileImgUrl");
+        Member member = new Member("email", "nickname", Career.ETC, CareerYear.EIGHT,
+            "profileImgUrl");
         Category category = new Category("개발");
         Creator creator = new Creator("name", "profileImgUrl", "descriptions", category);
         NotRecommendCreator notRecommendCreator = new NotRecommendCreator(member, creator);
@@ -175,6 +224,42 @@ public class CreatorControllerTest extends AuthSetupForMock {
                     )
                 )
             );
+      }
+    }
+  }
+
+  @Nested
+  @DisplayName("크리에이터 삭제 API는")
+  class CreatorDeleteTest {
+
+    @Nested
+    @DisplayName("유효한 크리에이터 id가 들어오면")
+    class Success {
+
+      @BeforeEach
+      void setUp() {
+        authSetup();
+      }
+
+      @Test
+      @DisplayName("해당 크리에이터를 삭제하고 OK를 응답한다")
+      void deleteCreatorReturnsOK() throws Exception {
+        Long creatorId = 1L;
+
+        doNothing().when(creatorService).deleteCreator(creatorId);
+
+        mockMvc.perform(delete("/admin/creators/" + creatorId)
+                .header(HttpHeaders.AUTHORIZATION, authorizationHeader)
+                .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andDo(print())
+            .andDo(document("CreatorControllerTest/deleteCreator",
+                preprocessRequest(prettyPrint()),
+                preprocessResponse(prettyPrint()),
+                requestHeaders(
+                    headerWithName("Authorization").description("accessToken")
+                )
+            ));
       }
     }
   }

@@ -17,6 +17,8 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class WebConfig implements WebMvcConfigurer {
 
   private static final String CORS_ALLOWED_METHODS = "GET,POST,HEAD,PUT,PATCH,DELETE,TRACE,OPTIONS";
+  private static final String FRONT_DOMAIN = "https://hyperlink-five.vercel.app";
+  private static final String FRONTEND_LOCALHOST = "http://localhost:5173";
 
   private final AuthTokenExtractor authTokenExtractor;
   private final JwtTokenProvider jwtTokenProvider;
@@ -28,6 +30,7 @@ public class WebConfig implements WebMvcConfigurer {
 
   @Bean
   public FilterRegistrationBean loginFilter() {
+
     FilterRegistrationBean<Filter> filterRegistrationBean = new FilterRegistrationBean<Filter>();
 
     filterRegistrationBean.setFilter(
@@ -35,6 +38,7 @@ public class WebConfig implements WebMvcConfigurer {
     filterRegistrationBean.setOrder(1);
     filterRegistrationBean.addUrlPatterns("/*");
     return filterRegistrationBean;
+
   }
 
   @Override
@@ -44,12 +48,11 @@ public class WebConfig implements WebMvcConfigurer {
 
   @Override
   public void addCorsMappings(final CorsRegistry registry) {
-    registry.addMapping("/**") //추후 변동예정.
+    registry.addMapping("/**")
         .allowedMethods(CORS_ALLOWED_METHODS.split(","))
-        .allowedOrigins("http://localhost:5173")
+        .allowedOrigins(FRONT_DOMAIN, FRONTEND_LOCALHOST)
         .allowedHeaders("*")
         .allowCredentials(true)
         .exposedHeaders(HttpHeaders.LOCATION, HttpHeaders.SET_COOKIE);
   }
-
 }

@@ -27,31 +27,19 @@ operation::MemberContentController/includeCreateOrDeleteBookmark[snippets='http-
 
 === 회원가입
 
-=== /members/signup
-
-.Request
-include::{snippets}/members/signup/http-request.adoc[]
-include::{snippets}/members/signup/request-headers.adoc[]
-include::{snippets}//members/signup/request-fields.adoc[]
-
-.Response
-include::{snippets}/members/signup/http-response.adoc[]
-include::{snippets}/members/signup/response-headers.adoc[]
-include::{snippets}//members/signup/response-fields.adoc[]
+operation::members/signup[snippets='http-request,http-response,response-fields']
 
 === 로그인
 
-=== /members/login
+operation::members/login[snippets='http-request,http-response,response-fields']
 
-.Request
-include::{snippets}/members/login/http-request.adoc[]
-include::{snippets}/members/login/request-headers.adoc[]
-include::{snippets}//members/login/request-fields.adoc[]
+=== 내정보 조회
 
-.Response
-include::{snippets}/members/login/http-response.adoc[]
-include::{snippets}/members/login/response-headers.adoc[]
-include::{snippets}//members/login/response-fields.adoc[]
+operation::members/mypage[snippets='http-request,http-response,response-fields']
+
+=== 관심목록 변경
+
+operation::members/attention-category[snippets='http-request,http-response,response-fields']
 
 == History
 === 히스토리 전체 내역 조회
@@ -60,4 +48,13 @@ operation::MemberHistoryControllerTest/getAllHistory[snippets='http-request,http
 == Creator
 === 비추천 크리에이터 추가
 
+
 operation::CreatorControllerTest/notRecommend[snippets='http-request,http-response']
+
+== Admin
+=== 크리에이터 삭제
+operation::CreatorControllerTest/deleteCreator[snippets='http-request,http-response']
+
+=== 크리에이터 추가
+operation::CreatorControllerTest/enrollCreator[snippets='http-request,http-response']
+

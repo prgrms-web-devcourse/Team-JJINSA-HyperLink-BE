@@ -2,7 +2,10 @@ package com.hyperlink.server.creator.application;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import com.hyperlink.server.domain.category.domain.CategoryRepository;
 import com.hyperlink.server.domain.category.domain.entity.Category;
 import com.hyperlink.server.domain.category.exception.CategoryNotFoundException;
@@ -12,6 +15,8 @@ import com.hyperlink.server.domain.creator.domain.entity.Creator;
 import com.hyperlink.server.domain.creator.dto.CreatorEnrollRequest;
 import com.hyperlink.server.domain.creator.dto.CreatorEnrollResponse;
 import com.hyperlink.server.domain.creator.exception.CreatorNotFoundException;
+import com.hyperlink.server.domain.member.domain.Career;
+import com.hyperlink.server.domain.member.domain.CareerYear;
 import com.hyperlink.server.domain.member.domain.MemberRepository;
 import com.hyperlink.server.domain.member.domain.entity.Member;
 import com.hyperlink.server.domain.member.exception.MemberNotFoundException;
@@ -40,10 +45,10 @@ public class CreatorServiceIntegrationTest {
 
   @Autowired
   CreatorRepository creatorRepository;
-  
+
   @Autowired
   NotRecommendCreatorRepository notRecommendCreatorRepository;
-  
+
   @Autowired
   MemberRepository memberRepository;
 
@@ -54,14 +59,15 @@ public class CreatorServiceIntegrationTest {
     @Test
     @DisplayName("성공하면 크리에이터로 등록된다.")
     public void success() throws Exception {
-      Category develop = new Category("develop");
+      Category develop = new Category("개발");
       CreatorEnrollRequest creatorEnrollRequest = new CreatorEnrollRequest("크리에이터 이름",
-          "profileImgUrl", "크리에이터입니다.", "develop");
+          "profileImgUrl", "크리에이터입니다.", develop.getName());
 
       categoryRepository.save(develop);
-      CreatorEnrollResponse creatorEnrollResponse = creatorService.enrollCreator(creatorEnrollRequest);
+      CreatorEnrollResponse creatorEnrollResponse = creatorService.enrollCreator(
+          creatorEnrollRequest);
 
-      Optional<Creator> foundCreator = creatorRepository.findById(creatorEnrollResponse.id());
+      Optional<Creator> foundCreator = creatorRepository.findById(creatorEnrollResponse.creatorId());
       assertThat(foundCreator).isPresent();
       assertThat(foundCreator.get().getName()).isEqualTo(creatorEnrollRequest.name());
     }
@@ -70,7 +76,7 @@ public class CreatorServiceIntegrationTest {
     @DisplayName("없는 카테고리 이름으로 등록하면 CategoryNotFoundException이 발생한다.")
     public void fail() throws Exception {
       CreatorEnrollRequest creatorEnrollRequest = new CreatorEnrollRequest("크리에이터 이름",
-          "profileImgUrl", "크리에이터입니다.", "develop");
+          "profileImgUrl", "크리에이터입니다.", "개발");
 
       assertThatThrownBy(() -> creatorService.enrollCreator(creatorEnrollRequest))
           .isInstanceOf(CategoryNotFoundException.class);
@@ -88,7 +94,7 @@ public class CreatorServiceIntegrationTest {
 
     @BeforeEach
     void setUp() {
-      member = new Member("email", "nickname", "career", "careerYear", "profileImgUrl");
+      member = new Member("email", "nickname", Career.ETC, CareerYear.EIGHT, "profileImgUrl");
       memberRepository.save(member);
       category = new Category("개발");
       categoryRepository.save(category);
@@ -104,7 +110,8 @@ public class CreatorServiceIntegrationTest {
 
       NotRecommendCreator notRecommendCreator = creatorService.notRecommend(memberId, creatorId);
 
-      List<NotRecommendCreator> memberNotRecommendCreators = notRecommendCreatorRepository.findByMemberId(memberId);
+      List<NotRecommendCreator> memberNotRecommendCreators = notRecommendCreatorRepository.findByMemberId(
+          memberId);
 
       assertThat(memberNotRecommendCreators).contains(notRecommendCreator);
     }
@@ -127,6 +134,33 @@ public class CreatorServiceIntegrationTest {
 
       assertThrows(CreatorNotFoundException.class, () ->
           creatorService.notRecommend(memberId, creatorId));
+    }
+  }
+
+
+  @Nested
+  @DisplayName("크리에이터 삭제 메서드는")
+  class CreatorDeleteTest {
+
+    @Test
+    @DisplayName("성공하면 크리에이터를 삭제한다.")
+    public void success() throws Exception {
+      Category develop = new Category("개발");
+      categoryRepository.save(develop);
+      Creator creator = new Creator("개발크리에이터", "profileImgUrl", "description", develop);
+      creatorRepository.save(creator);
+
+      creatorService.deleteCreator(creator.getId());
+
+      assertFalse(creatorRepository.existsById(creator.getId()));
+    }
+
+    @Test
+    @DisplayName("크리에이터가 없으면 크리에이터를 삭제하지 못하고 CreatorNotFoundException이 발생한다.")
+    public void fail() throws Exception {
+      Long creatorId = -1L;
+
+      assertThrows(CreatorNotFoundException.class, () -> creatorService.deleteCreator(creatorId));
     }
   }
 

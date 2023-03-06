@@ -15,7 +15,6 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.response
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.hyperlink.server.AuthSetupForMock;
-import com.hyperlink.server.domain.auth.token.JwtTokenProvider;
 import com.hyperlink.server.domain.content.dto.ContentResponse;
 import com.hyperlink.server.domain.content.dto.GetContentsCommonResponse;
 import com.hyperlink.server.domain.content.dto.RecommendationCompanyResponse;
@@ -46,10 +45,9 @@ public class MemberHistoryControllerTest extends AuthSetupForMock {
 
   @MockBean
   MemberHistoryService memberHistoryService;
+
   @Autowired
   MockMvc mockMvc;
-  @MockBean
-  JwtTokenProvider jwtTokenProvider;
 
   @Nested
   @DisplayName("히스토리 전체 조회 API는")
@@ -70,7 +68,7 @@ public class MemberHistoryControllerTest extends AuthSetupForMock {
                     .param("page", String.valueOf(nullValue))
                     .param("size", String.valueOf(nullValue))
                     .header(HttpHeaders.AUTHORIZATION, authorizationHeader)
-                )
+            )
             .andExpect(status().isBadRequest())
             .andExpect(response -> assertTrue(
                 response.getResolvedException() instanceof MethodArgumentTypeMismatchException));
@@ -80,6 +78,7 @@ public class MemberHistoryControllerTest extends AuthSetupForMock {
     @Nested
     @DisplayName("유효한 요청값이 들어오면")
     class Success {
+
       String page = "0", size = "10";
 
       @Test
