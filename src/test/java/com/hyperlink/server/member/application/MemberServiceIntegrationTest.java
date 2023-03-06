@@ -66,6 +66,7 @@ class MemberServiceIntegrationTest {
   @DisplayName("회원가입을 할 수 있다.")
   @Test
   void signUpTest() {
+    Category develop = categoryRepository.save(new Category("develop"));
     Category beauty = categoryRepository.save(new Category("beauty"));
 
     SignUpRequest signUpRequest = new SignUpRequest("rldnd1234@naver.com", "Chocho", "develop",
@@ -106,7 +107,7 @@ class MemberServiceIntegrationTest {
   @Test
   void changeAttentionCategoryCorrectTest() {
 
-//    Category develop = categoryRepository.save(new Category("develop"));
+    Category develop = categoryRepository.save(new Category("develop"));
     Category beauty = categoryRepository.save(new Category("beauty"));
 
     Member saveMember = memberRepository.save(
