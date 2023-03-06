@@ -55,10 +55,17 @@ operation::MemberHistoryControllerTest/getAllHistory[snippets='http-request,http
 
 operation::CreatorControllerTest/notRecommend[snippets='http-request,http-response']
 
+== Subscription
+=== 크리에이터 구독/구독 취소
+operation::SubscriptionControllerTest/subscribeOrUnsubscribeCreator[snippets='http-request,http-response']
+
 == Admin
 === 크리에이터 삭제
 operation::CreatorControllerTest/deleteCreator[snippets='http-request,http-response']
 
 === 크리에이터 추가
 operation::CreatorControllerTest/enrollCreator[snippets='http-request,http-response']
+
+=== 컨텐츠 활성화
+operation::ContentControllerTest/activateContent[snippets='http-request,http-response']
 

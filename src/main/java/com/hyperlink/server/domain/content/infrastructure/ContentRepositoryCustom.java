@@ -27,7 +27,7 @@ public class ContentRepositoryCustom {
 
   private final JPAQueryFactory queryFactory;
 
-  public Slice<Content> searchByTitleContaining(List<String> keywords, Pageable pageable) {
+  public Slice<Content> searchByTitleContainingOrderByLatest(List<String> keywords, Pageable pageable) {
     BooleanBuilder builder = new BooleanBuilder();
     for (String keyword : keywords) {
       builder.or(content.title.contains(keyword));
@@ -38,6 +38,7 @@ public class ContentRepositoryCustom {
         .where(builder)
         .offset(pageable.getOffset())
         .limit(pageable.getPageSize())
+        .orderBy(content.createdAt.desc())
         .fetch();
 
     long size = queryFactory.selectFrom(content)

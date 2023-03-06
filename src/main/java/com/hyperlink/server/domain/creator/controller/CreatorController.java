@@ -36,15 +36,15 @@ public class CreatorController {
   @ResponseStatus(HttpStatus.OK)
   public void deleteCreator(@LoginMemberId Optional<Long> memberId,
       @PathVariable("creatorId") Long creatorId) {
+    memberId.orElseThrow(TokenNotExistsException::new);
     creatorService.deleteCreator(creatorId);
   }
 
   @PostMapping("/creators/{creatorId}/not-recommend")
   @ResponseStatus(HttpStatus.OK)
-  public void notRecommend(@PathVariable("creatorId") Long creatorId) {
-    // TODO : JWT
-    Long memberId = 1L;
+  public void notRecommend(@LoginMemberId Optional<Long> optionalMemberId,
+      @PathVariable("creatorId") Long creatorId) {
+    Long memberId = optionalMemberId.orElseThrow(TokenNotExistsException::new);
     creatorService.notRecommend(memberId, creatorId);
-
   }
 }

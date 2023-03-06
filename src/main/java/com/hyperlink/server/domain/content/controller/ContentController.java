@@ -37,25 +37,22 @@ public class ContentController {
 
   @PatchMapping("/contents/{contentId}/view")
   @ResponseStatus(HttpStatus.OK)
-  public PatchInquiryResponse addViewOfContent(@PathVariable("contentId") long contentId) {
-    // TODO : JWT
-    Long memberId = 1L;
-    contentService.addView(memberId, contentId);
+  public PatchInquiryResponse addViewOfContent(@LoginMemberId Optional<Long> optionalMemberId,
+      @PathVariable("contentId") long contentId) {
+    contentService.addView(optionalMemberId, contentId);
     int viewCount = contentService.getViewCount(contentId);
     return new PatchInquiryResponse(viewCount);
   }
 
   @PostMapping("/contents/search")
   @ResponseStatus(HttpStatus.OK)
-  public SearchResponse search(@LoginMemberId Optional<Long> memberId,
+  public SearchResponse search(@LoginMemberId Optional<Long> optionalMemberId,
       @RequestParam("keyword") @NotBlank String keyword,
       @RequestParam("page") @NotNull int page,
       @RequestParam("size") @NotNull int size) {
-    if (memberId.isEmpty()) {
-      throw new TokenNotExistsException();
-    }
-    Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
-    return contentService.search(memberId.get(), keyword, pageable);
+    Long memberId = optionalMemberId.orElseThrow(TokenNotExistsException::new);
+    Pageable pageable = PageRequest.of(page, size);
+    return contentService.search(memberId, keyword, pageable);
   }
 
   @GetMapping("/contents")
