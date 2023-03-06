@@ -197,6 +197,8 @@ public class CreatorControllerTest extends AuthSetupForMock {
       @Test
       @DisplayName("해당 멤버의 비추천 크리에이터 목록에 추가하고 OK를 응답한다")
       void addNotRecommend() throws Exception {
+        authSetup();
+
         long creatorId = 10L;
         Member member = new Member("email", "nickname", Career.ETC, CareerYear.EIGHT,
             "profileImgUrl");
@@ -208,7 +210,7 @@ public class CreatorControllerTest extends AuthSetupForMock {
 
         mockMvc.perform(
                 post("/creators/" + creatorId + "/not-recommend")
-                    // .header("AccessToken", accessToken)
+                    .header(HttpHeaders.AUTHORIZATION, authorizationHeader)
                     .characterEncoding("UTF-8")
             )
             .andExpect(status().isOk())
@@ -218,8 +220,7 @@ public class CreatorControllerTest extends AuthSetupForMock {
                     preprocessRequest(prettyPrint()),
                     preprocessResponse(prettyPrint()),
                     requestHeaders(
-                        // TODO : jwt
-//                        headerWithName("AccessToken").description("jwt header")
+                        headerWithName(HttpHeaders.AUTHORIZATION).description("jwt header")
                     )
                 )
             );

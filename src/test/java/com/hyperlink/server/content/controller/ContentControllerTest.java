@@ -1,6 +1,7 @@
 package com.hyperlink.server.content.controller;
 
 import static org.mockito.Mockito.doReturn;
+import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
@@ -13,6 +14,8 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.response
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.hyperlink.server.AuthSetupForMock;
+import com.hyperlink.server.domain.auth.token.JwtTokenProvider;
 import com.hyperlink.server.domain.content.application.ContentService;
 import com.hyperlink.server.domain.content.controller.ContentController;
 import com.hyperlink.server.domain.content.dto.ContentResponse;
@@ -35,6 +38,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
+import org.springframework.http.HttpHeaders;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -42,7 +46,7 @@ import org.springframework.test.web.servlet.MockMvc;
 @MockBean(JpaMetamodelMappingContext.class)
 @AutoConfigureRestDocs
 @AutoConfigureMockMvc
-public class ContentControllerTest {
+public class ContentControllerTest extends AuthSetupForMock {
 
   @MockBean
   ContentService contentService;
@@ -50,6 +54,8 @@ public class ContentControllerTest {
   MockMvc mockMvc;
   @Autowired
   ObjectMapper objectMapper;
+  @MockBean
+  JwtTokenProvider jwtTokenProvider;
 
   @Nested
   @DisplayName("조회수 추가 API는")
@@ -66,7 +72,7 @@ public class ContentControllerTest {
       void addInquiryOfContentTest() throws Exception {
         mockMvc.perform(
                 patch("/contents/" + contentId + "/view")
-                //                    .header("AccessToken", accessToken)
+                .header(HttpHeaders.AUTHORIZATION, authorizationHeader)
             )
             .andExpect(status().isOk())
             .andDo(
@@ -75,8 +81,7 @@ public class ContentControllerTest {
                     preprocessRequest(prettyPrint()),
                     preprocessResponse(prettyPrint()),
                     requestHeaders(
-                        // TODO : jwt
-//                        headerWithName("AccessToken").description("jwt header")
+                        headerWithName(HttpHeaders.AUTHORIZATION).description("jwt header")
                     ),
                     responseFields(
                         fieldWithPath("viewCount").type(JsonFieldType.NUMBER)
@@ -107,6 +112,7 @@ public class ContentControllerTest {
                     .param("keyword", keyword)
                     .param("page", page)
                     .param("size", size)
+                    .header(HttpHeaders.AUTHORIZATION, authorizationHeader)
                     .characterEncoding("UTF-8")
             )
             .andExpect(status().isBadRequest())
@@ -124,6 +130,8 @@ public class ContentControllerTest {
       @Test
       @DisplayName("검색결과 리스트를 응답한다")
       void searchContentsTest() throws Exception {
+        authSetup();
+
         List<RecommendationCompanyResponse> recommendationCompanyResponses = List.of(
             new RecommendationCompanyResponse("네이버", "https://imglogo.com"));
         ContentResponse contentResponse = new ContentResponse(27L, "개발자의 삶", "슈카", 2L,
@@ -143,7 +151,7 @@ public class ContentControllerTest {
                     .param("keyword", keyword)
                     .param("page", page)
                     .param("size", size)
-//                    .header("AccessToken", accessToken)
+                    .header(HttpHeaders.AUTHORIZATION, authorizationHeader)
                     .characterEncoding("UTF-8")
             ).andExpect(status().isOk())
             .andDo(
@@ -152,40 +160,39 @@ public class ContentControllerTest {
                     preprocessRequest(prettyPrint()),
                     preprocessResponse(prettyPrint()),
                     requestHeaders(
-                        // TODO : jwt
-//                        headerWithName("AccessToken").description("jwt header")
+                        headerWithName(HttpHeaders.AUTHORIZATION).description("jwt header")
                     ),
                     responseFields(
-                        fieldWithPath("contents.[].contentId").type(JsonFieldType.NUMBER)
+                        fieldWithPath("getContentsCommonResponse.contents.[].contentId").type(JsonFieldType.NUMBER)
                             .description("컨텐츠 id"),
-                        fieldWithPath("contents.[].title").type(JsonFieldType.STRING)
+                        fieldWithPath("getContentsCommonResponse.contents.[].title").type(JsonFieldType.STRING)
                             .description("컨텐츠 제목"),
-                        fieldWithPath("contents.[].creatorName").type(JsonFieldType.STRING)
+                        fieldWithPath("getContentsCommonResponse.contents.[].creatorName").type(JsonFieldType.STRING)
                             .description("크리에이터 이름"),
-                        fieldWithPath("contents.[].creatorId").type(JsonFieldType.NUMBER)
+                        fieldWithPath("getContentsCommonResponse.contents.[].creatorId").type(JsonFieldType.NUMBER)
                             .description("크리에이터 id"),
-                        fieldWithPath("contents.[].contentImgUrl").type(JsonFieldType.STRING)
+                        fieldWithPath("getContentsCommonResponse.contents.[].contentImgUrl").type(JsonFieldType.STRING)
                             .description("컨텐츠 이미지 URL"),
-                        fieldWithPath("contents.[].link").type(JsonFieldType.STRING)
+                        fieldWithPath("getContentsCommonResponse.contents.[].link").type(JsonFieldType.STRING)
                             .description("컨텐츠 연결 외부 링크"),
-                        fieldWithPath("contents.[].likeCount").type(JsonFieldType.NUMBER)
+                        fieldWithPath("getContentsCommonResponse.contents.[].likeCount").type(JsonFieldType.NUMBER)
                             .description("좋아요 개수"),
-                        fieldWithPath("contents.[].viewCount").type(JsonFieldType.NUMBER)
+                        fieldWithPath("getContentsCommonResponse.contents.[].viewCount").type(JsonFieldType.NUMBER)
                             .description("조회수 개수"),
-                        fieldWithPath("contents.[].isBookmarked").type(JsonFieldType.BOOLEAN)
+                        fieldWithPath("getContentsCommonResponse.contents.[].isBookmarked").type(JsonFieldType.BOOLEAN)
                             .description("북마크 여부"),
-                        fieldWithPath("contents.[].isLiked").type(JsonFieldType.BOOLEAN)
+                        fieldWithPath("getContentsCommonResponse.contents.[].isLiked").type(JsonFieldType.BOOLEAN)
                             .description("좋아요 여부"),
-                        fieldWithPath("contents.[].createdAt").type(JsonFieldType.STRING)
+                        fieldWithPath("getContentsCommonResponse.contents.[].createdAt").type(JsonFieldType.STRING)
                             .description("컨텐츠 생성 날짜"),
-                        fieldWithPath("contents.[].recommendationCompanies").type(
+                        fieldWithPath("getContentsCommonResponse.contents.[].recommendationCompanies").type(
                             JsonFieldType.ARRAY).description("회사 추천 배열"),
-                        fieldWithPath("contents.[].recommendationCompanies.[].companyName").type(
+                        fieldWithPath("getContentsCommonResponse.contents.[].recommendationCompanies.[].companyName").type(
                             JsonFieldType.STRING).description("회사명"),
                         fieldWithPath(
-                            "contents.[].recommendationCompanies.[].companyLogoImgUrl").type(
+                            "getContentsCommonResponse.contents.[].recommendationCompanies.[].companyLogoImgUrl").type(
                             JsonFieldType.STRING).description("회사 로고 URL"),
-                        fieldWithPath("hasNext").type(JsonFieldType.BOOLEAN)
+                        fieldWithPath("getContentsCommonResponse.hasNext").type(JsonFieldType.BOOLEAN)
                             .description("다음 페이지 존재여부"),
                         fieldWithPath("keyword").type(JsonFieldType.STRING).description("검색 키워드"),
                         fieldWithPath("resultCount").type(JsonFieldType.NUMBER)

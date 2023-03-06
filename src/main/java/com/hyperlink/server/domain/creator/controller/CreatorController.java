@@ -41,10 +41,9 @@ public class CreatorController {
 
   @PostMapping("/creators/{creatorId}/not-recommend")
   @ResponseStatus(HttpStatus.OK)
-  public void notRecommend(@PathVariable("creatorId") Long creatorId) {
-    // TODO : JWT
-    Long memberId = 1L;
+  public void notRecommend(@LoginMemberId Optional<Long> optionalMemberId,
+      @PathVariable("creatorId") Long creatorId) {
+    Long memberId = optionalMemberId.orElseThrow(TokenNotExistsException::new);
     creatorService.notRecommend(memberId, creatorId);
-
   }
 }

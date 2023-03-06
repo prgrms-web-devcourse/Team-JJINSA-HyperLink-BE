@@ -26,6 +26,7 @@ import com.hyperlink.server.domain.member.domain.entity.Member;
 import com.hyperlink.server.domain.memberHistory.application.MemberHistoryService;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.AfterAll;
@@ -97,7 +98,7 @@ public class ContentServiceIntegrationTest {
       contentRepository.save(content);
       int inquiryCountBeforeAdd = content.getViewCount();
 
-      contentService.addView(null, content.getId());
+      contentService.addView(Optional.empty(), content.getId());
 
       int findInquiry = contentService.getViewCount(content.getId());
 
@@ -124,7 +125,7 @@ public class ContentServiceIntegrationTest {
       @Test
       @DisplayName("조회수가 +1 처리되고, 히스토리 내역에 추가된 데이터가 없다")
       void addViewPlusOneAndNothingChangeHistory() {
-        Long memberId = null;
+        Optional<Long> memberId = Optional.empty();
         Content content = new Content("title", "contentImgUrl", "link", creator, category);
         content = contentRepository.save(content);
         int beforeViewCount = content.getViewCount();
@@ -151,7 +152,7 @@ public class ContentServiceIntegrationTest {
         Content content = new Content("title", "contentImgUrl", "link", creator, category);
         content = contentRepository.save(content);
 
-        contentService.addView(member.getId(), content.getId());
+        contentService.addView(Optional.of(member.getId()), content.getId());
 
         verify(memberHistoryService, times(1)).insertMemberHistory(any(), any());
       }
@@ -219,7 +220,7 @@ public class ContentServiceIntegrationTest {
 
       @Override
       public void run() {
-        contentService.addView(null, contentId);
+        contentService.addView(Optional.empty(), contentId);
         countDownLatch.countDown();
       }
     }
