@@ -85,4 +85,11 @@ public class ContentService {
     contentRepository.save(content);
     return content.getId();
   }
+
+  @Transactional
+  public void activateContent(Long contentId) {
+    Content content = contentRepository.findById(contentId)
+        .orElseThrow(ContentNotFoundException::new);
+    content.makeViewable(true);
+  }
 }

@@ -4,6 +4,7 @@ import com.hyperlink.server.domain.auth.token.exception.TokenNotExistsException;
 import com.hyperlink.server.domain.content.application.ContentService;
 import com.hyperlink.server.domain.content.dto.PatchInquiryResponse;
 import com.hyperlink.server.domain.content.dto.SearchResponse;
+import com.hyperlink.server.domain.member.exception.MemberNotFoundException;
 import com.hyperlink.server.global.config.LoginMemberId;
 import java.util.Optional;
 import javax.validation.constraints.NotBlank;
@@ -17,6 +18,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -25,12 +27,11 @@ import org.springframework.web.bind.annotation.RestController;
 @Validated
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/contents")
 public class ContentController {
 
   private final ContentService contentService;
 
-  @PatchMapping("/{contentId}/view")
+  @PatchMapping("/contents/{contentId}/view")
   @ResponseStatus(HttpStatus.OK)
   public PatchInquiryResponse addViewOfContent(@LoginMemberId Optional<Long> optionalMemberId,
       @PathVariable("contentId") long contentId) {
@@ -39,7 +40,7 @@ public class ContentController {
     return new PatchInquiryResponse(viewCount);
   }
 
-  @GetMapping("/search")
+  @PostMapping("/contents/search")
   @ResponseStatus(HttpStatus.OK)
   public SearchResponse search(@LoginMemberId Optional<Long> optionalMemberId,
       @RequestParam("keyword") @NotBlank String keyword,
@@ -50,4 +51,11 @@ public class ContentController {
     return contentService.search(memberId, keyword, pageable);
   }
 
+  @PostMapping("/admin/contents/{contentId}/activate")
+  @ResponseStatus(HttpStatus.OK)
+  public void activateContent(@LoginMemberId Optional<Long> optionalMemberId,
+      @PathVariable("contentId") Long contentId) {
+    Long memberId = optionalMemberId.orElseThrow(MemberNotFoundException::new);
+    contentService.activateContent(contentId);
+  }
 }

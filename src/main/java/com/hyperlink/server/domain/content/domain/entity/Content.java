@@ -62,4 +62,8 @@ public class Content extends BaseEntity {
     this.creator = creator;
     this.category = category;
   }
+
+  public void makeViewable(boolean check) {
+    this.isViewable = check;
+  }
 }
