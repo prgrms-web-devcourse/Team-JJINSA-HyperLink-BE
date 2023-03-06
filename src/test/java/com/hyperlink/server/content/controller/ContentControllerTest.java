@@ -416,7 +416,7 @@ public class ContentControllerTest extends AuthSetupForMock {
             .andDo(print())
             .andDo(
                 document(
-                    "ContentControllerTest/retrieve",
+                    "ContentControllerTest/retrieveAllCategory",
                     preprocessRequest(prettyPrint()),
                     preprocessResponse(prettyPrint()),
                     requestHeaders(
