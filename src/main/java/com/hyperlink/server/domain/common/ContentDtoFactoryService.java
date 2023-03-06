@@ -16,6 +16,9 @@ public class ContentDtoFactoryService {
 
   private final MemberContentService memberContentService;
 
+  /**
+   * @description memberId에 null이 들어올 수 있음 null이라면 isBookmarked에서 false 반환
+   */
   public GetContentsCommonResponse createContentResponses(Long memberId, List<Content> contents,
       boolean hasNext) {
     List<ContentResponse> contentResponses = new ArrayList<>();

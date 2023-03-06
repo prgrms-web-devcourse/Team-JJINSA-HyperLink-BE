@@ -134,12 +134,12 @@ public class MemberHistoryControllerTest extends AuthSetupForMock {
                             .description("좋아요 여부"),
                         fieldWithPath("contents.[].createdAt").type(JsonFieldType.STRING)
                             .description("컨텐츠 생성 날짜"),
-                        fieldWithPath("contents.[].recommendationCompanies").type(
+                        fieldWithPath("contents.[].recommendations").type(
                             JsonFieldType.ARRAY).description("회사 추천 배열"),
-                        fieldWithPath("contents.[].recommendationCompanies.[].companyName").type(
+                        fieldWithPath("contents.[].recommendations.[].bannerName").type(
                             JsonFieldType.STRING).description("회사명"),
                         fieldWithPath(
-                            "contents.[].recommendationCompanies.[].companyLogoImgUrl").type(
+                            "contents.[].recommendations.[].bannerLogoImgUrl").type(
                             JsonFieldType.STRING).description("회사 로고 URL"),
                         fieldWithPath("hasNext").type(JsonFieldType.BOOLEAN)
                             .description("다음 페이지 존재여부")

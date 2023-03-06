@@ -1,5 +1,6 @@
 package com.hyperlink.server.domain.content.application;
 
+import com.hyperlink.server.domain.attentionCategory.domain.AttentionCategoryRepository;
 import com.hyperlink.server.domain.category.domain.CategoryRepository;
 import com.hyperlink.server.domain.category.domain.entity.Category;
 import com.hyperlink.server.domain.category.exception.CategoryNotFoundException;
@@ -10,12 +11,14 @@ import com.hyperlink.server.domain.content.dto.ContentEnrollResponse;
 import com.hyperlink.server.domain.content.dto.GetContentsCommonResponse;
 import com.hyperlink.server.domain.content.dto.SearchResponse;
 import com.hyperlink.server.domain.content.exception.ContentNotFoundException;
+import com.hyperlink.server.domain.content.exception.InvalidSortException;
 import com.hyperlink.server.domain.content.infrastructure.ContentRepositoryCustom;
 import com.hyperlink.server.domain.creator.domain.CreatorRepository;
 import com.hyperlink.server.domain.creator.domain.entity.Creator;
 import com.hyperlink.server.domain.creator.exception.CreatorNotFoundException;
 import com.hyperlink.server.domain.memberContent.application.MemberContentService;
 import com.hyperlink.server.domain.memberHistory.application.MemberHistoryService;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -35,6 +38,7 @@ public class ContentService {
   private final ContentRepository contentRepository;
   private final CategoryRepository categoryRepository;
   private final CreatorRepository creatorRepository;
+  private final AttentionCategoryRepository attentionCategoryRepository;
   private final ContentRepositoryCustom contentRepositoryCustom;
   private final MemberContentService memberContentService;
   private final ContentDtoFactoryService contentDtoFactoryService;
@@ -84,6 +88,58 @@ public class ContentService {
     }
     contentRepository.save(content);
     return content.getId();
+  }
+
+  public GetContentsCommonResponse retrieveTrendContents(Long memberId, String categoryName,
+      String sort, Pageable pageable) {
+    Category category = categoryRepository.findByName(categoryName)
+        .orElseThrow(CategoryNotFoundException::new);
+
+    Slice<Content> contents = switch (sort) {
+      case "recent" ->
+          contentRepositoryCustom.retrieveRecentTrendContentsByCategory(category.getId(), pageable);
+      case "popular" ->
+          contentRepositoryCustom.retrievePopularTrendContentsByCategory(category.getId(),
+              pageable);
+      default -> throw new InvalidSortException();
+    };
+
+    return contentDtoFactoryService.createContentResponses(memberId, contents.getContent(),
+        contents.hasNext());
+  }
+
+  public GetContentsCommonResponse retrieveTrendAllCategoriesContents(Long memberId,
+      String sort, Pageable pageable) {
+    List<Long> categoryIds = new ArrayList<>();
+    if(memberId == null) {
+      categoryIds = categoryRepository.findAllCategoryIds();
+    } else {
+      categoryIds = attentionCategoryRepository.findAttentionCategoryIdsByMemberId(memberId);
+    }
+
+    Slice<Content> contents = switch (sort) {
+      case "recent" ->
+          contentRepositoryCustom.retrieveRecentTrendContentsForCategories(categoryIds, pageable);
+      case "popular" ->
+          contentRepositoryCustom.retrievePopularTrendContentsForCategories(categoryIds, pageable);
+      default -> throw new InvalidSortException();
+    };
+
+    return contentDtoFactoryService.createContentResponses(memberId, contents.getContent(),
+        contents.hasNext());
+  }
+
+  public GetContentsCommonResponse retrieveCreatorContents(Long memberId, Long creatorId,
+      String sort, Pageable pageable) {
+    Slice<Content> contents = switch (sort) {
+      case "recent" -> contentRepositoryCustom.retrieveRecentContentsByCreator(creatorId, pageable);
+      case "popular" ->
+          contentRepositoryCustom.retrievePopularContentsByCreator(creatorId, pageable);
+      default -> throw new InvalidSortException();
+    };
+
+    return contentDtoFactoryService.createContentResponses(memberId, contents.getContent(),
+        contents.hasNext());
   }
 
   @Transactional

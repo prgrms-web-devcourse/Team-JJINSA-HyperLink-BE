@@ -31,6 +31,7 @@ public class MemberContentService {
   }
 
   public boolean isBookmarked(Long memberId, Long contentId) {
+    if(memberId == null) return false;
     return memberContentRepository.findMemberContentByMemberIdAndContentIdAndType(
         memberId, contentId, BOOKMARK.getTypeNumber()).isPresent();
   }

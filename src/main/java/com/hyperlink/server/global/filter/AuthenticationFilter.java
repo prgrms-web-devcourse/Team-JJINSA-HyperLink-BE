@@ -24,6 +24,7 @@ public class AuthenticationFilter implements Filter {
       "/members/signup", "/profile", "/actuator/health", "/members/oauth/code/google",
       "/members/access-token", "/contents/*/view", "/daily-briefing"};
 
+
   private final AuthTokenExtractor authTokenExtractor;
   private final JwtTokenProvider jwtTokenProvider;
 
