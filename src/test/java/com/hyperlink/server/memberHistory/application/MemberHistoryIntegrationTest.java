@@ -16,7 +16,7 @@ import com.hyperlink.server.domain.member.domain.MemberRepository;
 import com.hyperlink.server.domain.member.domain.entity.Member;
 import com.hyperlink.server.domain.memberHistory.application.MemberHistoryService;
 import com.hyperlink.server.domain.memberHistory.domain.entity.MemberHistory;
-import com.hyperlink.server.domain.memberHistory.domain.entity.MemberHistoryRepository;
+import com.hyperlink.server.domain.memberHistory.domain.MemberHistoryRepository;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
