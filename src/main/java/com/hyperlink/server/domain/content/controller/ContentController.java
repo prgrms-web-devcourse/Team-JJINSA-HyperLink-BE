@@ -44,7 +44,7 @@ public class ContentController {
     return new PatchInquiryResponse(viewCount);
   }
 
-  @PostMapping("/contents/search")
+  @GetMapping("/contents/search")
   @ResponseStatus(HttpStatus.OK)
   public SearchResponse search(@LoginMemberId Optional<Long> optionalMemberId,
       @RequestParam("keyword") @NotBlank String keyword,
