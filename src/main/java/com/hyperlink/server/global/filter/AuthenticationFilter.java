@@ -22,7 +22,8 @@ public class AuthenticationFilter implements Filter {
 
   private static final String[] whitelist = {"/", "/members/logout", "/members/login",
       "/members/signup", "/profile", "/actuator/health", "/members/oauth/code/google",
-      "/members/access-token", "/contents/*/view", "/daily-briefing", "/contents/all"};
+      "/members/access-token", "/contents/*/view", "/daily-briefing", "/contents/all",
+      "/contents"};
 
 
   private final AuthTokenExtractor authTokenExtractor;
