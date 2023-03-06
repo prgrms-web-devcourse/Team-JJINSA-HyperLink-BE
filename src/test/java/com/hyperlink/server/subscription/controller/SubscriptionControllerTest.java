@@ -170,17 +170,6 @@ public class SubscriptionControllerTest extends AuthSetupForMock {
         }
       }
 
-      @Nested
-      @DisplayName("로그인 하지 않은")
-      class IfNotLogin {
-
-        @Test
-        @DisplayName("사용자가 구독 버튼을 누르면 401 UnAuthorized 를 반환한다.")
-        void unAuthorized() {
-
-        }
-      }
-
 
     }
   }

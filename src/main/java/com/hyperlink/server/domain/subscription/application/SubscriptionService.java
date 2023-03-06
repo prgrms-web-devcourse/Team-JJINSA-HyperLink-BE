@@ -34,11 +34,9 @@ public class SubscriptionService {
     boolean exist = subscriptionRepository.existsByMemberIdAndCreatorId(member.getId(),
         creator.getId());
     if(exist) {
-      // 구독 취소하기
       subscriptionRepository.deleteByMemberIdAndCreatorId(member.getId(), creator.getId());
       return SubscribeResponse.of(false);
     }
-    // 구독하기
     subscriptionRepository.save(new Subscription(member, creator));
     return SubscribeResponse.of(true);
   }
