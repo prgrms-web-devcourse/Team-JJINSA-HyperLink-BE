@@ -18,6 +18,7 @@ import com.hyperlink.server.domain.memberContent.application.MemberContentServic
 import com.hyperlink.server.domain.memberHistory.application.MemberHistoryService;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
@@ -47,16 +48,15 @@ public class ContentService {
   }
 
   @Transactional
-  public void addView(Long memberId, Long contentId) {
+  public void addView(Optional<Long> optionalMemberId, Long contentId) {
     contentRepository.updateViewCount(contentId);
-    if (memberId != null) {
-      memberHistoryService.insertMemberHistory(memberId, contentId);
-    }
+    optionalMemberId.ifPresent(
+        memberId -> memberHistoryService.insertMemberHistory(memberId, contentId));
   }
 
   public SearchResponse search(Long memberId, String keyword, Pageable pageable) {
     List<String> keywords = splitSearchKeywords(keyword);
-    Slice<Content> searchResultContents = contentRepositoryCustom.searchByTitleContaining(keywords,
+    Slice<Content> searchResultContents = contentRepositoryCustom.searchByTitleContainingOrderByLatest(keywords,
         pageable);
 
     GetContentsCommonResponse contentResponses = contentDtoFactoryService.createContentResponses(

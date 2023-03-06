@@ -45,7 +45,6 @@ public class CreatorService {
     NotRecommendCreator notRecommendCreator = new NotRecommendCreator(member, creator);
 
     return notRecommendCreatorRepository.save(notRecommendCreator);
-
   }
 
   @Transactional
