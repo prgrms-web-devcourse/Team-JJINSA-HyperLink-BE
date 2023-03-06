@@ -3,11 +3,9 @@ package com.hyperlink.server.member.application;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import com.hyperlink.server.domain.attentionCategory.domain.AttentionCategoryRepository;
 import com.hyperlink.server.domain.attentionCategory.dto.AttentionCategoryRequest;
 import com.hyperlink.server.domain.attentionCategory.dto.AttentionCategoryResponse;
 import com.hyperlink.server.domain.auth.token.AuthTokenExtractor;
-import com.hyperlink.server.domain.auth.token.JwtTokenProvider;
 import com.hyperlink.server.domain.auth.token.RefreshTokenRepository;
 import com.hyperlink.server.domain.category.domain.CategoryRepository;
 import com.hyperlink.server.domain.category.domain.entity.Category;
@@ -16,6 +14,8 @@ import com.hyperlink.server.domain.member.domain.Career;
 import com.hyperlink.server.domain.member.domain.CareerYear;
 import com.hyperlink.server.domain.member.domain.MemberRepository;
 import com.hyperlink.server.domain.member.domain.entity.Member;
+import com.hyperlink.server.domain.member.dto.MembersUpdateRequest;
+import com.hyperlink.server.domain.member.dto.MembersUpdateResponse;
 import com.hyperlink.server.domain.member.dto.MyPageResponse;
 import com.hyperlink.server.domain.member.dto.SignUpRequest;
 import com.hyperlink.server.domain.member.dto.SignUpResult;
@@ -47,11 +47,6 @@ class MemberServiceIntegrationTest {
   @Autowired
   private AuthTokenExtractor authTokenExtractor;
 
-  @Autowired
-  private JwtTokenProvider jwtTokenProvider;
-  @Autowired
-  private AttentionCategoryRepository attentionCategoryRepository;
-
   @DisplayName("주어진 이메일정보로 가입 멤버 존재여부를 확인할 수 있다.")
   @Test
   void existsMemberByEmailTest() {
@@ -66,6 +61,7 @@ class MemberServiceIntegrationTest {
   @DisplayName("회원가입을 할 수 있다.")
   @Test
   void signUpTest() {
+    Category develop = categoryRepository.save(new Category("develop"));
     Category beauty = categoryRepository.save(new Category("beauty"));
 
     SignUpRequest signUpRequest = new SignUpRequest("rldnd1234@naver.com", "Chocho", "develop",
@@ -106,7 +102,7 @@ class MemberServiceIntegrationTest {
   @Test
   void changeAttentionCategoryCorrectTest() {
 
-//    Category develop = categoryRepository.save(new Category("develop"));
+    Category develop = categoryRepository.save(new Category("develop"));
     Category beauty = categoryRepository.save(new Category("beauty"));
 
     Member saveMember = memberRepository.save(
@@ -130,6 +126,35 @@ class MemberServiceIntegrationTest {
 
     assertThatThrownBy(
         () -> memberService.changeAttentionCategory(1000L, attentionCategoryRequest)).isInstanceOf(
+        MemberNotFoundException.class);
+  }
+
+  @DisplayName("프로필 정보를 변경할 수 있다.")
+  @Test
+  void changeProfileTest() {
+    Member saveMember = memberRepository.save(
+        new Member("rldnd1234@naver.com", "Chocho", Career.DEVELOP, CareerYear.MORE_THAN_TEN,
+            "localhost", 1995, "man"));
+
+    MembersUpdateRequest membersUpdateRequest = new MembersUpdateRequest("master", "develop",
+        "one");
+
+    MembersUpdateResponse membersUpdateResponse = memberService.changeProfile(saveMember.getId(),
+        membersUpdateRequest);
+
+    assertThat(membersUpdateResponse.nickname()).isEqualTo(membersUpdateRequest.nickname());
+    assertThat(membersUpdateResponse.career()).isEqualTo(membersUpdateRequest.career());
+    assertThat(membersUpdateResponse.careerYear()).isEqualTo(membersUpdateRequest.careerYear());
+  }
+
+  @DisplayName("프로필 정보 변경시 해당 member를 찾을 수없다면 MemberNotFoundException을 던진다.")
+  @Test
+  void changeProfileInCorrectTest() {
+    MembersUpdateRequest membersUpdateRequest = new MembersUpdateRequest("master", "develop",
+        "one");
+
+    assertThatThrownBy(
+        () -> memberService.changeProfile(123444L, membersUpdateRequest)).isInstanceOf(
         MemberNotFoundException.class);
   }
 }

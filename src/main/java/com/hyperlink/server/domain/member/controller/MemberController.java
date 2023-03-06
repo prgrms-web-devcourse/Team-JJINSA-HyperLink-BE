@@ -7,6 +7,8 @@ import com.hyperlink.server.domain.auth.oauth.GoogleAccessToken;
 import com.hyperlink.server.domain.auth.token.AuthTokenExtractor;
 import com.hyperlink.server.domain.auth.token.RefreshTokenCookieProvider;
 import com.hyperlink.server.domain.member.application.MemberService;
+import com.hyperlink.server.domain.member.dto.MembersUpdateRequest;
+import com.hyperlink.server.domain.member.dto.MembersUpdateResponse;
 import com.hyperlink.server.domain.member.dto.MyPageResponse;
 import com.hyperlink.server.domain.member.dto.ProfileImgResponse;
 import com.hyperlink.server.domain.member.dto.SignUpRequest;
@@ -29,7 +31,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -95,7 +96,6 @@ public class MemberController {
   }
 
   @PostMapping("/members/profile-image")
-  @ResponseBody
   public ResponseEntity<ProfileImgResponse> profileImgChange(
       @LoginMemberId Optional<Long> optionalMemberId,
       @RequestPart("profileImage") MultipartFile multipartFile) {
@@ -104,5 +104,14 @@ public class MemberController {
 
     return ResponseEntity.ok(awsS3Service.changeProfileImg(memberId, multipartFile));
   }
+
+  @PutMapping("/members/update")
+  @ResponseStatus(HttpStatus.OK)
+  public MembersUpdateResponse updateProfile(@LoginMemberId Optional<Long> optionalMemberId,
+      @RequestBody MembersUpdateRequest membersUpdateRequest) {
+    Long memberId = optionalMemberId.orElseThrow(MemberNotFoundException::new);
+    return memberService.changeProfile(memberId, membersUpdateRequest);
+  }
+
 }
 
