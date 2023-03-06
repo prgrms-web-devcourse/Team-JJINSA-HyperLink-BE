@@ -1,5 +1,12 @@
 package com.hyperlink.server.domain.subscription.application;
 
+import com.hyperlink.server.domain.category.domain.CategoryRepository;
+import com.hyperlink.server.domain.category.domain.entity.Category;
+import com.hyperlink.server.domain.category.exception.CategoryNotFoundException;
+import com.hyperlink.server.domain.common.ContentDtoFactoryService;
+import com.hyperlink.server.domain.content.domain.entity.Content;
+import com.hyperlink.server.domain.content.dto.GetContentsCommonResponse;
+import com.hyperlink.server.domain.content.infrastructure.ContentRepositoryCustom;
 import com.hyperlink.server.domain.creator.domain.CreatorRepository;
 import com.hyperlink.server.domain.creator.domain.entity.Creator;
 import com.hyperlink.server.domain.creator.exception.CreatorNotFoundException;
@@ -9,7 +16,10 @@ import com.hyperlink.server.domain.member.exception.MemberNotFoundException;
 import com.hyperlink.server.domain.subscription.domain.SubscriptionRepository;
 import com.hyperlink.server.domain.subscription.domain.entity.Subscription;
 import com.hyperlink.server.domain.subscription.dto.SubscribeResponse;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -19,6 +29,9 @@ public class SubscriptionService {
   private final SubscriptionRepository subscriptionRepository;
   private final MemberRepository memberRepository;
   private final CreatorRepository creatorRepository;
+  private final CategoryRepository categoryRepository;
+  private final ContentRepositoryCustom contentRepositoryCustom;
+  private final ContentDtoFactoryService contentDtoFactoryService;
 
 
   public SubscribeResponse subscribeOrUnsubscribeCreator(Long loginMemberId, Long creatorId) {
@@ -39,5 +52,24 @@ public class SubscriptionService {
     }
     subscriptionRepository.save(new Subscription(member, creator));
     return SubscribeResponse.of(true);
+  }
+
+  public GetContentsCommonResponse retrieveSubscribedCreatorsContentsByCategoryId(Long loginMemberId, String categoryName, Pageable pageable) {
+    Category category = categoryRepository.findByName(categoryName)
+        .orElseThrow(CategoryNotFoundException::new);
+
+    List<Long> creatorIds = subscriptionRepository.findCreatorIdByMemberId(loginMemberId);
+    Slice<Content> contents = contentRepositoryCustom.retrieveRecentContentsSubscribedCreatorsByCategoryId(
+        creatorIds, category.getId(), pageable);
+    return contentDtoFactoryService.createContentResponses(loginMemberId, contents.getContent(),
+        contents.hasNext());
+  }
+
+  public GetContentsCommonResponse retrieveSubscribedCreatorsContentsForAllCategories(Long loginMemberId, Pageable pageable) {
+    List<Long> creatorIds = subscriptionRepository.findCreatorIdByMemberId(loginMemberId);
+    Slice<Content> contents = contentRepositoryCustom.retrieveRecentContentsForAllSubscribedCreators(
+        creatorIds, pageable);
+    return contentDtoFactoryService.createContentResponses(loginMemberId, contents.getContent(),
+        contents.hasNext());
   }
 }
