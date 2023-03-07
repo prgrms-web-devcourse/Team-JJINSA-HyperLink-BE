@@ -15,6 +15,7 @@ import com.hyperlink.server.domain.creator.domain.CreatorRepository;
 import com.hyperlink.server.domain.creator.domain.entity.Creator;
 import com.hyperlink.server.domain.creator.dto.CreatorEnrollRequest;
 import com.hyperlink.server.domain.creator.dto.CreatorEnrollResponse;
+import com.hyperlink.server.domain.creator.dto.CreatorResponse;
 import com.hyperlink.server.domain.creator.dto.CreatorsRetrievalResponse;
 import com.hyperlink.server.domain.creator.exception.CreatorNotFoundException;
 import com.hyperlink.server.domain.member.domain.Career;
@@ -217,87 +218,135 @@ public class CreatorServiceIntegrationTest {
     }
 
     @Nested
-    @DisplayName("[로그인]")
-    class IsLogin {
-      @Test
-      @DisplayName("로그인 한 유저가 구독했는지, 구독자 수는 몇명인지를 고려하여 전체 카테고리의 크리에이터 정보를 조회한다.")
-      void retrieveAllCategoryCreator() {
-        int page = 0;
-        int size = 10;
-        String categoryName = "all";
+    @DisplayName("크리에이터 전체 조회 시")
+    class AllCreator {
+      @Nested
+      @DisplayName("[로그인]")
+      class IsLogin {
+        @Test
+        @DisplayName("로그인 한 유저가 구독했는지, 구독자 수는 몇명인지를 고려하여 전체 카테고리의 크리에이터 정보를 조회한다.")
+        void retrieveAllCategoryCreator() {
+          int page = 0;
+          int size = 10;
+          String categoryName = "all";
 
-        CreatorsRetrievalResponse creatorsRetrievalResponse = creatorService.getCreatorsByCategory(
-            member1.getId(), categoryName, PageRequest.of(page, size));
+          CreatorsRetrievalResponse creatorsRetrievalResponse = creatorService.getCreatorsByCategory(
+              member1.getId(), categoryName, PageRequest.of(page, size));
 
-        assertThat(creatorsRetrievalResponse.creators()).hasSize(3);
-        assertThat(creatorsRetrievalResponse.creators().get(0).isSubscribed()).isTrue();
-        assertThat(creatorsRetrievalResponse.creators().get(0).subscriberAmount()).isEqualTo(3);
+          assertThat(creatorsRetrievalResponse.creators()).hasSize(3);
+          assertThat(creatorsRetrievalResponse.creators().get(0).isSubscribed()).isTrue();
+          assertThat(creatorsRetrievalResponse.creators().get(0).subscriberAmount()).isEqualTo(3);
+        }
+
+        @Test
+        @DisplayName("로그인 한 유저가 구독했는지, 구독자 수는 몇명인지를 고려하여 전체 카테고리의 크리에이터 정보를 조회한다.")
+        void retrieveByCategoryCreator() {
+          int page = 0;
+          int size = 10;
+          String categoryName = developCategory.getName();
+
+          CreatorsRetrievalResponse creatorsRetrievalResponse = creatorService.getCreatorsByCategory(
+              member1.getId(), categoryName, PageRequest.of(page, size));
+
+          assertThat(creatorsRetrievalResponse.creators()).hasSize(2);
+          assertThat(creatorsRetrievalResponse.creators().get(0).isSubscribed()).isTrue();
+          assertThat(creatorsRetrievalResponse.creators().get(0).subscriberAmount()).isEqualTo(3);
+        }
       }
 
-      @Test
-      @DisplayName("로그인 한 유저가 구독했는지, 구독자 수는 몇명인지를 고려하여 전체 카테고리의 크리에이터 정보를 조회한다.")
-      void retrieveByCategoryCreator() {
-        int page = 0;
-        int size = 10;
-        String categoryName = developCategory.getName();
+      @Nested
+      @DisplayName("[비 로그인]")
+      class IsNotLogin {
+        @Test
+        @DisplayName("구독 여부는 false로, 구독자 수는 몇명인지 고려하여 전체 카테고리의 크리에이터 정보를 조회한다.")
+        void retrieveAllCategoryCreatorNotLogin() {
+          int page = 0;
+          int size = 10;
+          String categoryName = "all";
 
-        CreatorsRetrievalResponse creatorsRetrievalResponse = creatorService.getCreatorsByCategory(
-            member1.getId(), categoryName, PageRequest.of(page, size));
+          CreatorsRetrievalResponse creatorsRetrievalResponse = creatorService.getCreatorsByCategory(
+              null, categoryName, PageRequest.of(page, size));
 
-        assertThat(creatorsRetrievalResponse.creators()).hasSize(2);
-        assertThat(creatorsRetrievalResponse.creators().get(0).isSubscribed()).isTrue();
-        assertThat(creatorsRetrievalResponse.creators().get(0).subscriberAmount()).isEqualTo(3);
+          assertThat(creatorsRetrievalResponse.creators()).hasSize(3);
+          assertThat(creatorsRetrievalResponse.creators().get(0).isSubscribed()).isFalse();
+          assertThat(creatorsRetrievalResponse.creators().get(0).subscriberAmount()).isEqualTo(3);
+        }
+
+        @Test
+        @DisplayName("구독 여부는 false로, 구독자 수는 몇명인지 고려하여 전체 카테고리의 크리에이터 정보를 조회한다.")
+        void retrieveByCategoryCreatorNotLogin() {
+          int page = 0;
+          int size = 10;
+          String categoryName = developCategory.getName();
+
+          CreatorsRetrievalResponse creatorsRetrievalResponse = creatorService.getCreatorsByCategory(
+              null, categoryName, PageRequest.of(page, size));
+
+          assertThat(creatorsRetrievalResponse.creators()).hasSize(2);
+          assertThat(creatorsRetrievalResponse.creators().get(0).isSubscribed()).isFalse();
+          assertThat(creatorsRetrievalResponse.creators().get(0).subscriberAmount()).isEqualTo(3);
+        }
+      }
+
+      @Nested
+      @DisplayName("[실패]")
+      class Fail {
+
+        @Test
+        @DisplayName("카테고리 입력이 잘못되면 CategoryNotFoundException 이 발생한다.")
+        void invalidCategoryNameThrowsCategoryNotFoundException() {
+          int page = 0;
+          int size = 10;
+          String invalidCategoryName = "invalid";
+
+          assertThrows(CategoryNotFoundException.class,
+              () -> creatorService.getCreatorsByCategory(null, invalidCategoryName,
+                  PageRequest.of(page, size)));
+        }
       }
     }
 
     @Nested
-    @DisplayName("[비 로그인]")
-    class IsNotLogin {
-      @Test
-      @DisplayName("구독 여부는 false로, 구독자 수는 몇명인지 고려하여 전체 카테고리의 크리에이터 정보를 조회한다.")
-      void retrieveAllCategoryCreatorNotLogin() {
-        int page = 0;
-        int size = 10;
-        String categoryName = "all";
+    @DisplayName("크리에이터 단일 조회 시")
+    class OneCreator {
+      @Nested
+      @DisplayName("[로그인]")
+      class IsLogin {
+        @Test
+        @DisplayName("로그인 한 유저가 구독했는지, 구독자 수는 몇명인지를 고려하여 크리에이터 정보를 조회한다.")
+        void retrieveAllCategoryCreator() {
+          CreatorResponse creatorResponse = creatorService.getCreatorDetail(
+              member1.getId(), creator2.getId());
 
-        CreatorsRetrievalResponse creatorsRetrievalResponse = creatorService.getCreatorsByCategory(
-            null, categoryName, PageRequest.of(page, size));
-
-        assertThat(creatorsRetrievalResponse.creators()).hasSize(3);
-        assertThat(creatorsRetrievalResponse.creators().get(0).isSubscribed()).isFalse();
-        assertThat(creatorsRetrievalResponse.creators().get(0).subscriberAmount()).isEqualTo(3);
+          assertThat(creatorResponse.isSubscribed()).isTrue();
+          assertThat(creatorResponse.subscriberAmount()).isEqualTo(2);
+        }
       }
 
-      @Test
-      @DisplayName("구독 여부는 false로, 구독자 수는 몇명인지 고려하여 전체 카테고리의 크리에이터 정보를 조회한다.")
-      void retrieveByCategoryCreatorNotLogin() {
-        int page = 0;
-        int size = 10;
-        String categoryName = developCategory.getName();
+      @Nested
+      @DisplayName("[비 로그인]")
+      class IsNotLogin {
+        @Test
+        @DisplayName("구독 여부는 false로, 구독자 수는 몇명인지 고려하여 크리에이터 정보를 조회한다.")
+        void retrieveAllCategoryCreatorNotLogin() {
+          CreatorResponse creatorResponse = creatorService.getCreatorDetail(
+              null, creator2.getId());
 
-        CreatorsRetrievalResponse creatorsRetrievalResponse = creatorService.getCreatorsByCategory(
-            null, categoryName, PageRequest.of(page, size));
-
-        assertThat(creatorsRetrievalResponse.creators()).hasSize(2);
-        assertThat(creatorsRetrievalResponse.creators().get(0).isSubscribed()).isFalse();
-        assertThat(creatorsRetrievalResponse.creators().get(0).subscriberAmount()).isEqualTo(3);
+          assertThat(creatorResponse.isSubscribed()).isFalse();
+          assertThat(creatorResponse.subscriberAmount()).isEqualTo(2);
+        }
       }
-    }
 
-    @Nested
-    @DisplayName("[실패]")
-    class Fail {
-
-      @Test
-      @DisplayName("카테고리 입력이 잘못되면 CategoryNotFoundException 이 발생한다.")
-      void invalidCategoryNameThrowsCategoryNotFoundException() {
-        int page = 0;
-        int size = 10;
-        String invalidCategoryName = "invalid";
-
-        assertThrows(CategoryNotFoundException.class,
-            () -> creatorService.getCreatorsByCategory(null, invalidCategoryName,
-                PageRequest.of(page, size)));
+      @Nested
+      @DisplayName("[실패]")
+      class Fail {
+        @Test
+        @DisplayName("없는 크리에이터를 조회하려고 하면 CreatorNotFoundException을 반환한다.")
+        void invalidCreatorThrowsCreatorNotFoundException() {
+          Long invalidCreatorId = -1L;
+          assertThrows(CreatorNotFoundException.class,
+              () -> creatorService.getCreatorDetail(null, invalidCreatorId));
+        }
       }
     }
   }
