@@ -7,6 +7,8 @@ import com.hyperlink.server.domain.attentionCategory.dto.AttentionCategoryRespon
 import com.hyperlink.server.domain.auth.token.JwtTokenProvider;
 import com.hyperlink.server.domain.auth.token.RefreshToken;
 import com.hyperlink.server.domain.auth.token.RefreshTokenRepository;
+import com.hyperlink.server.domain.company.domain.CompanyRepository;
+import com.hyperlink.server.domain.company.domain.entity.Company;
 import com.hyperlink.server.domain.member.domain.Career;
 import com.hyperlink.server.domain.member.domain.CareerYear;
 import com.hyperlink.server.domain.member.domain.MemberRepository;
@@ -30,17 +32,20 @@ public class MemberService {
   private final JwtTokenProvider jwtTokenProvider;
   private final RefreshTokenRepository refreshTokenRepository;
   private final AttentionCategoryRepository attentionCategoryRepository;
+  private final CompanyRepository companyRepository;
 
   public MemberService(MemberRepository memberRepository,
       AttentionCategoryService attentionCategoryService,
       JwtTokenProvider jwtTokenProvider, RefreshTokenRepository refreshTokenRepository,
-      AttentionCategoryRepository attentionCategoryRepository) {
+      AttentionCategoryRepository attentionCategoryRepository,
+      CompanyRepository companyRepository) {
     this.memberRepository = memberRepository;
 
     this.attentionCategoryService = attentionCategoryService;
     this.jwtTokenProvider = jwtTokenProvider;
     this.refreshTokenRepository = refreshTokenRepository;
     this.attentionCategoryRepository = attentionCategoryRepository;
+    this.companyRepository = companyRepository;
   }
 
   public boolean existsMemberByEmail(String email) {
@@ -87,5 +92,12 @@ public class MemberService {
         Career.selectCareer(membersUpdateRequest.career()),
         CareerYear.selectCareerYear(membersUpdateRequest.careerYear()));
     return MembersUpdateResponse.from(changedMember);
+  }
+
+  @Transactional
+  public void putCompanyAfterVerification(Long memberId, Company company) {
+    Member foundMember = memberRepository.findById(memberId)
+        .orElseThrow(MemberNotFoundException::new);
+    foundMember.changeCompany(company);
   }
 }

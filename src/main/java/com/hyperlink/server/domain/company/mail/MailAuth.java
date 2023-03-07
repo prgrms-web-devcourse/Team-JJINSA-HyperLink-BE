@@ -9,11 +9,11 @@ import org.springframework.data.redis.core.RedisHash;
 public class MailAuth {
 
   @Id
-  String email;
+  String companyEmail;
   Integer authNumber;
 
-  public MailAuth(String email, Integer authNumber) {
-    this.email = email;
+  public MailAuth(String companyEmail, Integer authNumber) {
+    this.companyEmail = companyEmail;
     this.authNumber = authNumber;
   }
 }

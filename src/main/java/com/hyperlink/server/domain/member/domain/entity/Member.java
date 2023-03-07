@@ -94,4 +94,8 @@ public class Member extends BaseEntity {
   public void changeProfileImgUrl(String profileImgUrl) {
     this.profileImgUrl = profileImgUrl;
   }
+
+  public void changeCompany(Company company) {
+    this.company = company;
+  }
 }

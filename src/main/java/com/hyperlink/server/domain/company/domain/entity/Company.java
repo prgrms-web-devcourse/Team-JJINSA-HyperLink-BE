@@ -34,4 +34,10 @@ public class Company extends BaseEntity {
   @ColumnDefault("0")
   private Boolean isUsingRecommend;
 
+  public Company(String emailAddress, String name, String logoImgUrl) {
+    this.emailAddress = emailAddress;
+    this.name = name;
+    this.logoImgUrl = logoImgUrl;
+    this.isUsingRecommend = false;
+  }
 }
