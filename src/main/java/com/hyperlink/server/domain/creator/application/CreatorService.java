@@ -38,6 +38,7 @@ public class CreatorService {
     return CreatorEnrollResponse.from(savedCreator);
   }
 
+  @Transactional
   public NotRecommendCreator notRecommend(Long memberId, Long creatorId) {
     Member member = memberRepository.findById(memberId).orElseThrow(MemberNotFoundException::new);
     Creator creator = creatorRepository.findById(creatorId)
