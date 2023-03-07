@@ -453,8 +453,8 @@ public class ContentServiceIntegrationTest {
         @Test
         @DisplayName("인기순으로 조회할 수 있다.")
         void retrievePopular() {
-          contentService.addView(member.getId(), content3.getId());
-          contentService.addView(member.getId(), content3.getId());
+          contentService.addView(Optional.of(member.getId()), content3.getId());
+          contentService.addView(Optional.of(member.getId()), content3.getId());
 
           GetContentsCommonResponse getContentsCommonResponse = contentService.retrieveTrendContents(
               null, "개발", "popular", PageRequest.of(0, 10));
@@ -503,12 +503,12 @@ public class ContentServiceIntegrationTest {
           @Test
           @DisplayName("카테고리 전체에 대해 인기순으로 조회할 수 있다.")
           public void retrieveForAttentionCategoryByPopular() throws Exception {
-            contentService.addView(member.getId(), content4.getId());
-            contentService.addView(member.getId(), content4.getId());
-            contentService.addView(member.getId(), content4.getId());
+            contentService.addView(Optional.of(member.getId()), content4.getId());
+            contentService.addView(Optional.of(member.getId()), content4.getId());
+            contentService.addView(Optional.of(member.getId()), content4.getId());
 
-            contentService.addView(member.getId(), content3.getId());
-            contentService.addView(member.getId(), content3.getId());
+            contentService.addView(Optional.of(member.getId()), content3.getId());
+            contentService.addView(Optional.of(member.getId()), content3.getId());
 
             GetContentsCommonResponse getContentsCommonResponse = contentService.retrieveTrendAllCategoriesContents(
                 null, "popular", PageRequest.of(0, 10));
@@ -538,12 +538,12 @@ public class ContentServiceIntegrationTest {
           @Test
           @DisplayName("유저의 관심 카테고리 전체에 대해 인기순으로 조회할 수 있다.")
           public void retrieveForAttentionCategoryByPopular() throws Exception {
-            contentService.addView(member.getId(), content4.getId());
-            contentService.addView(member.getId(), content4.getId());
-            contentService.addView(member.getId(), content4.getId());
+            contentService.addView(Optional.of(member.getId()), content4.getId());
+            contentService.addView(Optional.of(member.getId()), content4.getId());
+            contentService.addView(Optional.of(member.getId()), content4.getId());
 
-            contentService.addView(member.getId(), content3.getId());
-            contentService.addView(member.getId(), content3.getId());
+            contentService.addView(Optional.of(member.getId()), content3.getId());
+            contentService.addView(Optional.of(member.getId()), content3.getId());
 
             GetContentsCommonResponse getContentsCommonResponse = contentService.retrieveTrendAllCategoriesContents(
                 member.getId(), "popular", PageRequest.of(0, 10));
@@ -580,12 +580,12 @@ public class ContentServiceIntegrationTest {
         Member member = memberRepository.save(new Member("email", "nickname", Career.DEVELOP,
             CareerYear.LESS_THAN_ONE, "profileImgUrl"));
         memberRepository.save(member);
-        contentService.addView(member.getId(), content4.getId());
-        contentService.addView(member.getId(), content4.getId());
-        contentService.addView(member.getId(), content4.getId());
+        contentService.addView(Optional.of(member.getId()), content4.getId());
+        contentService.addView(Optional.of(member.getId()), content4.getId());
+        contentService.addView(Optional.of(member.getId()), content4.getId());
 
-        contentService.addView(member.getId(), content3.getId());
-        contentService.addView(member.getId(), content3.getId());
+        contentService.addView(Optional.of(member.getId()), content3.getId());
+        contentService.addView(Optional.of(member.getId()), content3.getId());
 
         GetContentsCommonResponse getContentsCommonResponse = contentService.retrieveCreatorContents(
             null, creator.getId(), "popular", PageRequest.of(0, 10));

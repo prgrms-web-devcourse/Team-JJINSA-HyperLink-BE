@@ -27,7 +27,8 @@ public class ContentRepositoryCustom {
 
   private final JPAQueryFactory queryFactory;
 
-  public Slice<Content> searchByTitleContainingOrderByLatest(List<String> keywords, Pageable pageable) {
+  public Slice<Content> searchByTitleContainingOrderByLatest(List<String> keywords,
+      Pageable pageable) {
     BooleanBuilder builder = new BooleanBuilder();
     for (String keyword : keywords) {
       builder.or(content.title.contains(keyword));
@@ -72,9 +73,10 @@ public class ContentRepositoryCustom {
     return getSlice(pageable, contents);
   }
 
-  public Slice<Content> retrievePopularTrendContentsForCategories(List<Long> categoryIds, Pageable pageable) {
+  public Slice<Content> retrievePopularTrendContentsForCategories(List<Long> categoryIds,
+      Pageable pageable) {
     BooleanBuilder categoryConditionBuilder = new BooleanBuilder();
-    for(Long categoryId : categoryIds) {
+    for (Long categoryId : categoryIds) {
       categoryConditionBuilder.or(content.category.id.eq(categoryId));
     }
 
@@ -89,9 +91,10 @@ public class ContentRepositoryCustom {
     return getSlice(pageable, contents);
   }
 
-  public Slice<Content> retrieveRecentTrendContentsForCategories(List<Long> categoryIds, Pageable pageable) {
+  public Slice<Content> retrieveRecentTrendContentsForCategories(List<Long> categoryIds,
+      Pageable pageable) {
     BooleanBuilder categoryConditionBuilder = new BooleanBuilder();
-    for(Long categoryId : categoryIds) {
+    for (Long categoryId : categoryIds) {
       categoryConditionBuilder.or(content.category.id.eq(categoryId));
     }
 
@@ -122,6 +125,42 @@ public class ContentRepositoryCustom {
     List<Content> contents = queryFactory
         .selectFrom(content)
         .where(eqCreatorId(creatorId))
+        .orderBy(recentOrderType())
+        .offset(pageable.getOffset())
+        .limit(pageable.getPageSize() + 1)
+        .fetch();
+
+    return getSlice(pageable, contents);
+  }
+
+  public Slice<Content> retrieveRecentContentsSubscribedCreatorsByCategoryId(
+      List<Long> subscribedCreatorIds, Long categoryId, Pageable pageable) {
+    BooleanBuilder subscribedCreatorConditionBuilder = new BooleanBuilder();
+    for (Long creatorId : subscribedCreatorIds) {
+      subscribedCreatorConditionBuilder.or(content.creator.id.eq(creatorId));
+    }
+
+    List<Content> contents = queryFactory
+        .selectFrom(content)
+        .where(subscribedCreatorConditionBuilder, eqCategoryId(categoryId))
+        .orderBy(recentOrderType())
+        .offset(pageable.getOffset())
+        .limit(pageable.getPageSize() + 1)
+        .fetch();
+
+    return getSlice(pageable, contents);
+  }
+
+  public Slice<Content> retrieveRecentContentsForAllSubscribedCreators(
+      List<Long> subscribedCreatorIds, Pageable pageable) {
+    BooleanBuilder subscribedCreatorConditionBuilder = new BooleanBuilder();
+    for (Long creatorId : subscribedCreatorIds) {
+      subscribedCreatorConditionBuilder.or(content.creator.id.eq(creatorId));
+    }
+
+    List<Content> contents = queryFactory
+        .selectFrom(content)
+        .where(subscribedCreatorConditionBuilder)
         .orderBy(recentOrderType())
         .offset(pageable.getOffset())
         .limit(pageable.getPageSize() + 1)

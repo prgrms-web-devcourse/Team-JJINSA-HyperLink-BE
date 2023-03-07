@@ -68,8 +68,6 @@ public class ContentControllerTest extends AuthSetupForMock {
   MockMvc mockMvc;
   @Autowired
   ObjectMapper objectMapper;
-  @MockBean
-  JwtTokenProvider jwtTokenProvider;
 
   @Nested
   @DisplayName("조회수 추가 API는")
@@ -418,7 +416,7 @@ public class ContentControllerTest extends AuthSetupForMock {
             .andDo(print())
             .andDo(
                 document(
-                    "ContentControllerTest/retrieve",
+                    "ContentControllerTest/retrieveAllCategory",
                     preprocessRequest(prettyPrint()),
                     preprocessResponse(prettyPrint()),
                     requestHeaders(

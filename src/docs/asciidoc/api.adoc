@@ -17,7 +17,11 @@ operation::ContentControllerTest/addInquiryOfContent[snippets='http-request,http
 
 operation::ContentControllerTest/search[snippets='http-request,http-response,response-fields']
 
-=== 조회
+=== 전체 카테고리 조회
+
+operation::ContentControllerTest/retrieveAllCategory[snippets="http-request,http-response"]
+
+=== 카테고리별 조회
 
 operation::ContentControllerTest/retrieve[snippets="http-request,http-response"]
 
@@ -64,6 +68,12 @@ operation::CreatorControllerTest/notRecommend[snippets='http-request,http-respon
 == Subscription
 === 크리에이터 구독/구독 취소
 operation::SubscriptionControllerTest/subscribeOrUnsubscribeCreator[snippets='http-request,http-response']
+
+=== 구독 피드 카테고리별 조회
+operation::SubscriptionControllerTest/retrieveByCategory[snippets='http-request,http-response']
+
+=== 구독 피드 전체 카테고리 조회
+operation::SubscriptionControllerTest/retrieveAllCategory[snippets='http-request,http-response']
 
 == Admin
 
