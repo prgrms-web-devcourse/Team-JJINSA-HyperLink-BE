@@ -314,7 +314,7 @@ public class CreatorControllerTest extends AuthSetupForMock {
         String category = "develop";
         CreatorResponse naverD2 = new CreatorResponse(1L, "네이버 D2", 500000, "네이버 D2 블로그입니다.", true,
             "https://img.naverd2.com/logo");
-        CreatorResponse kakao = new CreatorResponse(1L, "카카오 디벨로퍼스", 230421, "카카오 디벨로퍼스 블로그입니다.", false,
+        CreatorResponse kakao = new CreatorResponse(2L, "카카오 디벨로퍼스", 230421, "카카오 디벨로퍼스 블로그입니다.", false,
             "https://img.kakao.com/logo");
         CreatorsRetrievalResponse creatorsRetrievalResponse = new CreatorsRetrievalResponse(
             List.of(naverD2, kakao), false);
