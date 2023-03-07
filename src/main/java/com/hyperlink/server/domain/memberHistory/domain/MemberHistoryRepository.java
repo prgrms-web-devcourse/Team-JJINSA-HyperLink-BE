@@ -1,5 +1,7 @@
-package com.hyperlink.server.domain.memberHistory.domain.entity;
+package com.hyperlink.server.domain.memberHistory.domain;
 
+import com.hyperlink.server.domain.memberHistory.domain.entity.MemberHistory;
+import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -10,4 +12,7 @@ public interface MemberHistoryRepository extends JpaRepository<MemberHistory, Lo
   List<MemberHistory> findAllByMemberId(Long memberId);
 
   Slice<MemberHistory> findSliceByMemberId(Long memberId, Pageable pageable);
+
+  Long countByCreatedAtAfter(LocalDateTime dateTime);
+
 }
