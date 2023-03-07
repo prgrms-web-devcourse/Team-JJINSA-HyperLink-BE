@@ -5,6 +5,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.when;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
@@ -15,6 +16,7 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWit
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -27,11 +29,14 @@ import com.hyperlink.server.domain.creator.controller.CreatorController;
 import com.hyperlink.server.domain.creator.domain.entity.Creator;
 import com.hyperlink.server.domain.creator.dto.CreatorEnrollRequest;
 import com.hyperlink.server.domain.creator.dto.CreatorEnrollResponse;
+import com.hyperlink.server.domain.creator.dto.CreatorResponse;
+import com.hyperlink.server.domain.creator.dto.CreatorsRetrievalResponse;
 import com.hyperlink.server.domain.creator.exception.CreatorNotFoundException;
 import com.hyperlink.server.domain.member.domain.Career;
 import com.hyperlink.server.domain.member.domain.CareerYear;
 import com.hyperlink.server.domain.member.domain.entity.Member;
 import com.hyperlink.server.domain.notRecommendCreator.domain.entity.NotRecommendCreator;
+import java.util.List;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -48,6 +53,7 @@ import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 
 @WebMvcTest(CreatorController.class)
 @MockBean(JpaMetamodelMappingContext.class)
@@ -287,4 +293,84 @@ public class CreatorControllerTest extends AuthSetupForMock {
     }
   }
 
+  @Nested
+  @DisplayName("크리에이터 조회 API는")
+  class CreatorRetrievalTest {
+
+    @BeforeEach
+    void setUp() {
+      authSetup();
+    }
+
+    @Nested
+    @DisplayName("[성공] 올바른 카테고리 이름이 들어오면")
+    class Success {
+
+      @Test
+      @DisplayName("로그인 상태에 맞추어 구독 여부와 구독자 수가 포함된 크리에이터 정보를 반환한다.")
+      void retrieveCreatorByCategoryOrAllCategory() throws Exception {
+        String page = "0";
+        String size = "10";
+        String category = "develop";
+        CreatorResponse naverD2 = new CreatorResponse(1L, "네이버 D2", 500000, "네이버 D2 블로그입니다.", true,
+            "https://img.naverd2.com/logo");
+        CreatorResponse kakao = new CreatorResponse(1L, "카카오 디벨로퍼스", 230421, "카카오 디벨로퍼스 블로그입니다.", false,
+            "https://img.kakao.com/logo");
+        CreatorsRetrievalResponse creatorsRetrievalResponse = new CreatorsRetrievalResponse(
+            List.of(naverD2, kakao), false);
+
+        when(creatorService.getCreatorsByCategory(any(), any(), any())).thenReturn(
+            creatorsRetrievalResponse);
+
+        mockMvc.perform(get("/creators")
+                .header(HttpHeaders.AUTHORIZATION, authorizationHeader)
+                .param("category", category)
+                .param("page", page)
+                .param("size", size)
+                .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andDo(print())
+            .andDo(document("CreatorControllerTest/retrieveCreator",
+                preprocessRequest(prettyPrint()),
+                preprocessResponse(prettyPrint()),
+                requestHeaders(
+                    headerWithName("Authorization").description("accessToken")
+                ),
+                responseFields(
+                    fieldWithPath("creators[]").type(JsonFieldType.ARRAY).description("크리에이터 목록"),
+                    fieldWithPath("creators[].creatorId").type(JsonFieldType.NUMBER).description("크리에이터 id"),
+                    fieldWithPath("creators[].creatorName").type(JsonFieldType.STRING).description("크리에이터 이름"),
+                    fieldWithPath("creators[].subscriberAmount").type(JsonFieldType.NUMBER).description("구독자 수"),
+                    fieldWithPath("creators[].creatorDescription").type(JsonFieldType.STRING).description("크리에이터 소개글"),
+                    fieldWithPath("creators[].isSubscribed").type(JsonFieldType.BOOLEAN).description("구독 여부"),
+                    fieldWithPath("creators[].profileImgUrl").type(JsonFieldType.STRING).description("크리에이터 프로필 이미지 URL"),
+                    fieldWithPath("hasNext").type(JsonFieldType.BOOLEAN).description("다음 페이지 존재 여부")
+                )
+            ));
+      }
+    }
+
+    @Nested
+    @DisplayName("[실패]")
+    class Fail {
+
+      @Test
+      @DisplayName("인자가 잘못 입력되면 MissingServletRequestParameterException 이 발생한다.")
+      void missArgumentThrowsMissingServletRequestParameterException() throws Exception {
+        String page = null;
+        String size = null;
+        String category = null;
+
+        mockMvc.perform(get("/creators")
+                .header(HttpHeaders.AUTHORIZATION, authorizationHeader)
+                .param("category", category)
+                .param("page", page)
+                .param("size", size)
+                .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isBadRequest())
+            .andExpect(response -> Assertions.assertTrue(
+                response.getResolvedException() instanceof MissingServletRequestParameterException));
+      }
+    }
+  }
 }
