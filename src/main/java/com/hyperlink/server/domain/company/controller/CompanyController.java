@@ -29,12 +29,11 @@ public class CompanyController {
 
   @PostMapping("/companies/auth")
   public ResponseEntity<Void> send(@RequestBody MailRequest mailRequest) {
-    // 이메일 발신될 데이터 적재
+    int authNumber = random.nextInt(AUTH_MAX_NUMBER);
+    companyService.saveMailAuthNumber(mailRequest, authNumber);
+
     SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
     simpleMailMessage.setTo(mailRequest.email());
-    int authNumber = random.nextInt(AUTH_MAX_NUMBER);
-    companyService.saveMailAuthNumber(mailRequest.email(), authNumber);
-
     simpleMailMessage.setSubject(AUTH_MAIL_TITLE);
     simpleMailMessage.setText(AUTH_MAIL_CONTENT + authNumber);
     javaMailSender.send(simpleMailMessage);

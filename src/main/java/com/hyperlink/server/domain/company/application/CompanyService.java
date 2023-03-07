@@ -1,6 +1,7 @@
 package com.hyperlink.server.domain.company.application;
 
 import com.hyperlink.server.domain.company.domain.CompanyRepository;
+import com.hyperlink.server.domain.company.dto.MailRequest;
 import com.hyperlink.server.domain.company.mail.MailAuth;
 import com.hyperlink.server.domain.company.mail.MailAuthRepository;
 import org.springframework.stereotype.Service;
@@ -19,7 +20,7 @@ public class CompanyService {
     this.companyRepository = companyRepository;
   }
 
-  public void saveMailAuthNumber(String email, int authNumber) {
-    mailRepository.save(new MailAuth(email, authNumber));
+  public void saveMailAuthNumber(MailRequest mailRequest, Integer authNumber) {
+    mailRepository.save(new MailAuth(mailRequest.email(), mailRequest.companyName(), authNumber));
   }
 }
