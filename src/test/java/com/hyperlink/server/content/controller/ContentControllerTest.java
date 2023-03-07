@@ -197,12 +197,12 @@ public class ContentControllerTest extends AuthSetupForMock {
                             .description("좋아요 여부"),
                         fieldWithPath("getContentsCommonResponse.contents.[].createdAt").type(JsonFieldType.STRING)
                             .description("컨텐츠 생성 날짜"),
-                        fieldWithPath("contents.[].recommendations").type(
+                        fieldWithPath("getContentsCommonResponse.contents.[].recommendations").type(
                             JsonFieldType.ARRAY).description("회사 추천 배열"),
-                        fieldWithPath("contents.[].recommendations.[].bannerName").type(
+                        fieldWithPath("getContentsCommonResponse.contents.[].recommendations.[].bannerName").type(
                             JsonFieldType.STRING).description("회사명"),
                         fieldWithPath(
-                            "contents.[].recommendations.[].bannerLogoImgUrl").type(
+                            "getContentsCommonResponse.contents.[].recommendations.[].bannerLogoImgUrl").type(
                             JsonFieldType.STRING).description("회사 로고 URL"),
                         fieldWithPath("getContentsCommonResponse.hasNext").type(JsonFieldType.BOOLEAN)
                             .description("다음 페이지 존재여부"),

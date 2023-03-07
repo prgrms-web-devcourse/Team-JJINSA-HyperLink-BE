@@ -9,7 +9,7 @@ import com.hyperlink.server.domain.member.domain.MemberRepository;
 import com.hyperlink.server.domain.member.domain.entity.Member;
 import com.hyperlink.server.domain.member.exception.MemberNotFoundException;
 import com.hyperlink.server.domain.memberHistory.domain.entity.MemberHistory;
-import com.hyperlink.server.domain.memberHistory.domain.entity.MemberHistoryRepository;
+import com.hyperlink.server.domain.memberHistory.domain.MemberHistoryRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;

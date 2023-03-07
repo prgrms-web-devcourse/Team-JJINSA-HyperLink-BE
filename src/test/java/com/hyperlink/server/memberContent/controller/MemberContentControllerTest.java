@@ -10,7 +10,6 @@ import static org.springframework.restdocs.operation.preprocess.Preprocessors.pr
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.hyperlink.server.AuthSetupForMock;
-import com.hyperlink.server.domain.auth.token.JwtTokenProvider;
 import com.hyperlink.server.domain.memberContent.application.MemberContentService;
 import com.hyperlink.server.domain.memberContent.controller.MemberContentController;
 import org.junit.jupiter.api.Assertions;
@@ -37,8 +36,6 @@ public class MemberContentControllerTest extends AuthSetupForMock {
   MemberContentService memberContentService;
   @Autowired
   MockMvc mockMvc;
-  @MockBean
-  JwtTokenProvider jwtTokenProvider;
 
   @Nested
   @DisplayName("북마크 추가/삭제 API는")
