@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -25,14 +26,31 @@ import org.springframework.stereotype.Service;
 public class DailyBriefingService {
 
   public static final int STANDARD_HOUR = 24;
+  public static final String STANDARD_TIME_PATTERN = "yyyy-MM-dd HH";
 
   private final MemberRepository memberRepository;
   private final MemberHistoryRepository memberHistoryRepository;
   private final ContentRepository contentRepository;
   private final CategoryRepository categoryRepository;
   private final DailyBriefingRepositoryCustom dailyBriefingRepositoryCustom;
+  private final RedisTemplate<String, GetDailyBriefingResponse> dailyBriefingResponseRedisTemplate;
 
-  public GetDailyBriefingResponse getDailyBriefing(LocalDateTime standardTime) {
+  public GetDailyBriefingResponse getDailyBriefingResponse(LocalDateTime now) {
+    final long whenResponseIsNullRetryPastStandardTime = 1L;
+    String standardTime = now.format(DateTimeFormatter.ofPattern(STANDARD_TIME_PATTERN));
+    GetDailyBriefingResponse getDailyBriefingResponse = (GetDailyBriefingResponse) dailyBriefingResponseRedisTemplate.opsForHash()
+        .get("daily-briefing", standardTime);
+
+    if (getDailyBriefingResponse == null) {
+      String pastStandardTime = now.minusHours(whenResponseIsNullRetryPastStandardTime)
+          .format(DateTimeFormatter.ofPattern(STANDARD_TIME_PATTERN));
+      getDailyBriefingResponse = (GetDailyBriefingResponse) dailyBriefingResponseRedisTemplate.opsForHash()
+          .get("daily-briefing", pastStandardTime);
+    }
+    return getDailyBriefingResponse;
+  }
+
+  public GetDailyBriefingResponse createDailyBriefing(LocalDateTime standardTime) {
     LocalDateTime pastOneDay = standardTime.minusHours(STANDARD_HOUR);
 
     Integer memberIncrease = memberRepository.countByCreatedAtAfter(pastOneDay);
@@ -49,7 +67,7 @@ public class DailyBriefingService {
     DailyBriefing dailyBriefing = new DailyBriefing(memberIncrease, viewIncrease, viewByCategories,
         contentIncrease, memberCountByAttentionCategories);
     return new GetDailyBriefingResponse(
-        standardTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH")), dailyBriefing);
+        standardTime.format(DateTimeFormatter.ofPattern(STANDARD_TIME_PATTERN)), dailyBriefing);
   }
 
   public List<StatisticsByCategoryResponse> getViewAndRankingByCategories(
@@ -66,7 +84,8 @@ public class DailyBriefingService {
       viewCountStatisticsByCategoryHashMap.get(categoryName).addViewCountStatistics();
     }
 
-    return includeCalculateRankingAndCreateStatisticsByCategoryResponse(viewCountStatisticsByCategoryHashMap);
+    return includeCalculateRankingAndCreateStatisticsByCategoryResponse(
+        viewCountStatisticsByCategoryHashMap);
   }
 
   public List<StatisticsByCategoryResponse> getMemberCountAndRankingByAttentionCategories() {
@@ -81,10 +100,12 @@ public class DailyBriefingService {
       memberCountStatisticsByCategoryHashMap.put(category.getName(), countStatisticsByCategory);
     }
 
-    return includeCalculateRankingAndCreateStatisticsByCategoryResponse(memberCountStatisticsByCategoryHashMap);
+    return includeCalculateRankingAndCreateStatisticsByCategoryResponse(
+        memberCountStatisticsByCategoryHashMap);
   }
 
-  public List<StatisticsByCategoryResponse> includeCalculateRankingAndCreateStatisticsByCategoryResponse(Map<String, CountStatisticsByCategory> countStatisticsByCategoryHashMap) {
+  public List<StatisticsByCategoryResponse> includeCalculateRankingAndCreateStatisticsByCategoryResponse(
+      Map<String, CountStatisticsByCategory> countStatisticsByCategoryHashMap) {
     List<CountStatisticsByCategory> countStatisticsByCategoriesForRanking = new ArrayList<>(
         countStatisticsByCategoryHashMap.values());
     calculateRanking(countStatisticsByCategoriesForRanking);
