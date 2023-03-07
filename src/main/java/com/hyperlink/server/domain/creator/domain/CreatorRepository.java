@@ -11,20 +11,24 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 public interface CreatorRepository extends JpaRepository<Creator, Long> {
+
   Optional<Creator> findByName(String name);
 
-  @Query(value = "select c.id as creatorId, c.name as name, count(sub.creator.id) as subscriberAmount, c.description as description, c.profileImgUrl as profileImgUrl from Creator c "
-      + "left join Subscription sub "
-      + "on c.id = sub.creator.id "
-      + "group by c.id ")
+  @Query(value =
+      "select c.id as creatorId, c.name as name, count(sub.creator.id) as subscriberAmount, c.description as description, c.profileImgUrl as profileImgUrl from Creator c "
+          + "left join Subscription sub "
+          + "on c.id = sub.creator.id "
+          + "group by c.id ")
   Slice<CreatorAndSubscriptionCountMapper> findAllCreators(Pageable pageable);
 
-  @Query("select c.id as creatorId, c.name as name, count(sub.creator.id) as subscriberAmount, c.description as description, c.profileImgUrl as profileImgUrl from Creator c "
-      + "left join Subscription sub "
-      + "on c.id = sub.creator.id "
-      + "where c.category.id = :categoryId "
-      + "group by c.id ")
-  Slice<CreatorAndSubscriptionCountMapper> findAllCreatorsByCategoryId(@Param("categoryId") Long categoryId, Pageable pageable);
+  @Query(
+      "select c.id as creatorId, c.name as name, count(sub.creator.id) as subscriberAmount, c.description as description, c.profileImgUrl as profileImgUrl from Creator c "
+          + "left join Subscription sub "
+          + "on c.id = sub.creator.id "
+          + "where c.category.id = :categoryId "
+          + "group by c.id ")
+  Slice<CreatorAndSubscriptionCountMapper> findAllCreatorsByCategoryId(
+      @Param("categoryId") Long categoryId, Pageable pageable);
 
   @Query(
       "select c.id as creatorId, case when sub.member.id = :memberId then TRUE else FALSE end as isSubscribed from Creator c "
@@ -40,4 +44,21 @@ public interface CreatorRepository extends JpaRepository<Creator, Long> {
           + "where c.category.id = :categoryId")
   Slice<SubscribeFlagMapper> findCreatorIdAndSubscribeFlagByMemberIdAndCategoryId(
       @Param("memberId") Long memberId, @Param("categoryId") Long categoryId, Pageable pageable);
+
+  @Query(
+      "select c.id as creatorId, c.name as name, count(sub.creator.id) as subscriberAmount, c.description as description, c.profileImgUrl as profileImgUrl from Creator c "
+          + "left join Subscription sub "
+          + "on c.id = sub.creator.id "
+          + "where c.id = :creatorId"
+  )
+  CreatorAndSubscriptionCountMapper findCreatorAndSubscriptionCount(
+      @Param("creatorId") Long creatorId);
+
+  @Query(
+      "select c.id as creatorId, case when sub.member.id = :memberId then TRUE else FALSE end as isSubscribed from Creator c "
+          + "left join Subscription sub "
+          + "on c.id = sub.creator.id and sub.member.id = :memberId "
+          + "where c.id = :creatorId")
+  SubscribeFlagMapper findCreatorAndSubscribeFlag(@Param("memberId") Long memberId,
+      @Param("creatorId") Long creatorId);
 }

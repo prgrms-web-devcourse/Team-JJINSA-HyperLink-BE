@@ -86,18 +86,38 @@ public class CreatorService {
     return new CreatorsRetrievalResponse(creatorInfos, creators.hasNext());
   }
 
-  private void fillSubscribeStatus(Long memberId, List<CreatorAndSubscriptionCountMapper> contents,
+  public CreatorResponse getCreatorDetail(Long memberId, Long creatorId) {
+    boolean creatorExists = creatorRepository.existsById(creatorId);
+    if (!creatorExists) {
+      throw new CreatorNotFoundException();
+    }
+    CreatorAndSubscriptionCountMapper creatorInfo = creatorRepository.findCreatorAndSubscriptionCount(
+        creatorId);
+    return fillSubscribeStatus(memberId, creatorInfo);
+  }
+
+  private void fillSubscribeStatus(Long memberId, List<CreatorAndSubscriptionCountMapper> creators,
       List<CreatorResponse> creatorInfos, Slice<SubscribeFlagMapper> creatorRepository) {
     if (memberId == null) {
-      contents.forEach(content -> {
-        creatorInfos.add(CreatorResponse.from(content, false));
+      creators.forEach(creator -> {
+        creatorInfos.add(CreatorResponse.from(creator, false));
       });
     } else {
       List<SubscribeFlagMapper> isSubscribes = creatorRepository.getContent();
-      contents.forEach(content -> {
-        fillSubscribeStatusIfCreatorIdMatch(creatorInfos, isSubscribes, content);
+      creators.forEach(creator -> {
+        fillSubscribeStatusIfCreatorIdMatch(creatorInfos, isSubscribes, creator);
       });
     }
+  }
+
+  private CreatorResponse fillSubscribeStatus(Long memberId,
+      CreatorAndSubscriptionCountMapper creator) {
+    if (memberId == null) {
+      return CreatorResponse.from(creator, false);
+    }
+    SubscribeFlagMapper subscribeInfo = creatorRepository.findCreatorAndSubscribeFlag(memberId,
+        creator.getCreatorId());
+    return CreatorResponse.from(creator, subscribeInfo.getIsSubscribed());
   }
 
   private void fillSubscribeStatusIfCreatorIdMatch(List<CreatorResponse> creatorInfos,
