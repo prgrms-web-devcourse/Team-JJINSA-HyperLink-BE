@@ -94,7 +94,7 @@ public class DailyBriefingServiceUnitTest {
       doReturn(List.of(new StatisticsByCategoryResponse("develop", 13, 3))).when(
           dailyBriefingService).getMemberCountAndRankingByAttentionCategories();
 
-      dailyBriefingService.getDailyBriefing(LocalDateTime.now());
+      dailyBriefingService.createDailyBriefing(LocalDateTime.now());
 
       verify(memberRepository, times(1)).countByCreatedAtAfter(any());
       verify(memberHistoryRepository, times(1)).findAllByCreatedAtAfter(any());

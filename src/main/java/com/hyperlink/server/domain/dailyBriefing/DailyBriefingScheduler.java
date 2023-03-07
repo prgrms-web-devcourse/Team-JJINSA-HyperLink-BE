@@ -20,7 +20,7 @@ public class DailyBriefingScheduler {
   @Scheduled(cron = "0 0 0-23 * * *", zone = "Asia/Seoul")
   void createDailyBriefing() {
     log.info("데일리브리핑 스케쥴러 실행");
-    GetDailyBriefingResponse dailyBriefing = dailyBriefingService.getDailyBriefing(
+    GetDailyBriefingResponse dailyBriefing = dailyBriefingService.createDailyBriefing(
         LocalDateTime.now());
 
     dailyBriefingResponseRedisTemplate.opsForHash().put("daily-briefing", dailyBriefing.standardTime(), dailyBriefing);
