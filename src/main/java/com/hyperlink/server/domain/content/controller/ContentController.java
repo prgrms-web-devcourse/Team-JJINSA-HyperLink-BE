@@ -39,7 +39,8 @@ public class ContentController {
   @ResponseStatus(HttpStatus.OK)
   public PatchInquiryResponse addViewOfContent(@LoginMemberId Optional<Long> optionalMemberId,
       @PathVariable("contentId") long contentId) {
-    contentService.addView(optionalMemberId, contentId);
+    Long memberId = optionalMemberId.orElse(null);
+    contentService.addView(memberId, contentId);
     int viewCount = contentService.getViewCount(contentId);
     return new PatchInquiryResponse(viewCount);
   }
