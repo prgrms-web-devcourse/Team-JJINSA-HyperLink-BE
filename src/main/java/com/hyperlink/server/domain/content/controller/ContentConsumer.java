@@ -21,7 +21,7 @@ public class ContentConsumer {
   public void handler(String message) throws JsonProcessingException {
     ContentEnrollResponse contentEnrollResponse = objectMapper.readValue(message,
         ContentEnrollResponse.class);
-//    contentService.insertContent(contentEnrollResponse);
+    contentService.insertContent(contentEnrollResponse);
     log.info("GET MESSAGE FROM RABBIT MQ! data : {}", contentEnrollResponse);
   }
 }
