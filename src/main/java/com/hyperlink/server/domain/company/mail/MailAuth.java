@@ -10,13 +10,11 @@ public class MailAuth {
 
   @Id
   String companyEmail;
-  String companyName;
   Integer authNumber;
 
 
-  public MailAuth(String companyEmail, String companyName, Integer authNumber) {
+  public MailAuth(String companyEmail, Integer authNumber) {
     this.companyEmail = companyEmail;
-    this.companyName = companyName;
     this.authNumber = authNumber;
   }
 }

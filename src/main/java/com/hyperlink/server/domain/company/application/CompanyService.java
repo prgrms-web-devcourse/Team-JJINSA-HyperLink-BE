@@ -22,6 +22,6 @@ public class CompanyService {
 
   public void saveMailAuthNumber(MailRequest mailRequest, Integer authNumber) {
     mailRepository.save(
-        new MailAuth(mailRequest.companyEmail(), mailRequest.companyName(), authNumber));
+        new MailAuth(mailRequest.companyEmail(), authNumber));
   }
 }
