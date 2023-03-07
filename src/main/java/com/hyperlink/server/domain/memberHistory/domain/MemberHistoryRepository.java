@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 public interface MemberHistoryRepository extends JpaRepository<MemberHistory, Long> {
 
@@ -15,4 +16,6 @@ public interface MemberHistoryRepository extends JpaRepository<MemberHistory, Lo
 
   Long countByCreatedAtAfter(LocalDateTime dateTime);
 
+  @Query("select ca.name from MemberHistory mh join mh.content con join con.category ca")
+  List<String> findAllByCreatedAtAfter(LocalDateTime dateTime);
 }
