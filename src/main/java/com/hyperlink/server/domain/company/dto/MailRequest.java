@@ -4,7 +4,7 @@ import javax.validation.constraints.NotBlank;
 
 public record MailRequest(
     @NotBlank String companyName,
-    @NotBlank String email
+    @NotBlank String companyEmail
 ) {
 
 }

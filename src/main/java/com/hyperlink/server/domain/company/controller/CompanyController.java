@@ -33,7 +33,7 @@ public class CompanyController {
     companyService.saveMailAuthNumber(mailRequest, authNumber);
 
     SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
-    simpleMailMessage.setTo(mailRequest.email());
+    simpleMailMessage.setTo(mailRequest.companyEmail());
     simpleMailMessage.setSubject(AUTH_MAIL_TITLE);
     simpleMailMessage.setText(AUTH_MAIL_CONTENT + authNumber);
     javaMailSender.send(simpleMailMessage);
