@@ -82,6 +82,9 @@ dependencies {
 
     //aws S3
     implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
+
+    //mail
+    implementation 'org.springframework.boot:spring-boot-starter-mail:2.7.1'
 }
 
 def querydslDir = "$buildDir/generated/querydsl"
