@@ -42,9 +42,14 @@ public class ContentRepositoryCustom {
         .orderBy(content.createdAt.desc())
         .fetch();
 
-    long size = queryFactory.selectFrom(content)
+    Long size = queryFactory.select(content.count())
+        .from(content)
         .where(builder)
-        .fetch().size();
+        .fetchOne();
+
+    if (size == null) {
+      size = 0L;
+    }
 
     return new PageImpl<>(contents, pageable, size);
   }
