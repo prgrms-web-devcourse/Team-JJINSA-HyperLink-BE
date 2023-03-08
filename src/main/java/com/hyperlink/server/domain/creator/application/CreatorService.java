@@ -87,13 +87,13 @@ public class CreatorService {
   }
 
   private void fillSubscribeStatus(Long memberId, List<CreatorAndSubscriptionCountMapper> contents,
-      List<CreatorResponse> creatorInfos, Slice<SubscribeFlagMapper> creatorRepository) {
+      List<CreatorResponse> creatorInfos, Slice<SubscribeFlagMapper> creatorSubscriptionInfo) {
     if (memberId == null) {
       contents.forEach(content -> {
-        creatorInfos.add(CreatorResponse.from(content, false));
+        creatorInfos.add(CreatorResponse.of(content, false));
       });
     } else {
-      List<SubscribeFlagMapper> isSubscribes = creatorRepository.getContent();
+      List<SubscribeFlagMapper> isSubscribes = creatorSubscriptionInfo.getContent();
       contents.forEach(content -> {
         fillSubscribeStatusIfCreatorIdMatch(creatorInfos, isSubscribes, content);
       });
@@ -105,7 +105,7 @@ public class CreatorService {
       CreatorAndSubscriptionCountMapper content) {
     for (SubscribeFlagMapper subscribeFlagMapper : isSubscribes) {
       if (subscribeFlagMapper.getCreatorId().equals(content.getCreatorId())) {
-        creatorInfos.add(CreatorResponse.from(content, subscribeFlagMapper.getIsSubscribed()));
+        creatorInfos.add(CreatorResponse.of(content, subscribeFlagMapper.getIsSubscribed()));
         break;
       }
     }
