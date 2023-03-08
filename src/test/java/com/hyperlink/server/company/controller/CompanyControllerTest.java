@@ -49,7 +49,7 @@ class CompanyControllerTest extends AuthSetupForMock {
 
 
   @Test
-  void myInfoMockTest() throws Exception {
+  void sendMailTest() throws Exception {
     authSetup();
 
     String email = "rldnd2637@naver.com";
@@ -68,7 +68,7 @@ class CompanyControllerTest extends AuthSetupForMock {
             preprocessResponse(prettyPrint()),
             requestHeaders(headerWithName(HttpHeaders.AUTHORIZATION).description("AccessToken")),
             requestFields(
-                fieldWithPath("email").type(JsonFieldType.STRING).description("회사 이메일"))));
+                fieldWithPath("companyEmail").type(JsonFieldType.STRING).description("회사 이메일"))));
   }
 
 }

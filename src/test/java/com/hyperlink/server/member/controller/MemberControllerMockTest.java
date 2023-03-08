@@ -75,7 +75,7 @@ public class MemberControllerMockTest extends AuthSetupForMock {
 
     MyPageResponse myPageResponse = new MyPageResponse("rldnd1234@naver.com", "Chocho",
         "develop", "1",
-        "localhost");
+        "localhost", "companyEmail");
 
     given(memberService.myInfo(1L))
         .willReturn(myPageResponse);

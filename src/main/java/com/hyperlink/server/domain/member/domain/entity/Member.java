@@ -60,7 +60,6 @@ public class Member extends BaseEntity {
   @JoinColumn(name = "company_id")
   private Company company;
 
-
   public Member(String email, String nickname, Career career, CareerYear careerYear,
       String profileImgUrl) {
     this.email = email;
@@ -94,4 +93,9 @@ public class Member extends BaseEntity {
   public void changeProfileImgUrl(String profileImgUrl) {
     this.profileImgUrl = profileImgUrl;
   }
+
+  public void changeCompany(Company company) {
+    this.company = company;
+  }
+
 }

@@ -1,6 +1,8 @@
 package com.hyperlink.server.domain.member.application;
 
 import com.hyperlink.server.domain.attentionCategory.application.AttentionCategoryService;
+import com.hyperlink.server.domain.attentionCategory.dto.AttentionCategoryRequest;
+import com.hyperlink.server.domain.attentionCategory.dto.AttentionCategoryResponse;
 import com.hyperlink.server.domain.auth.token.JwtTokenProvider;
 import com.hyperlink.server.domain.auth.token.RefreshToken;
 import com.hyperlink.server.domain.auth.token.RefreshTokenRepository;
@@ -57,6 +59,7 @@ public class MemberService {
   public MyPageResponse myInfo(Long memberId) {
     Member foundMember = memberRepository.findById(memberId)
         .orElseThrow(MemberNotFoundException::new);
+
     return MyPageResponse.from(foundMember);
   }
 
