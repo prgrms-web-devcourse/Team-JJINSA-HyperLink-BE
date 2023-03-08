@@ -29,6 +29,12 @@ public class AttentionCategoryService {
     this.categoryRepository = categoryRepository;
   }
 
+  public AttentionCategoryResponse getAttentionCategory(Long memberId) {
+    List<String> attentionCategoryNames = attentionCategoryRepository.findAttentionCategoryNamesByMemberId(
+        memberId);
+    return AttentionCategoryResponse.from(attentionCategoryNames);
+  }
+
   @Transactional
   public AttentionCategoryResponse changeAttentionCategory(Long memberId,
       List<String> attentionCategories) {
@@ -37,7 +43,7 @@ public class AttentionCategoryService {
         .orElseThrow(MemberNotFoundException::new);
 
     attentionCategoryRepository.deleteAttentionCategoriesByMember(foundMember);
-    
+
     List<String> savedAttentionCategory = new ArrayList<>();
     attentionCategories.stream().forEach(categoryName -> {
       Category category = categoryRepository.findByName(categoryName)

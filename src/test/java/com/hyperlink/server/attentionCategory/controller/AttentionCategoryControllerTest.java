@@ -75,4 +75,28 @@ class AttentionCategoryControllerTest extends AuthSetupForMock {
                     .description("관심 카테고리 목록"))));
   }
 
+  @Test
+  void getAttentionCategoryTest() throws Exception {
+    authSetup();
+
+    List<String> nameList = Arrays.asList("develop", "beauty");
+    AttentionCategoryResponse attentionCategoryResponse = new AttentionCategoryResponse(nameList);
+    given(attentionCategoryService.getAttentionCategory(memberId))
+        .willReturn(attentionCategoryResponse);
+
+    mockMvc.perform(MockMvcRequestBuilders
+            .get("/attention-category")
+            .header(HttpHeaders.AUTHORIZATION, authorizationHeader))
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andDo(print())
+        .andDo(document("Attention-category/get",
+            preprocessRequest(prettyPrint()),
+            preprocessResponse(prettyPrint()),
+            requestHeaders(headerWithName(HttpHeaders.AUTHORIZATION).description("AccessToken")),
+            responseFields(
+                fieldWithPath("attentionCategory").type(JsonFieldType.ARRAY)
+                    .description("관심 카테고리 이름 목록"))));
+  }
+
 }
