@@ -58,10 +58,11 @@ class CompanyServiceIntegrationTest {
     Category beauty = categoryRepository.save(new Category("beauty"));
 
     Member saveMember = memberRepository.save(
-        new Member("rldnd1234@naver.com", "Chocho", Career.DEVELOP, CareerYear.MORE_THAN_TEN,
+        new Member("rldnd1234@gmail.com", "Chocho", Career.DEVELOP, CareerYear.MORE_THAN_TEN,
             "localhost", 1995, "man"));
 
     String email = "rldnd2637@naver.com";
+
     int authNumber = 123456;
     companyService.saveMailAuthNumber(new MailRequest(email), authNumber);
 
@@ -72,10 +73,8 @@ class CompanyServiceIntegrationTest {
 
     Company company = saveMember.getCompany();
 
-    assertThat(company.getEmailAddress()).isEqualTo(email);
+    assertThat(company.getEmailAddress()).isEqualTo("naver.com");
     assertThat(company.getName()).isEqualTo("naver");
     assertThat(company.getLogoImgUrl()).isEqualTo("s3URL");
-
-
   }
 }

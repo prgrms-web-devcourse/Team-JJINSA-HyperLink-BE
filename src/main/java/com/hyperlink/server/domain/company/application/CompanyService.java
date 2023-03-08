@@ -34,6 +34,7 @@ public class CompanyService {
         new MailAuth(mailRequest.companyEmail(), authNumber));
   }
 
+  @Transactional
   public void verifyAuthCompanyMail(Long memberId, MailAuthVerifyRequest mailAuthVerifyRequest) {
     MailAuth mailAuth = mailRepository.findById(mailAuthVerifyRequest.companyEmail())
         .orElseThrow(MailAuthInvalidException::new);
@@ -41,21 +42,21 @@ public class CompanyService {
     if (!mailAuthVerifyRequest.authNumber().equals(mailAuth.getAuthNumber())) {
       throw new MailAuthInvalidException();
     }
+    String mailAddress = extractCompanyEmail(mailAuthVerifyRequest.companyEmail());
 
-    Company savedCompany = saveCompany(mailAuthVerifyRequest);
+    Company company = companyRepository.findByEmailAddress(mailAddress).orElse(
+        companyRepository.save(
+            new Company(mailAddress, extractCompanyNameFromEmail(
+                mailAddress), mailAuthVerifyRequest.logoImgUrl())));
 
-    memberService.putCompanyAfterVerification(memberId, savedCompany);
+    memberService.putCompanyAfterVerification(memberId, company);
   }
 
-  @Transactional
-  public Company saveCompany(MailAuthVerifyRequest mailAuthVerifyRequest) {
-    String companyEmail = mailAuthVerifyRequest.companyEmail();
-    return companyRepository.save(
-        new Company(companyEmail, extractCompanyNameFromEmail(
-            companyEmail), mailAuthVerifyRequest.logoImgUrl()));
+  private String extractCompanyEmail(String companyEmail) {
+    return companyEmail.split("@")[AT_INDEX];
   }
 
-  private String extractCompanyNameFromEmail(String companyEmail) {
-    return companyEmail.split("@")[AT_INDEX].split("\\.")[DOT_INDEX];
+  private String extractCompanyNameFromEmail(String mailAddress) {
+    return mailAddress.split("\\.")[DOT_INDEX];
   }
 }
