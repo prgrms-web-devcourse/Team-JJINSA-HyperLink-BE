@@ -25,7 +25,7 @@ public class RedisConfig {
   }
 
   @Bean
-  public RedisTemplate<String, GetDailyBriefingResponse> redisTemplate() {
+  public RedisTemplate<String, GetDailyBriefingResponse> dailyBriefingRedisTemplate() {
     RedisTemplate<String, GetDailyBriefingResponse> redisTemplate = new RedisTemplate<>();
     redisTemplate.setKeySerializer(new StringRedisSerializer());
     redisTemplate.setValueSerializer(
