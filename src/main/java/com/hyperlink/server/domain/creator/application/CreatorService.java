@@ -5,6 +5,8 @@ import com.hyperlink.server.domain.category.domain.entity.Category;
 import com.hyperlink.server.domain.category.exception.CategoryNotFoundException;
 import com.hyperlink.server.domain.creator.domain.CreatorRepository;
 import com.hyperlink.server.domain.creator.domain.entity.Creator;
+import com.hyperlink.server.domain.creator.dto.CreatorAdminResponse;
+import com.hyperlink.server.domain.creator.dto.CreatorAdminResponses;
 import com.hyperlink.server.domain.creator.dto.CreatorAndSubscriptionCountMapper;
 import com.hyperlink.server.domain.creator.dto.CreatorEnrollRequest;
 import com.hyperlink.server.domain.creator.dto.CreatorEnrollResponse;
@@ -21,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
@@ -63,6 +66,16 @@ public class CreatorService {
     } catch (EmptyResultDataAccessException e) {
       throw new CreatorNotFoundException();
     }
+  }
+
+  public CreatorAdminResponses retrieveCreatorsForAdmin(Pageable pageable) {
+    Page<Creator> creatorPagination = creatorRepository.findCreators(pageable);
+    List<Creator> creators = creatorPagination.getContent();
+
+    List<CreatorAdminResponse> creatorAdminResponses = creators.stream()
+        .map(CreatorAdminResponse::from).toList();
+    return new CreatorAdminResponses(creatorAdminResponses, creatorPagination.getNumber(),
+        creatorPagination.getTotalPages());
   }
 
   public CreatorsRetrievalResponse getCreatorsByCategory(Long memberId, String categoryName,

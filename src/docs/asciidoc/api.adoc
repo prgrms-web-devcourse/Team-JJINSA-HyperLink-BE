@@ -91,6 +91,9 @@ operation::DailyBriefingControllerTest/getDailyBriefing[snippets='http-request,h
 
 == Admin
 
+=== 크리에이터 조회
+operation::CreatorControllerTest/retrieveCreatorsAdmin['http-request,http-response']
+
 === 크리에이터 삭제
 
 operation::CreatorControllerTest/deleteCreator[snippets='http-request,http-response']
