@@ -17,8 +17,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hyperlink.server.AuthSetupForMock;
-import com.hyperlink.server.domain.attentionCategory.dto.AttentionCategoryRequest;
-import com.hyperlink.server.domain.attentionCategory.dto.AttentionCategoryResponse;
 import com.hyperlink.server.domain.auth.application.AuthService;
 import com.hyperlink.server.domain.auth.oauth.GoogleAccessTokenRepository;
 import com.hyperlink.server.domain.auth.token.RefreshTokenCookieProvider;
@@ -30,8 +28,6 @@ import com.hyperlink.server.domain.member.dto.MyPageResponse;
 import com.hyperlink.server.domain.member.dto.ProfileImgResponse;
 import com.hyperlink.server.domain.member.s3.AwsS3Service;
 import com.hyperlink.server.global.config.LoginMemberIdArgumentResolver;
-import java.util.Arrays;
-import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
@@ -90,33 +86,6 @@ public class MemberControllerMockTest extends AuthSetupForMock {
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andDo(print());
-  }
-
-  @Test
-  void changeAttentionCategoryTest() throws Exception {
-    authSetup();
-
-    List<String> nameList = Arrays.asList("develop", "beauty");
-    AttentionCategoryRequest attentionCategoryRequest = new AttentionCategoryRequest(nameList);
-    AttentionCategoryResponse attentionCategoryResponse = new AttentionCategoryResponse(nameList);
-    given(memberService.changeAttentionCategory(memberId, attentionCategoryRequest))
-        .willReturn(attentionCategoryResponse);
-
-    mockMvc.perform(MockMvcRequestBuilders
-            .put("/members/attention-category")
-            .header(HttpHeaders.AUTHORIZATION, authorizationHeader)
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(objectMapper.writeValueAsString(attentionCategoryRequest)))
-        .andExpect(status().isOk())
-        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andDo(print())
-        .andDo(document("members/attention-category",
-            preprocessRequest(prettyPrint()),
-            preprocessResponse(prettyPrint()),
-            requestHeaders(headerWithName(HttpHeaders.AUTHORIZATION).description("AccessToken")),
-            responseFields(
-                fieldWithPath("attentionCategory").type(JsonFieldType.ARRAY)
-                    .description("관심 카테고리 목록"))));
   }
 
   @Test

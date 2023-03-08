@@ -45,10 +45,6 @@ operation::members/login[snippets='http-request,http-response,response-fields']
 
 operation::members/mypage[snippets='http-request,http-response,response-fields']
 
-=== 관심목록 변경
-
-operation::members/attention-category[snippets='http-request,http-response,response-fields']
-
 === 프로필 변경
 
 operation::members/update[snippets='http-request,http-response,response-fields']
@@ -66,17 +62,23 @@ operation::MemberHistoryControllerTest/getAllHistory[snippets='http-request,http
 operation::CreatorControllerTest/notRecommend[snippets='http-request,http-response']
 
 == Subscription
+
 === 크리에이터 구독/구독 취소
+
 operation::SubscriptionControllerTest/subscribeOrUnsubscribeCreator[snippets='http-request,http-response']
 
 === 구독 피드 카테고리별 조회
+
 operation::SubscriptionControllerTest/retrieveByCategory[snippets='http-request,http-response']
 
 === 구독 피드 전체 카테고리 조회
+
 operation::SubscriptionControllerTest/retrieveAllCategory[snippets='http-request,http-response']
 
 == Daily-Briefing
+
 === 데일리 브리핑 조회
+
 operation::DailyBriefingControllerTest/getDailyBriefing[snippets='http-request,http-response']
 
 == Admin
@@ -90,5 +92,11 @@ operation::CreatorControllerTest/deleteCreator[snippets='http-request,http-respo
 operation::CreatorControllerTest/enrollCreator[snippets='http-request,http-response']
 
 === 컨텐츠 활성화
+
 operation::ContentControllerTest/activateContent[snippets='http-request,http-response']
 
+== AttentionCategory
+
+=== 관심카테고리 변경
+
+operation::Attention-category/update[snippets='http-request,http-response,response-fields']
