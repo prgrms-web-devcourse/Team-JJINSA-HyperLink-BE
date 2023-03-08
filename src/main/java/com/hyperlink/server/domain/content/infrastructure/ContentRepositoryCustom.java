@@ -188,8 +188,8 @@ public class ContentRepositoryCustom {
         .add(content.likeCount.multiply(LIKE_COUNT_WEIGHT)).desc();
   }
 
-  private OrderSpecifier<LocalDateTime> recentOrderType() {
-    return content.createdAt.desc();
+  private OrderSpecifier<Long> recentOrderType() {
+    return content.id.desc();
   }
 
   private BooleanExpression eqCreatorId(Long creatorId) {

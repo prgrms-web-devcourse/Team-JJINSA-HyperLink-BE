@@ -446,7 +446,7 @@ public class ContentServiceIntegrationTest {
 
           List<ContentResponse> contents = getContentsCommonResponse.contents();
           assertThat(contents).hasSize(3);
-          assertThat(contents.get(0).createdAt()).isLessThanOrEqualTo(
+          assertThat(contents.get(0).createdAt()).isGreaterThanOrEqualTo(
               contents.get(contents.size() - 1).createdAt());
         }
 
@@ -496,7 +496,7 @@ public class ContentServiceIntegrationTest {
 
             List<ContentResponse> contents = getContentsCommonResponse.contents();
             assertThat(contents).hasSize(4);
-            assertThat(contents.get(0).createdAt()).isLessThanOrEqualTo(
+            assertThat(contents.get(0).createdAt()).isGreaterThanOrEqualTo(
                 contents.get(contents.size() - 1).createdAt());
           }
 
@@ -531,7 +531,7 @@ public class ContentServiceIntegrationTest {
 
             List<ContentResponse> contents = getContentsCommonResponse.contents();
             assertThat(contents).hasSize(3);
-            assertThat(contents.get(0).createdAt()).isLessThanOrEqualTo(
+            assertThat(contents.get(0).createdAt()).isGreaterThanOrEqualTo(
                 contents.get(contents.size() - 1).createdAt());
           }
 
@@ -570,7 +570,7 @@ public class ContentServiceIntegrationTest {
 
         List<ContentResponse> contents = getContentsCommonResponse.contents();
         assertThat(contents).hasSize(3);
-        assertThat(contents.get(0).createdAt()).isLessThanOrEqualTo(
+        assertThat(contents.get(0).createdAt()).isGreaterThanOrEqualTo(
             contents.get(contents.size() - 1).createdAt());
       }
 
