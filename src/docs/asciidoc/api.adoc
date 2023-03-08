@@ -61,6 +61,14 @@ operation::MemberHistoryControllerTest/getAllHistory[snippets='http-request,http
 
 operation::CreatorControllerTest/notRecommend[snippets='http-request,http-response']
 
+=== 크리에이터 상세 조회
+
+operation::CreatorControllerTest/retrieveCreatorDetail[snippets='http-request,http-response']
+
+=== 크리에이터 조회
+
+operation::CreatorControllerTest/retrieveCreator[snippets='http-request,http-response']
+
 == Subscription
 
 === 크리에이터 구독/구독 취소
@@ -100,3 +108,9 @@ operation::ContentControllerTest/activateContent[snippets='http-request,http-res
 === 관심카테고리 변경
 
 operation::Attention-category/update[snippets='http-request,http-response,response-fields']
+
+== Company
+
+=== 회사 이메일 인증번호 요청
+
+operation::company/auth[snippets='http-request,http-response']

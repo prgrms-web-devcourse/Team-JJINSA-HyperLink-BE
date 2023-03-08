@@ -101,6 +101,5 @@ public class MemberController {
     Long memberId = optionalMemberId.orElseThrow(MemberNotFoundException::new);
     return memberService.changeProfile(memberId, membersUpdateRequest);
   }
-
 }
 
