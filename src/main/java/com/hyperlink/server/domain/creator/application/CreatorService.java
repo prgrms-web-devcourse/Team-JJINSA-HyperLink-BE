@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.PageRequest;
@@ -70,12 +71,13 @@ public class CreatorService {
   }
 
   public CreatorAdminResponses retrieveCreatorsForAdmin(PageRequest pageable) {
-    Slice<Creator> creatorSlice = creatorRepository.findCreators(pageable);
-    List<Creator> creators = creatorSlice.getContent();
+    Page<Creator> creatorPagination = creatorRepository.findCreators(pageable);
+    List<Creator> creators = creatorPagination.getContent();
 
     List<CreatorAdminResponse> creatorAdminResponses = creators.stream()
         .map(CreatorAdminResponse::from).toList();
-    return new CreatorAdminResponses(creatorAdminResponses, creatorSlice.hasNext());
+    return new CreatorAdminResponses(creatorAdminResponses, creatorPagination.getNumber(),
+        creatorPagination.getTotalPages());
   }
 
   public CreatorsRetrievalResponse getCreatorsByCategory(Long memberId, String categoryName,
