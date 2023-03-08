@@ -43,7 +43,7 @@ class AttentionCategoryServiceIntegrationTest {
         new Member("rldnd5555@gmail.com", "chocho", Career.DEVELOP, CareerYear.MORE_THAN_TEN, "url",
             1990, "man"));
 
-    attentionCategoryService.changeAttentionCategory(savedMember, attentionCategorys);
+    attentionCategoryService.changeAttentionCategory(savedMember.getId(), attentionCategorys);
     List<AttentionCategory> allAttentionCategory = attentionCategoryRepository.findAll();
 
     List<Category> result = allAttentionCategory.stream()
@@ -59,15 +59,12 @@ class AttentionCategoryServiceIntegrationTest {
   @DisplayName("관심목록 추가시 해당하는 Category가 없다면 CategoryNotFoundException 을 던진다.")
   @Test
   void setAttentionCategoryInCorrectTest() {
-
-//    Category develop = categoryRepository.save(new Category("develop"));
-    Category beauty = categoryRepository.save(new Category("beauty"));
     List<String> attentionCategorys = Arrays.asList("food", "beauty");
     Member savedMember = memberRepository.save(
         new Member("rldnd5555@gmail.com", "chocho", Career.DEVELOP, CareerYear.MORE_THAN_TEN, "url",
             1990, "man"));
     Assertions.assertThatThrownBy(() ->
-        attentionCategoryService.changeAttentionCategory(savedMember, attentionCategorys)
+        attentionCategoryService.changeAttentionCategory(savedMember.getId(), attentionCategorys)
     ).isInstanceOf(
         CategoryNotFoundException.class);
   }
