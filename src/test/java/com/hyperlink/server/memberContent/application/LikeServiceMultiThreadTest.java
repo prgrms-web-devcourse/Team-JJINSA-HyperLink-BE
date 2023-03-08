@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
@@ -34,7 +33,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 @TestInstance(Lifecycle.PER_CLASS)
-@Slf4j
 @SpringBootTest
 @Transactional
 @DisplayName("LikeService 통합테스트")
@@ -109,6 +107,5 @@ public class LikeServiceMultiThreadTest {
     Content foundContent = contentRepository.findById(content.getId())
         .orElseThrow(ContentNotFoundException::new);
     assertThat(foundContent.getLikeCount()).isEqualTo(threadCount);
-    log.info("test 실패");
   }
 }

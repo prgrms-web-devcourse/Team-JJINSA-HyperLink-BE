@@ -16,7 +16,6 @@ import com.hyperlink.server.AuthSetupForMock;
 import com.hyperlink.server.domain.content.application.ContentService;
 import com.hyperlink.server.domain.memberContent.application.BookmarkService;
 import com.hyperlink.server.domain.memberContent.application.LikeService;
-import com.hyperlink.server.domain.memberContent.application.MemberContentService;
 import com.hyperlink.server.domain.memberContent.controller.MemberContentController;
 import com.hyperlink.server.domain.memberContent.dto.LikeClickRequest;
 import org.junit.jupiter.api.Assertions;
@@ -40,9 +39,6 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 @AutoConfigureRestDocs
 @AutoConfigureMockMvc
 public class MemberContentControllerTest extends AuthSetupForMock {
-
-  @MockBean
-  MemberContentService memberContentService;
 
   @MockBean
   BookmarkService bookmarkService;

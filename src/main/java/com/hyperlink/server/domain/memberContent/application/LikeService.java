@@ -44,8 +44,7 @@ public class LikeService {
     contentService.subTractLike(contentId);
   }
 
-  @Transactional
-  public void existLike(Long memberId, Long contentId) {
+  private void existLike(Long memberId, Long contentId) {
     if (memberContentRepository.existsMemberContentByMemberIdAndContentIdAndType(memberId,
         contentId,
         LIKE.getTypeNumber())) {
