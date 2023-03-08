@@ -91,7 +91,7 @@ public class ContentController {
       @RequestParam("page") @NotNull @Min(0) int page,
       @RequestParam("size") @NotNull @Min(1) int size
   ) {
-//    optionalMemberId.orElseThrow(MemberNotFoundException::new);
+    optionalMemberId.orElseThrow(MemberNotFoundException::new);
     return contentService.retrieveInactivatedContents(PageRequest.of(page, size));
   }
 
