@@ -11,7 +11,7 @@ public class MailAuth {
   @Id
   String companyEmail;
   Integer authNumber;
-
+  
   public MailAuth(String companyEmail, Integer authNumber) {
     this.companyEmail = companyEmail;
     this.authNumber = authNumber;

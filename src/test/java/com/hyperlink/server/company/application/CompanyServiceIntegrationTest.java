@@ -50,7 +50,7 @@ class CompanyServiceIntegrationTest {
     assertThat(foundMailAuth.getCompanyEmail()).isEqualTo(email);
     assertThat(foundMailAuth.getAuthNumber()).isEqualTo(authNumber);
   }
-
+  
   @DisplayName("회사 이메일 인증 완료시 해당 회사 이메일을 저장할 수 있다.")
   @Test
   void verifyAuthCompanyMailTest() {
