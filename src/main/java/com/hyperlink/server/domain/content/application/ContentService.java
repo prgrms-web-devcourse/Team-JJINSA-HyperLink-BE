@@ -7,6 +7,8 @@ import com.hyperlink.server.domain.category.exception.CategoryNotFoundException;
 import com.hyperlink.server.domain.common.ContentDtoFactoryService;
 import com.hyperlink.server.domain.content.domain.ContentRepository;
 import com.hyperlink.server.domain.content.domain.entity.Content;
+import com.hyperlink.server.domain.content.dto.ContentAdminResponse;
+import com.hyperlink.server.domain.content.dto.ContentAdminResponses;
 import com.hyperlink.server.domain.content.dto.ContentEnrollResponse;
 import com.hyperlink.server.domain.content.dto.GetContentsCommonResponse;
 import com.hyperlink.server.domain.content.dto.SearchResponse;
@@ -21,8 +23,11 @@ import com.hyperlink.server.domain.memberHistory.application.MemberHistoryServic
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
@@ -147,5 +152,14 @@ public class ContentService {
     Content content = contentRepository.findById(contentId)
         .orElseThrow(ContentNotFoundException::new);
     content.makeViewable(true);
+  }
+
+  public ContentAdminResponses retrieveInactivatedContents(Pageable pageable) {
+    Page<Content> inactivatedContentsPage = contentRepository.findInactivatedContents(pageable);
+    List<Content> inactivatedContents = inactivatedContentsPage.getContent();
+    List<ContentAdminResponse> inactivatedContentAdminResponses = inactivatedContents.stream()
+        .map(ContentAdminResponse::from).toList();
+    return ContentAdminResponses.of(inactivatedContentAdminResponses, inactivatedContentsPage.getNumber(),
+        inactivatedContentsPage.getTotalPages());
   }
 }

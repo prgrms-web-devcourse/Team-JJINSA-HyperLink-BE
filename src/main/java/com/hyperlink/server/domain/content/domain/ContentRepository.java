@@ -3,6 +3,8 @@ package com.hyperlink.server.domain.content.domain;
 import com.hyperlink.server.domain.content.domain.entity.Content;
 import java.time.LocalDateTime;
 import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -19,4 +21,7 @@ public interface ContentRepository extends JpaRepository<Content, Long> {
   boolean existsByLink(String link);
 
   Integer countByCreatedAtAfter(LocalDateTime date);
+
+  @Query("select c from Content c where c.isViewable = false")
+  Page<Content> findInactivatedContents(Pageable pageable);
 }
