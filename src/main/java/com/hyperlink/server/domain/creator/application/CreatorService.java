@@ -113,11 +113,11 @@ public class CreatorService {
   private CreatorResponse fillSubscribeStatus(Long memberId,
       CreatorAndSubscriptionCountMapper creator) {
     if (memberId == null) {
-      return CreatorResponse.from(creator, false);
+      return CreatorResponse.of(creator, false);
     }
     SubscribeFlagMapper subscribeInfo = creatorRepository.findCreatorAndSubscribeFlag(memberId,
         creator.getCreatorId());
-    return CreatorResponse.from(creator, subscribeInfo.getIsSubscribed());
+    return CreatorResponse.of(creator, subscribeInfo.getIsSubscribed());
   }
 
   private void fillSubscribeStatusIfCreatorIdMatch(List<CreatorResponse> creatorInfos,
