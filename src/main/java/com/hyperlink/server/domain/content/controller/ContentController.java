@@ -9,21 +9,18 @@ import com.hyperlink.server.domain.content.exception.CategoryAndCreatorIdConstra
 import com.hyperlink.server.domain.member.exception.MemberNotFoundException;
 import com.hyperlink.server.global.config.LoginMemberId;
 import java.util.Optional;
-import javax.validation.ConstraintViolationException;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
@@ -39,7 +36,8 @@ public class ContentController {
   @ResponseStatus(HttpStatus.OK)
   public PatchInquiryResponse addViewOfContent(@LoginMemberId Optional<Long> optionalMemberId,
       @PathVariable("contentId") long contentId) {
-    contentService.addView(optionalMemberId, contentId);
+    Long memberId = optionalMemberId.orElse(null);
+    contentService.addView(memberId, contentId);
     int viewCount = contentService.getViewCount(contentId);
     return new PatchInquiryResponse(viewCount);
   }

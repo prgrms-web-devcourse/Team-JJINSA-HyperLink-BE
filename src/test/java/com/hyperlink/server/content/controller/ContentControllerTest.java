@@ -19,6 +19,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hyperlink.server.AuthSetupForMock;
+import com.hyperlink.server.domain.auth.token.JwtTokenProvider;
 import com.hyperlink.server.domain.content.application.ContentService;
 import com.hyperlink.server.domain.content.controller.ContentController;
 import com.hyperlink.server.domain.content.dto.ContentResponse;
@@ -84,7 +85,7 @@ public class ContentControllerTest extends AuthSetupForMock {
       void addInquiryOfContentTest() throws Exception {
         mockMvc.perform(
                 patch("/contents/" + contentId + "/view")
-                .header(HttpHeaders.AUTHORIZATION, authorizationHeader)
+                    .header(HttpHeaders.AUTHORIZATION, authorizationHeader)
             )
             .andExpect(status().isOk())
             .andDo(
@@ -175,27 +176,38 @@ public class ContentControllerTest extends AuthSetupForMock {
                         headerWithName(HttpHeaders.AUTHORIZATION).description("jwt header")
                     ),
                     responseFields(
-                        fieldWithPath("getContentsCommonResponse.contents.[].contentId").type(JsonFieldType.NUMBER)
+                        fieldWithPath("getContentsCommonResponse.contents.[].contentId").type(
+                                JsonFieldType.NUMBER)
                             .description("컨텐츠 id"),
-                        fieldWithPath("getContentsCommonResponse.contents.[].title").type(JsonFieldType.STRING)
+                        fieldWithPath("getContentsCommonResponse.contents.[].title").type(
+                                JsonFieldType.STRING)
                             .description("컨텐츠 제목"),
-                        fieldWithPath("getContentsCommonResponse.contents.[].creatorName").type(JsonFieldType.STRING)
+                        fieldWithPath("getContentsCommonResponse.contents.[].creatorName").type(
+                                JsonFieldType.STRING)
                             .description("크리에이터 이름"),
-                        fieldWithPath("getContentsCommonResponse.contents.[].creatorId").type(JsonFieldType.NUMBER)
+                        fieldWithPath("getContentsCommonResponse.contents.[].creatorId").type(
+                                JsonFieldType.NUMBER)
                             .description("크리에이터 id"),
-                        fieldWithPath("getContentsCommonResponse.contents.[].contentImgUrl").type(JsonFieldType.STRING)
+                        fieldWithPath("getContentsCommonResponse.contents.[].contentImgUrl").type(
+                                JsonFieldType.STRING)
                             .description("컨텐츠 이미지 URL"),
-                        fieldWithPath("getContentsCommonResponse.contents.[].link").type(JsonFieldType.STRING)
+                        fieldWithPath("getContentsCommonResponse.contents.[].link").type(
+                                JsonFieldType.STRING)
                             .description("컨텐츠 연결 외부 링크"),
-                        fieldWithPath("getContentsCommonResponse.contents.[].likeCount").type(JsonFieldType.NUMBER)
+                        fieldWithPath("getContentsCommonResponse.contents.[].likeCount").type(
+                                JsonFieldType.NUMBER)
                             .description("좋아요 개수"),
-                        fieldWithPath("getContentsCommonResponse.contents.[].viewCount").type(JsonFieldType.NUMBER)
+                        fieldWithPath("getContentsCommonResponse.contents.[].viewCount").type(
+                                JsonFieldType.NUMBER)
                             .description("조회수 개수"),
-                        fieldWithPath("getContentsCommonResponse.contents.[].isBookmarked").type(JsonFieldType.BOOLEAN)
+                        fieldWithPath("getContentsCommonResponse.contents.[].isBookmarked").type(
+                                JsonFieldType.BOOLEAN)
                             .description("북마크 여부"),
-                        fieldWithPath("getContentsCommonResponse.contents.[].isLiked").type(JsonFieldType.BOOLEAN)
+                        fieldWithPath("getContentsCommonResponse.contents.[].isLiked").type(
+                                JsonFieldType.BOOLEAN)
                             .description("좋아요 여부"),
-                        fieldWithPath("getContentsCommonResponse.contents.[].createdAt").type(JsonFieldType.STRING)
+                        fieldWithPath("getContentsCommonResponse.contents.[].createdAt").type(
+                                JsonFieldType.STRING)
                             .description("컨텐츠 생성 날짜"),
                         fieldWithPath("getContentsCommonResponse.contents.[].recommendations").type(
                             JsonFieldType.ARRAY).description("회사 추천 배열"),
@@ -204,7 +216,8 @@ public class ContentControllerTest extends AuthSetupForMock {
                         fieldWithPath(
                             "getContentsCommonResponse.contents.[].recommendations.[].bannerLogoImgUrl").type(
                             JsonFieldType.STRING).description("회사 로고 URL"),
-                        fieldWithPath("getContentsCommonResponse.hasNext").type(JsonFieldType.BOOLEAN)
+                        fieldWithPath("getContentsCommonResponse.hasNext").type(
+                                JsonFieldType.BOOLEAN)
                             .description("다음 페이지 존재여부"),
                         fieldWithPath("keyword").type(JsonFieldType.STRING).description("검색 키워드"),
                         fieldWithPath("resultCount").type(JsonFieldType.NUMBER)

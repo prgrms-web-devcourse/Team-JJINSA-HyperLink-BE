@@ -1,6 +1,7 @@
 package com.hyperlink.server.domain.content.domain;
 
 import com.hyperlink.server.domain.content.domain.entity.Content;
+import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -16,4 +17,6 @@ public interface ContentRepository extends JpaRepository<Content, Long> {
   List<Content> findAllByCreatorName(String creatorName);
 
   boolean existsByLink(String link);
+
+  Integer countByCreatedAtAfter(LocalDateTime date);
 }

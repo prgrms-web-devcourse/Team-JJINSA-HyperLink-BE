@@ -296,7 +296,7 @@ public class CreatorControllerTest extends AuthSetupForMock {
   @Nested
   @DisplayName("크리에이터 조회 API는")
   class CreatorRetrievalTest {
-
+  
     @Nested
     @DisplayName("크리에이터 전체 조회 시")
     class RetrievalAll {
@@ -421,9 +421,5 @@ public class CreatorControllerTest extends AuthSetupForMock {
         }
       }
     }
-
-
-
-
   }
 }
