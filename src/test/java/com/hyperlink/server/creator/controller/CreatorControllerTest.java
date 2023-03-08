@@ -321,7 +321,7 @@ public class CreatorControllerTest extends AuthSetupForMock {
             "VOGUE 패션 메거진", "beauty");
         CreatorAdminResponses creatorAdminResponses = new CreatorAdminResponses(
             List.of(creatorAdminResponse1, creatorAdminResponse2, creatorAdminResponse3,
-                creatorAdminResponse4), false);
+                creatorAdminResponse4), 0, 1);
 
         when(creatorService.retrieveCreatorsForAdmin(any())).thenReturn(creatorAdminResponses);
 
@@ -347,7 +347,8 @@ public class CreatorControllerTest extends AuthSetupForMock {
                         .description("크리에이터 소개글"),
                     fieldWithPath("creators[].categoryName").type(JsonFieldType.STRING)
                         .description("크리에이터 카테고리 이름"),
-                    fieldWithPath("hasNext").type(JsonFieldType.BOOLEAN).description("다음 페이지 존재 여부")
+                    fieldWithPath("currentPage").type(JsonFieldType.NUMBER).description("현재 조회중인 페이지 번호"),
+                    fieldWithPath("totalPage").type(JsonFieldType.NUMBER).description("전체 페이지 번호")
                 )
             ));
       }
