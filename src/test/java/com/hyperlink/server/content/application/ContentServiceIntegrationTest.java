@@ -16,6 +16,7 @@ import com.hyperlink.server.domain.category.exception.CategoryNotFoundException;
 import com.hyperlink.server.domain.content.application.ContentService;
 import com.hyperlink.server.domain.content.domain.ContentRepository;
 import com.hyperlink.server.domain.content.domain.entity.Content;
+import com.hyperlink.server.domain.content.dto.ContentAdminResponses;
 import com.hyperlink.server.domain.content.dto.ContentEnrollResponse;
 import com.hyperlink.server.domain.content.dto.ContentResponse;
 import com.hyperlink.server.domain.content.dto.GetContentsCommonResponse;
@@ -52,8 +53,10 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -410,7 +413,7 @@ public class ContentServiceIntegrationTest {
     Member member;
 
     @BeforeEach
-    void setUp() {
+    void setUp() throws InterruptedException {
       Creator creator2 = new Creator("코딩팩토리", "profileUrl", "description", category);
       creatorRepository.save(creator2);
       Category category2 = new Category("패션");
@@ -593,6 +596,28 @@ public class ContentServiceIntegrationTest {
         List<ContentResponse> contents = getContentsCommonResponse.contents();
         assertThat(contents).hasSize(3);
         assertThat(contents.get(0).title()).isEqualTo("제목3");
+      }
+    }
+
+    @Nested
+    @DisplayName("[어드민 페이지] 비활성화된 글을")
+    class InactivatedContent {
+
+      @Nested
+      @DisplayName("[성공]")
+      class Success {
+        @Test
+        @DisplayName("최신순으로 조회할 수 있다.")
+        void retrieveInactivatedContent() {
+          contentService.activateContent(content2.getId());
+
+          ContentAdminResponses contentAdminResponses = contentService.retrieveInactivatedContents(
+              PageRequest.of(0, 10));
+
+          assertThat(contentAdminResponses.contents()).hasSize(3);
+          assertThat(contentAdminResponses.contents().get(0).title()).isEqualTo("제목4");
+          assertThat(contentAdminResponses.contents().get(2).title()).isEqualTo("제목1");
+        }
       }
     }
   }
