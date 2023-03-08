@@ -1,7 +1,5 @@
 package com.hyperlink.server.domain.member.controller;
 
-import com.hyperlink.server.domain.attentionCategory.dto.AttentionCategoryRequest;
-import com.hyperlink.server.domain.attentionCategory.dto.AttentionCategoryResponse;
 import com.hyperlink.server.domain.auth.application.AuthService;
 import com.hyperlink.server.domain.auth.oauth.GoogleAccessToken;
 import com.hyperlink.server.domain.auth.token.AuthTokenExtractor;
@@ -77,15 +75,6 @@ public class MemberController {
     log.info("#### optional: " + optionalId.isEmpty());
     Long memberId = optionalId.orElseThrow(MemberNotFoundException::new);
     return memberService.myInfo(memberId);
-  }
-
-  @PutMapping("/members/attention-category")
-  @ResponseStatus(HttpStatus.OK)
-  public AttentionCategoryResponse changeAttentionCategory(
-      @LoginMemberId Optional<Long> optionalId,
-      @RequestBody AttentionCategoryRequest attentionCategoryRequest) {
-    Long memberId = optionalId.orElseThrow(MemberNotFoundException::new);
-    return memberService.changeAttentionCategory(memberId, attentionCategoryRequest);
   }
 
   private GoogleAccessToken getGoogleAccessToken(HttpServletRequest request) {

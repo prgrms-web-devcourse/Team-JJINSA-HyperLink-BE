@@ -45,7 +45,7 @@ public class MemberService {
   @Transactional
   public SignUpResult signUp(SignUpRequest signUpRequest, String profileUrl) {
     Member savedMember = memberRepository.save(SignUpRequest.to(signUpRequest, profileUrl));
-    attentionCategoryService.changeAttentionCategory(savedMember,
+    attentionCategoryService.changeAttentionCategory(savedMember.getId(),
         signUpRequest.attentionCategory());
 
     Long memberId = savedMember.getId();
@@ -61,17 +61,6 @@ public class MemberService {
         .orElseThrow(MemberNotFoundException::new);
 
     return MyPageResponse.from(foundMember);
-  }
-
-  @Transactional
-  public AttentionCategoryResponse changeAttentionCategory(
-      Long memberId, AttentionCategoryRequest attentionCategoryRequest) {
-    Member foundMember = memberRepository.findById(memberId)
-        .orElseThrow(MemberNotFoundException::new);
-    AttentionCategoryResponse attentionCategoryResponse = attentionCategoryService.changeAttentionCategory(
-        foundMember, attentionCategoryRequest.attentionCategory());
-
-    return attentionCategoryResponse;
   }
 
   @Transactional

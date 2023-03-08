@@ -3,8 +3,6 @@ package com.hyperlink.server.member.application;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import com.hyperlink.server.domain.attentionCategory.dto.AttentionCategoryRequest;
-import com.hyperlink.server.domain.attentionCategory.dto.AttentionCategoryResponse;
 import com.hyperlink.server.domain.auth.token.AuthTokenExtractor;
 import com.hyperlink.server.domain.auth.token.RefreshTokenRepository;
 import com.hyperlink.server.domain.category.domain.CategoryRepository;
@@ -22,7 +20,6 @@ import com.hyperlink.server.domain.member.dto.MyPageResponse;
 import com.hyperlink.server.domain.member.dto.SignUpRequest;
 import com.hyperlink.server.domain.member.dto.SignUpResult;
 import com.hyperlink.server.domain.member.exception.MemberNotFoundException;
-import java.util.Arrays;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -155,7 +152,7 @@ class MemberServiceIntegrationTest {
         () -> memberService.changeAttentionCategory(1000L, attentionCategoryRequest)).isInstanceOf(
         MemberNotFoundException.class);
   }
-
+  
   @DisplayName("프로필 정보를 변경할 수 있다.")
   @Test
   void changeProfileTest() {
