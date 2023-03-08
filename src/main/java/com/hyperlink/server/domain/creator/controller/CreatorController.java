@@ -2,9 +2,12 @@ package com.hyperlink.server.domain.creator.controller;
 
 import com.hyperlink.server.domain.auth.token.exception.TokenNotExistsException;
 import com.hyperlink.server.domain.creator.application.CreatorService;
+import com.hyperlink.server.domain.creator.dto.CreatorAdminResponse;
+import com.hyperlink.server.domain.creator.dto.CreatorAdminResponses;
 import com.hyperlink.server.domain.creator.dto.CreatorEnrollRequest;
 import com.hyperlink.server.domain.creator.dto.CreatorEnrollResponse;
 import com.hyperlink.server.domain.creator.dto.CreatorsRetrievalResponse;
+import com.hyperlink.server.domain.member.exception.MemberNotFoundException;
 import com.hyperlink.server.global.config.LoginMemberId;
 import java.util.Optional;
 import javax.validation.Valid;
@@ -12,6 +15,7 @@ import javax.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,11 +25,23 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+@Validated
 @RestController
 @RequiredArgsConstructor
 public class CreatorController {
 
   private final CreatorService creatorService;
+
+  @GetMapping("/admin/creators")
+  @ResponseStatus(HttpStatus.OK)
+  public CreatorAdminResponses retrieveAdminCreators(
+      @LoginMemberId Optional<Long> optionalMemberId,
+      @RequestParam("page") @NotNull int page,
+      @RequestParam("size") @NotNull int size
+  ) {
+//    optionalMemberId.orElseThrow(MemberNotFoundException::new);
+    return creatorService.retrieveCreatorsForAdmin(PageRequest.of(page, size));
+  }
 
 
   @PostMapping("/admin/creators")

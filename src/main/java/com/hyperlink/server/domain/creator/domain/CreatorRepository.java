@@ -3,6 +3,7 @@ package com.hyperlink.server.domain.creator.domain;
 import com.hyperlink.server.domain.creator.domain.entity.Creator;
 import com.hyperlink.server.domain.creator.dto.CreatorAndSubscriptionCountMapper;
 import com.hyperlink.server.domain.creator.dto.SubscribeFlagMapper;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -40,4 +41,7 @@ public interface CreatorRepository extends JpaRepository<Creator, Long> {
           + "where c.category.id = :categoryId")
   Slice<SubscribeFlagMapper> findCreatorIdAndSubscribeFlagByMemberIdAndCategoryId(
       @Param("memberId") Long memberId, @Param("categoryId") Long categoryId, Pageable pageable);
+
+  @Query("select c from Creator c join fetch c.category")
+  Slice<Creator> findCreators(Pageable pageable);
 }
