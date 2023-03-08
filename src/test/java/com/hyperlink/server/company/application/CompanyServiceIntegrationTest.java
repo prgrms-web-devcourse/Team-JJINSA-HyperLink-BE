@@ -3,6 +3,7 @@ package com.hyperlink.server.company.application;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.hyperlink.server.domain.company.application.CompanyService;
+import com.hyperlink.server.domain.company.dto.MailRequest;
 import com.hyperlink.server.domain.company.exception.MailAuthInvalidException;
 import com.hyperlink.server.domain.company.mail.MailAuth;
 import com.hyperlink.server.domain.company.mail.MailAuthRepository;
@@ -27,12 +28,13 @@ class CompanyServiceIntegrationTest {
   void saveMailAuthNumberTest() {
     String email = "rldnd2637@naver.com";
     int authNumber = 123456;
-    companyService.saveMailAuthNumber(email, authNumber);
+    MailRequest mailRequest = new MailRequest(email);
+    companyService.saveMailAuthNumber(mailRequest, authNumber);
 
     MailAuth foundMailAuth = mailAuthRepository.findById(email)
         .orElseThrow(MailAuthInvalidException::new);
 
-    assertThat(foundMailAuth.getEmail()).isEqualTo(email);
+    assertThat(foundMailAuth.getCompanyEmail()).isEqualTo(email);
     assertThat(foundMailAuth.getAuthNumber()).isEqualTo(authNumber);
   }
 }

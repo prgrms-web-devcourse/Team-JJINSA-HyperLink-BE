@@ -1,7 +1,6 @@
 package com.hyperlink.server.domain.member.application;
 
 import com.hyperlink.server.domain.attentionCategory.application.AttentionCategoryService;
-import com.hyperlink.server.domain.attentionCategory.domain.AttentionCategoryRepository;
 import com.hyperlink.server.domain.attentionCategory.dto.AttentionCategoryRequest;
 import com.hyperlink.server.domain.attentionCategory.dto.AttentionCategoryResponse;
 import com.hyperlink.server.domain.auth.token.JwtTokenProvider;
@@ -29,18 +28,14 @@ public class MemberService {
   private final AttentionCategoryService attentionCategoryService;
   private final JwtTokenProvider jwtTokenProvider;
   private final RefreshTokenRepository refreshTokenRepository;
-  private final AttentionCategoryRepository attentionCategoryRepository;
 
   public MemberService(MemberRepository memberRepository,
       AttentionCategoryService attentionCategoryService,
-      JwtTokenProvider jwtTokenProvider, RefreshTokenRepository refreshTokenRepository,
-      AttentionCategoryRepository attentionCategoryRepository) {
+      JwtTokenProvider jwtTokenProvider, RefreshTokenRepository refreshTokenRepository) {
     this.memberRepository = memberRepository;
-
     this.attentionCategoryService = attentionCategoryService;
     this.jwtTokenProvider = jwtTokenProvider;
     this.refreshTokenRepository = refreshTokenRepository;
-    this.attentionCategoryRepository = attentionCategoryRepository;
   }
 
   public boolean existsMemberByEmail(String email) {
@@ -64,6 +59,7 @@ public class MemberService {
   public MyPageResponse myInfo(Long memberId) {
     Member foundMember = memberRepository.findById(memberId)
         .orElseThrow(MemberNotFoundException::new);
+
     return MyPageResponse.from(foundMember);
   }
 
