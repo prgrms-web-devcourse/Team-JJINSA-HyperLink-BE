@@ -2,6 +2,7 @@ package com.hyperlink.server.creator.application;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -12,6 +13,7 @@ import com.hyperlink.server.domain.category.exception.CategoryNotFoundException;
 import com.hyperlink.server.domain.creator.application.CreatorService;
 import com.hyperlink.server.domain.creator.domain.CreatorRepository;
 import com.hyperlink.server.domain.creator.domain.entity.Creator;
+import com.hyperlink.server.domain.creator.dto.CreatorAdminResponses;
 import com.hyperlink.server.domain.creator.dto.CreatorEnrollRequest;
 import com.hyperlink.server.domain.creator.dto.CreatorEnrollResponse;
 import com.hyperlink.server.domain.creator.exception.CreatorNotFoundException;
@@ -30,6 +32,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
@@ -164,4 +167,29 @@ public class CreatorServiceIntegrationTest {
     }
   }
 
+
+  @Nested
+  @DisplayName("[Admin] 크리에이터 전체 조회 메소드는")
+  class CreatorAdminRetrieval {
+    @Test
+    @DisplayName("성공하면 전체 크리에이터를 조회한.")
+    public void success() throws Exception {
+      Category develop = new Category("개발");
+      Category beauty = new Category("패션");
+      categoryRepository.save(develop);
+      categoryRepository.save(beauty);
+      Creator creator1 = new Creator("개발크리에이터1", "profileImgUrl1", "description", develop);
+      Creator creator2 = new Creator("개발크리에이터2", "profileImgUrl2", "description", develop);
+      Creator creator3 = new Creator("개발크리에이터3", "profileImgUrl3", "description", develop);
+      Creator creator4 = new Creator("뷰티크리에이터1", "profileImgUrl4", "description", beauty);
+      Creator creator5 = new Creator("뷰티크리에이터2", "profileImgUrl5", "description", beauty);
+      creatorRepository.saveAll(List.of(creator1, creator2, creator3, creator4, creator5));
+
+      CreatorAdminResponses creatorAdminResponses = creatorService.retrieveCreatorsForAdmin(
+          PageRequest.of(0, 10));
+
+      assertEquals(5, creatorAdminResponses.creators().size());
+      assertEquals("패션", creatorAdminResponses.creators().get(4).categoryName());
+    }
+  }
 }
