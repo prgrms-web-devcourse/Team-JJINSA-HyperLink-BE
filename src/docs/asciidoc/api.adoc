@@ -75,6 +75,10 @@ operation::SubscriptionControllerTest/retrieveByCategory[snippets='http-request,
 === 구독 피드 전체 카테고리 조회
 operation::SubscriptionControllerTest/retrieveAllCategory[snippets='http-request,http-response']
 
+== Daily-Briefing
+=== 데일리 브리핑 조회
+operation::DailyBriefingControllerTest/getDailyBriefing[snippets='http-request,http-response']
+
 == Admin
 
 === 크리에이터 삭제
