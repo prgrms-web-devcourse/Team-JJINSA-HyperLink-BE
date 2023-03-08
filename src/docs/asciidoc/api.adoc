@@ -66,13 +66,17 @@ operation::MemberHistoryControllerTest/getAllHistory[snippets='http-request,http
 operation::CreatorControllerTest/notRecommend[snippets='http-request,http-response']
 
 == Subscription
+
 === 크리에이터 구독/구독 취소
+
 operation::SubscriptionControllerTest/subscribeOrUnsubscribeCreator[snippets='http-request,http-response']
 
 === 구독 피드 카테고리별 조회
+
 operation::SubscriptionControllerTest/retrieveByCategory[snippets='http-request,http-response']
 
 === 구독 피드 전체 카테고리 조회
+
 operation::SubscriptionControllerTest/retrieveAllCategory[snippets='http-request,http-response']
 
 == Daily-Briefing
@@ -90,5 +94,11 @@ operation::CreatorControllerTest/deleteCreator[snippets='http-request,http-respo
 operation::CreatorControllerTest/enrollCreator[snippets='http-request,http-response']
 
 === 컨텐츠 활성화
+
 operation::ContentControllerTest/activateContent[snippets='http-request,http-response']
 
+== Company
+
+=== 이메일 인증번호 요청
+
+operation::company/auth[snippets='http-request,http-response']
