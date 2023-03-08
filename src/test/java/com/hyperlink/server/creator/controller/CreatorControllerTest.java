@@ -296,80 +296,129 @@ public class CreatorControllerTest extends AuthSetupForMock {
   @Nested
   @DisplayName("크리에이터 조회 API는")
   class CreatorRetrievalTest {
-
-    @BeforeEach
-    void setUp() {
-      authSetup();
-    }
-
+  
     @Nested
-    @DisplayName("[성공] 올바른 카테고리 이름이 들어오면")
-    class Success {
+    @DisplayName("크리에이터 전체 조회 시")
+    class RetrievalAll {
+      @BeforeEach
+      void setUp() {
+        authSetup();
+      }
 
-      @Test
-      @DisplayName("로그인 상태에 맞추어 구독 여부와 구독자 수가 포함된 크리에이터 정보를 반환한다.")
-      void retrieveCreatorByCategoryOrAllCategory() throws Exception {
-        String page = "0";
-        String size = "10";
-        String category = "develop";
-        CreatorResponse naverD2 = new CreatorResponse(1L, "네이버 D2", 500000, "네이버 D2 블로그입니다.", true,
-            "https://img.naverd2.com/logo");
-        CreatorResponse kakao = new CreatorResponse(2L, "카카오 디벨로퍼스", 230421, "카카오 디벨로퍼스 블로그입니다.", false,
-            "https://img.kakao.com/logo");
-        CreatorsRetrievalResponse creatorsRetrievalResponse = new CreatorsRetrievalResponse(
-            List.of(naverD2, kakao), false);
+      @Nested
+      @DisplayName("[성공] 올바른 카테고리 이름이 들어오면")
+      class Success {
 
-        when(creatorService.getCreatorsByCategory(any(), any(), any())).thenReturn(
-            creatorsRetrievalResponse);
+        @Test
+        @DisplayName("로그인 상태에 맞추어 구독 여부와 구독자 수가 포함된 크리에이터 정보를 반환한다.")
+        void retrieveCreatorByCategoryOrAllCategory() throws Exception {
+          String page = "0";
+          String size = "10";
+          String category = "develop";
+          CreatorResponse naverD2 = new CreatorResponse(1L, "네이버 D2", 500000, "네이버 D2 블로그입니다.", true,
+              "https://img.naverd2.com/logo");
+          CreatorResponse kakao = new CreatorResponse(2L, "카카오 디벨로퍼스", 230421, "카카오 디벨로퍼스 블로그입니다.", false,
+              "https://img.kakao.com/logo");
+          CreatorsRetrievalResponse creatorsRetrievalResponse = new CreatorsRetrievalResponse(
+              List.of(naverD2, kakao), false);
 
-        mockMvc.perform(get("/creators")
-                .header(HttpHeaders.AUTHORIZATION, authorizationHeader)
-                .param("category", category)
-                .param("page", page)
-                .param("size", size)
-                .contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andDo(print())
-            .andDo(document("CreatorControllerTest/retrieveCreator",
-                preprocessRequest(prettyPrint()),
-                preprocessResponse(prettyPrint()),
-                requestHeaders(
-                    headerWithName("Authorization").description("accessToken")
-                ),
-                responseFields(
-                    fieldWithPath("creators[]").type(JsonFieldType.ARRAY).description("크리에이터 목록"),
-                    fieldWithPath("creators[].creatorId").type(JsonFieldType.NUMBER).description("크리에이터 id"),
-                    fieldWithPath("creators[].creatorName").type(JsonFieldType.STRING).description("크리에이터 이름"),
-                    fieldWithPath("creators[].subscriberAmount").type(JsonFieldType.NUMBER).description("구독자 수"),
-                    fieldWithPath("creators[].creatorDescription").type(JsonFieldType.STRING).description("크리에이터 소개글"),
-                    fieldWithPath("creators[].isSubscribed").type(JsonFieldType.BOOLEAN).description("구독 여부"),
-                    fieldWithPath("creators[].profileImgUrl").type(JsonFieldType.STRING).description("크리에이터 프로필 이미지 URL"),
-                    fieldWithPath("hasNext").type(JsonFieldType.BOOLEAN).description("다음 페이지 존재 여부")
-                )
-            ));
+          when(creatorService.getCreatorsByCategory(any(), any(), any())).thenReturn(
+              creatorsRetrievalResponse);
+
+          mockMvc.perform(get("/creators")
+                  .header(HttpHeaders.AUTHORIZATION, authorizationHeader)
+                  .param("category", category)
+                  .param("page", page)
+                  .param("size", size)
+                  .contentType(MediaType.APPLICATION_JSON))
+              .andExpect(status().isOk())
+              .andDo(print())
+              .andDo(document("CreatorControllerTest/retrieveCreator",
+                  preprocessRequest(prettyPrint()),
+                  preprocessResponse(prettyPrint()),
+                  requestHeaders(
+                      headerWithName("Authorization").description("accessToken")
+                  ),
+                  responseFields(
+                      fieldWithPath("creators[]").type(JsonFieldType.ARRAY).description("크리에이터 목록"),
+                      fieldWithPath("creators[].creatorId").type(JsonFieldType.NUMBER).description("크리에이터 id"),
+                      fieldWithPath("creators[].creatorName").type(JsonFieldType.STRING).description("크리에이터 이름"),
+                      fieldWithPath("creators[].subscriberAmount").type(JsonFieldType.NUMBER).description("구독자 수"),
+                      fieldWithPath("creators[].creatorDescription").type(JsonFieldType.STRING).description("크리에이터 소개글"),
+                      fieldWithPath("creators[].isSubscribed").type(JsonFieldType.BOOLEAN).description("구독 여부"),
+                      fieldWithPath("creators[].profileImgUrl").type(JsonFieldType.STRING).description("크리에이터 프로필 이미지 URL"),
+                      fieldWithPath("hasNext").type(JsonFieldType.BOOLEAN).description("다음 페이지 존재 여부")
+                  )
+              ));
+        }
+      }
+
+      @Nested
+      @DisplayName("[실패]")
+      class Fail {
+
+        @Test
+        @DisplayName("인자가 잘못 입력되면 MissingServletRequestParameterException 이 발생한다.")
+        void missArgumentThrowsMissingServletRequestParameterException() throws Exception {
+          String page = null;
+          String size = null;
+          String category = null;
+
+          mockMvc.perform(get("/creators")
+                  .header(HttpHeaders.AUTHORIZATION, authorizationHeader)
+                  .param("category", category)
+                  .param("page", page)
+                  .param("size", size)
+                  .contentType(MediaType.APPLICATION_JSON))
+              .andExpect(status().isBadRequest())
+              .andExpect(response -> Assertions.assertTrue(
+                  response.getResolvedException() instanceof MissingServletRequestParameterException));
+        }
       }
     }
 
     @Nested
-    @DisplayName("[실패]")
-    class Fail {
+    @DisplayName("크리에이터 단일 조회 시")
+    class RetrievalOne {
+      @BeforeEach
+      void setUp() {
+        authSetup();
+      }
 
-      @Test
-      @DisplayName("인자가 잘못 입력되면 MissingServletRequestParameterException 이 발생한다.")
-      void missArgumentThrowsMissingServletRequestParameterException() throws Exception {
-        String page = null;
-        String size = null;
-        String category = null;
+      @Nested
+      @DisplayName("[성공] 올바른 크리에이터 들어오면")
+      class Success {
 
-        mockMvc.perform(get("/creators")
-                .header(HttpHeaders.AUTHORIZATION, authorizationHeader)
-                .param("category", category)
-                .param("page", page)
-                .param("size", size)
-                .contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isBadRequest())
-            .andExpect(response -> Assertions.assertTrue(
-                response.getResolvedException() instanceof MissingServletRequestParameterException));
+        @Test
+        @DisplayName("로그인 상태에 맞추어 구독 여부와 구독자 수가 포함된 크리에이터 정보를 반환한다.")
+        void retrieveCreatorByCategoryOrAllCategory() throws Exception {
+          Long creatorId = 1L;
+          CreatorResponse naverD2Info = new CreatorResponse(1L, "네이버 D2", 500000, "네이버 D2 블로그입니다.", true,
+              "https://img.naverd2.com/logo");
+
+          when(creatorService.getCreatorDetail(any(), any())).thenReturn(naverD2Info);
+
+          mockMvc.perform(get("/creators/" + creatorId)
+                  .header(HttpHeaders.AUTHORIZATION, authorizationHeader)
+                  .contentType(MediaType.APPLICATION_JSON))
+              .andExpect(status().isOk())
+              .andDo(print())
+              .andDo(document("CreatorControllerTest/retrieveCreatorDetail",
+                  preprocessRequest(prettyPrint()),
+                  preprocessResponse(prettyPrint()),
+                  requestHeaders(
+                      headerWithName("Authorization").description("accessToken")
+                  ),
+                  responseFields(
+                      fieldWithPath("creatorId").type(JsonFieldType.NUMBER).description("크리에이터 id"),
+                      fieldWithPath("creatorName").type(JsonFieldType.STRING).description("크리에이터 이름"),
+                      fieldWithPath("subscriberAmount").type(JsonFieldType.NUMBER).description("구독자 수"),
+                      fieldWithPath("creatorDescription").type(JsonFieldType.STRING).description("크리에이터 소개글"),
+                      fieldWithPath("isSubscribed").type(JsonFieldType.BOOLEAN).description("구독 여부"),
+                      fieldWithPath("profileImgUrl").type(JsonFieldType.STRING).description("크리에이터 프로필 이미지 URL")
+                  )
+              ));
+        }
       }
     }
   }

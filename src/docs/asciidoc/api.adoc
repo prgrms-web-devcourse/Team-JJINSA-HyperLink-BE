@@ -65,6 +65,10 @@ operation::MemberHistoryControllerTest/getAllHistory[snippets='http-request,http
 
 operation::CreatorControllerTest/notRecommend[snippets='http-request,http-response']
 
+=== 크리에이터 상세 조회
+
+operation::CreatorControllerTest/retrieveCreatorDetail[snippets='http-request,http-response']
+
 === 크리에이터 조회
 
 operation::CreatorControllerTest/retrieveCreator[snippets='http-request,http-response']

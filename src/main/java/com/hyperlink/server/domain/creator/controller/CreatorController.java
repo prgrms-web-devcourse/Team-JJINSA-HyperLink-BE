@@ -4,6 +4,7 @@ import com.hyperlink.server.domain.auth.token.exception.TokenNotExistsException;
 import com.hyperlink.server.domain.creator.application.CreatorService;
 import com.hyperlink.server.domain.creator.dto.CreatorEnrollRequest;
 import com.hyperlink.server.domain.creator.dto.CreatorEnrollResponse;
+import com.hyperlink.server.domain.creator.dto.CreatorResponse;
 import com.hyperlink.server.domain.creator.dto.CreatorsRetrievalResponse;
 import com.hyperlink.server.global.config.LoginMemberId;
 import java.util.Optional;
@@ -62,5 +63,14 @@ public class CreatorController {
       @RequestParam("size") @NotNull int size) {
     Long memberId = optionalMemberId.orElse(null);
     return creatorService.getCreatorsByCategory(memberId, category, PageRequest.of(page, size));
+  }
+
+  @GetMapping("/creators/{creatorId}")
+  @ResponseStatus(HttpStatus.OK)
+  public CreatorResponse getCreatorDetail(
+      @LoginMemberId Optional<Long> optionalMemberId,
+      @PathVariable("creatorId") Long creatorId) {
+    Long memberId = optionalMemberId.orElse(null);
+    return creatorService.getCreatorDetail(memberId, creatorId);
   }
 }
