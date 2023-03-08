@@ -438,4 +438,66 @@ public class CreatorControllerTest extends AuthSetupForMock {
     }
   }
 
+  @Nested
+  @DisplayName("[Admin] 크리에이터 전체 조회 API는")
+  class CreatorRetrievalAdminTest {
+
+    @Nested
+    @DisplayName("[성공]")
+    class Success {
+
+      @BeforeEach
+      void setUp() {
+        authSetup();
+      }
+
+      @Test
+      @DisplayName("전체 크리에이터 정보를 조회한다.")
+      void retrieveCreatorForAdminReturnsOK() throws Exception {
+        String page = "0";
+        String size = "10";
+        CreatorAdminResponse creatorAdminResponse1 = new CreatorAdminResponse(1L, "네이버 D2",
+            "네이버 D2 블로그", "develop");
+        CreatorAdminResponse creatorAdminResponse2 = new CreatorAdminResponse(2L, "카카오 디벨로퍼스",
+            "카카오 디벨로퍼스 블로그", "develop");
+        CreatorAdminResponse creatorAdminResponse3 = new CreatorAdminResponse(3L, "토스 테크",
+            "토스 테크 블로그", "develop");
+        CreatorAdminResponse creatorAdminResponse4 = new CreatorAdminResponse(4L, "VOGUE",
+            "VOGUE 패션 메거진", "beauty");
+        CreatorAdminResponses creatorAdminResponses = new CreatorAdminResponses(
+            List.of(creatorAdminResponse1, creatorAdminResponse2, creatorAdminResponse3,
+                creatorAdminResponse4), 0, 1);
+
+        when(creatorService.retrieveCreatorsForAdmin(any())).thenReturn(creatorAdminResponses);
+
+        mockMvc.perform(get("/admin/creators")
+                .header(HttpHeaders.AUTHORIZATION, authorizationHeader)
+                .param("page", page)
+                .param("size", size))
+            .andExpect(status().isOk())
+            .andDo(print())
+            .andDo(document("CreatorControllerTest/retrieveCreatorsAdmin",
+                preprocessRequest(prettyPrint()),
+                preprocessResponse(prettyPrint()),
+                requestHeaders(
+                    headerWithName("Authorization").description("accessToken")
+                ),
+                responseFields(
+                    fieldWithPath("creators[]").type(JsonFieldType.ARRAY).description("크리에이터 목록"),
+                    fieldWithPath("creators[].creatorId").type(JsonFieldType.NUMBER)
+                        .description("크리에이터 id"),
+                    fieldWithPath("creators[].name").type(JsonFieldType.STRING)
+                        .description("크리에이터 이름"),
+                    fieldWithPath("creators[].description").type(JsonFieldType.STRING)
+                        .description("크리에이터 소개글"),
+                    fieldWithPath("creators[].categoryName").type(JsonFieldType.STRING)
+                        .description("크리에이터 카테고리 이름"),
+                    fieldWithPath("currentPage").type(JsonFieldType.NUMBER).description("현재 조회중인 페이지 번호"),
+                    fieldWithPath("totalPage").type(JsonFieldType.NUMBER).description("전체 페이지 번호")
+                )
+            ));
+      }
+    }
+  }
+
 }
