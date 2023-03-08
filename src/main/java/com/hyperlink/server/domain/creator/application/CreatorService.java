@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
@@ -58,17 +59,18 @@ public class CreatorService {
   public void deleteCreator(Long creatorId) {
     try {
       creatorRepository.deleteById(creatorId);
-    } catch(EmptyResultDataAccessException e) {
+    } catch (EmptyResultDataAccessException e) {
       throw new CreatorNotFoundException();
     }
   }
 
   public CreatorAdminResponses retrieveCreatorsForAdmin(PageRequest pageable) {
-    Slice<Creator> creatorSlice = creatorRepository.findCreators(pageable);
-    List<Creator> creators = creatorSlice.getContent();
+    Page<Creator> creatorPagination = creatorRepository.findCreators(pageable);
+    List<Creator> creators = creatorPagination.getContent();
 
     List<CreatorAdminResponse> creatorAdminResponses = creators.stream()
         .map(CreatorAdminResponse::from).toList();
-    return new CreatorAdminResponses(creatorAdminResponses, creatorSlice.hasNext());
+    return new CreatorAdminResponses(creatorAdminResponses, creatorPagination.getNumber(),
+        creatorPagination.getTotalPages());
   }
 }

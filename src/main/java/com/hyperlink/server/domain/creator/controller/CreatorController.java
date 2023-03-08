@@ -10,6 +10,7 @@ import com.hyperlink.server.domain.member.exception.MemberNotFoundException;
 import com.hyperlink.server.global.config.LoginMemberId;
 import java.util.Optional;
 import javax.validation.Valid;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -35,10 +36,10 @@ public class CreatorController {
   @ResponseStatus(HttpStatus.OK)
   public CreatorAdminResponses retrieveAdminCreators(
       @LoginMemberId Optional<Long> optionalMemberId,
-      @RequestParam("page") @NotNull int page,
-      @RequestParam("size") @NotNull int size
+      @RequestParam("page") @Min(0) @NotNull int page,
+      @RequestParam("size") @Min(1) @NotNull int size
   ) {
-//    optionalMemberId.orElseThrow(MemberNotFoundException::new);
+    optionalMemberId.orElseThrow(MemberNotFoundException::new);
     return creatorService.retrieveCreatorsForAdmin(PageRequest.of(page, size));
   }
 
