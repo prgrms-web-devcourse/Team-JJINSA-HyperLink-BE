@@ -2,7 +2,6 @@ package com.hyperlink.server.domain.creator.controller;
 
 import com.hyperlink.server.domain.auth.token.exception.TokenNotExistsException;
 import com.hyperlink.server.domain.creator.application.CreatorService;
-import com.hyperlink.server.domain.creator.dto.CreatorAdminResponse;
 import com.hyperlink.server.domain.creator.dto.CreatorAdminResponses;
 import com.hyperlink.server.domain.creator.dto.CreatorEnrollRequest;
 import com.hyperlink.server.domain.creator.dto.CreatorEnrollResponse;

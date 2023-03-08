@@ -5,9 +5,9 @@ import com.hyperlink.server.domain.category.domain.entity.Category;
 import com.hyperlink.server.domain.category.exception.CategoryNotFoundException;
 import com.hyperlink.server.domain.creator.domain.CreatorRepository;
 import com.hyperlink.server.domain.creator.domain.entity.Creator;
-import com.hyperlink.server.domain.creator.dto.CreatorAndSubscriptionCountMapper;
 import com.hyperlink.server.domain.creator.dto.CreatorAdminResponse;
 import com.hyperlink.server.domain.creator.dto.CreatorAdminResponses;
+import com.hyperlink.server.domain.creator.dto.CreatorAndSubscriptionCountMapper;
 import com.hyperlink.server.domain.creator.dto.CreatorEnrollRequest;
 import com.hyperlink.server.domain.creator.dto.CreatorEnrollResponse;
 import com.hyperlink.server.domain.creator.dto.CreatorResponse;
@@ -21,13 +21,11 @@ import com.hyperlink.server.domain.notRecommendCreator.domain.NotRecommendCreato
 import com.hyperlink.server.domain.notRecommendCreator.domain.entity.NotRecommendCreator;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -70,7 +68,7 @@ public class CreatorService {
     }
   }
 
-  public CreatorAdminResponses retrieveCreatorsForAdmin(PageRequest pageable) {
+  public CreatorAdminResponses retrieveCreatorsForAdmin(Pageable pageable) {
     Page<Creator> creatorPagination = creatorRepository.findCreators(pageable);
     List<Creator> creators = creatorPagination.getContent();
 
