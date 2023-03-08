@@ -8,6 +8,7 @@ import com.hyperlink.server.domain.category.domain.CategoryRepository;
 import com.hyperlink.server.domain.category.domain.entity.Category;
 import com.hyperlink.server.domain.content.domain.ContentRepository;
 import com.hyperlink.server.domain.content.domain.entity.Content;
+import com.hyperlink.server.domain.content.dto.BookMarkedContentPageResponse;
 import com.hyperlink.server.domain.creator.domain.CreatorRepository;
 import com.hyperlink.server.domain.creator.domain.entity.Creator;
 import com.hyperlink.server.domain.member.domain.Career;
@@ -17,8 +18,12 @@ import com.hyperlink.server.domain.member.domain.entity.Member;
 import com.hyperlink.server.domain.memberContent.application.MemberContentService;
 import com.hyperlink.server.domain.memberContent.domain.MemberContentRepository;
 import com.hyperlink.server.domain.memberContent.domain.entity.MemberContent;
+import com.hyperlink.server.domain.memberContent.dto.BookmarkPageResponse;
 import com.hyperlink.server.domain.memberContent.exception.BookmarkExistedException;
 import com.hyperlink.server.domain.memberContent.exception.BookmarkNotFoundException;
+import java.util.ArrayList;
+import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -27,6 +32,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @SpringBootTest
 @Transactional
 @DisplayName("memberContentService 통합테스트")
@@ -47,16 +53,18 @@ public class MemberContentServiceIntegrationTest {
 
   Member member;
   Content content;
+  Category newCategory;
+  Creator newCreator;
 
   @BeforeEach
   void setUp() {
     member = new Member("email", "nickname", Career.DEVELOP, CareerYear.MORE_THAN_TEN,
         "profileImgUrl");
-    Category category = new Category("개발");
+    Category category = new Category("개발2");
     Creator creator = new Creator("name", "profile", "description", category);
     content = new Content("title", "contentImgUrl", "link", creator, category);
-    categoryRepository.save(category);
-    creatorRepository.save(creator);
+    newCategory = categoryRepository.save(category);
+    newCreator = creatorRepository.save(creator);
     memberRepository.save(member);
     contentRepository.save(content);
   }
@@ -77,12 +85,12 @@ public class MemberContentServiceIntegrationTest {
 
         memberContentService.createBookmark(memberId, contentId);
 
-        MemberContent memberContent = memberContentRepository.findMemberContentByMemberIdAndContentIdAndType(
-            memberId, contentId, BOOKMARK.getTypeNumber()).orElseGet(() -> null);
+        MemberContent memberContent = memberContentRepository.findMemberContentByMemberIdAndContentAndType(
+            memberId, content, BOOKMARK.getTypeNumber()).orElseGet(() -> null);
 
         assertThat(memberContent).isNotNull();
         assertThat(memberContent.getMemberId()).isEqualTo(memberId);
-        assertThat(memberContent.getContentId()).isEqualTo(contentId);
+        assertThat(memberContent.getContent().getId()).isEqualTo(contentId);
       }
 
       @Test
@@ -122,12 +130,54 @@ public class MemberContentServiceIntegrationTest {
 
         memberContentService.deleteBookmark(memberId, contentId);
 
-        MemberContent memberContent = memberContentRepository.findMemberContentByMemberIdAndContentIdAndType(
-            memberId, contentId, BOOKMARK.getTypeNumber()).orElseGet(() -> null);
+        MemberContent memberContent = memberContentRepository.findMemberContentByMemberIdAndContentAndType(
+            memberId, content, BOOKMARK.getTypeNumber()).orElseGet(() -> null);
         assertThat(memberContent).isNull();
       }
-
     }
 
+  }
+
+  @DisplayName("북마크한 컨텐츠들을 가져올 수 있다.")
+  @Test
+  void findBookmarkedContentForSliceTest() {
+    List<Content> contents = new ArrayList<>();
+    for (int i = 0; i < 5; i++) {
+      Content savedContent = contentRepository.save(
+          content = new Content("title" + i, "contentImgUrl" + i, "link" + i,
+              newCreator, newCategory));
+      contents.add(savedContent);
+
+      memberContentService.createBookmark(member.getId(), savedContent.getId());
+    }
+    BookmarkPageResponse bookmarkedContentForSlice1 = memberContentService.findBookmarkedContentForSlice(
+        member.getId(), 0, 2);
+    BookmarkPageResponse bookmarkedContentForSlice2 = memberContentService.findBookmarkedContentForSlice(
+        member.getId(), 1, 2);
+    BookmarkPageResponse bookmarkedContentForSlice3 = memberContentService.findBookmarkedContentForSlice(
+        member.getId(), 2, 2);
+
+    assertThat(bookmarkedContentForSlice1.contents().size()).isEqualTo(2);
+    assertThat(bookmarkedContentForSlice1.hasNext()).isTrue();
+    log.info("#### 1" + bookmarkedContentForSlice1.contents().get(0));
+    log.info("#### 1" + bookmarkedContentForSlice1.contents().get(1));
+
+    assertThat(bookmarkedContentForSlice2.contents().size()).isEqualTo(2);
+    assertThat(bookmarkedContentForSlice2.hasNext()).isTrue();
+    log.info("#### 2" + bookmarkedContentForSlice2.contents().get(0));
+    log.info("#### 2" + bookmarkedContentForSlice2.contents().get(1));
+
+    assertThat(bookmarkedContentForSlice3.contents().size()).isEqualTo(1);
+    assertThat(bookmarkedContentForSlice3.hasNext()).isFalse();
+    log.info("#### 3" + bookmarkedContentForSlice3.contents().get(0));
+
+    BookmarkPageResponse bookmarkedContentForSlice = memberContentService.findBookmarkedContentForSlice(
+        member.getId(), 0, 5);
+
+    assertThat(bookmarkedContentForSlice.contents().size()).isEqualTo(5);
+    assertThat(bookmarkedContentForSlice.hasNext()).isFalse();
+    for (BookMarkedContentPageResponse b : bookmarkedContentForSlice.contents()) {
+      log.info("@@@@@@ " + b);
+    }
   }
 }

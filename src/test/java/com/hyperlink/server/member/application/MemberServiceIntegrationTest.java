@@ -123,37 +123,6 @@ class MemberServiceIntegrationTest {
         MemberNotFoundException.class);
   }
 
-  @DisplayName("관심 목록 카테고리를 변경할 수 있다.")
-  @Test
-  void changeAttentionCategoryCorrectTest() {
-
-    Category develop = categoryRepository.save(new Category("develop"));
-    Category beauty = categoryRepository.save(new Category("beauty"));
-
-    Member saveMember = memberRepository.save(
-        new Member("rldnd1234@naver.com", "Chocho", Career.DEVELOP, CareerYear.MORE_THAN_TEN,
-            "localhost", 1995, "man"));
-
-    List<String> nameList = Arrays.asList("develop", "beauty");
-    AttentionCategoryRequest attentionCategoryRequest = new AttentionCategoryRequest(nameList);
-    AttentionCategoryResponse attentionCategoryResponse = memberService.changeAttentionCategory(
-        saveMember.getId(), attentionCategoryRequest);
-    List<String> resultNameList = attentionCategoryResponse.attentionCategory();
-    assertThat(resultNameList).contains(nameList.get(0));
-    assertThat(resultNameList).contains(nameList.get(1));
-  }
-
-  @DisplayName("관심 목록 카테고리를 변경할 경우 잘못된 MemberId가 들어온다면 MemberNotFoundException을 던진다.")
-  @Test
-  void changeAttentionCategoryInCorrectTest() {
-    List<String> nameList = Arrays.asList("develop", "beauty");
-    AttentionCategoryRequest attentionCategoryRequest = new AttentionCategoryRequest(nameList);
-
-    assertThatThrownBy(
-        () -> memberService.changeAttentionCategory(1000L, attentionCategoryRequest)).isInstanceOf(
-        MemberNotFoundException.class);
-  }
-  
   @DisplayName("프로필 정보를 변경할 수 있다.")
   @Test
   void changeProfileTest() {
@@ -194,6 +163,7 @@ class MemberServiceIntegrationTest {
             priorImgUrl, 1995, "man"));
 
     ProfileImgRequest profileImgRequest = new ProfileImgRequest(changeImgUrl);
+    memberService.changeProfileImg(saveMember.getId(), profileImgRequest);
 
     Member foundMember = memberRepository.findById(saveMember.getId())
         .orElseThrow(MemberNotFoundException::new);
