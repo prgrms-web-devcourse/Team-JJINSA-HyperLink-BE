@@ -29,8 +29,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
 @Transactional
-@DisplayName("memberContentService 통합테스트")
-public class MemberContentServiceIntegrationTest {
+@DisplayName("BookmarkService 통합테스트")
+public class BookmarkServiceIntegrationTest {
 
   @Autowired
   MemberContentService memberContentService;
@@ -44,6 +44,7 @@ public class MemberContentServiceIntegrationTest {
   CategoryRepository categoryRepository;
   @Autowired
   CreatorRepository creatorRepository;
+
 
   Member member;
   Content content;
@@ -126,8 +127,7 @@ public class MemberContentServiceIntegrationTest {
             memberId, contentId, BOOKMARK.getTypeNumber()).orElseGet(() -> null);
         assertThat(memberContent).isNull();
       }
-
     }
-
   }
+
 }
