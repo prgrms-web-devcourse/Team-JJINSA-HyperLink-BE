@@ -14,6 +14,7 @@ import com.hyperlink.server.domain.member.domain.entity.Member;
 import com.hyperlink.server.domain.member.dto.MembersUpdateRequest;
 import com.hyperlink.server.domain.member.dto.MembersUpdateResponse;
 import com.hyperlink.server.domain.member.dto.MyPageResponse;
+import com.hyperlink.server.domain.member.dto.ProfileImgRequest;
 import com.hyperlink.server.domain.member.dto.SignUpRequest;
 import com.hyperlink.server.domain.member.dto.SignUpResult;
 import com.hyperlink.server.domain.member.exception.MemberNotFoundException;
@@ -87,5 +88,12 @@ public class MemberService {
         Career.selectCareer(membersUpdateRequest.career()),
         CareerYear.selectCareerYear(membersUpdateRequest.careerYear()));
     return MembersUpdateResponse.from(changedMember);
+  }
+
+  @Transactional
+  public void changeProfileImg(Long memberId, ProfileImgRequest profileImgRequest) {
+    Member foundMember = memberRepository.findById(memberId)
+        .orElseThrow(MemberNotFoundException::new);
+    foundMember.changeProfileImgUrl(profileImgRequest.profileImgUrl());
   }
 }

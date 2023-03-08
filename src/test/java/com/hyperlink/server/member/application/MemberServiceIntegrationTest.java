@@ -17,6 +17,7 @@ import com.hyperlink.server.domain.member.domain.entity.Member;
 import com.hyperlink.server.domain.member.dto.MembersUpdateRequest;
 import com.hyperlink.server.domain.member.dto.MembersUpdateResponse;
 import com.hyperlink.server.domain.member.dto.MyPageResponse;
+import com.hyperlink.server.domain.member.dto.ProfileImgRequest;
 import com.hyperlink.server.domain.member.dto.SignUpRequest;
 import com.hyperlink.server.domain.member.dto.SignUpResult;
 import com.hyperlink.server.domain.member.exception.MemberNotFoundException;
@@ -155,6 +156,36 @@ class MemberServiceIntegrationTest {
 
     assertThatThrownBy(
         () -> memberService.changeProfile(123444L, membersUpdateRequest)).isInstanceOf(
+        MemberNotFoundException.class);
+  }
+
+  @DisplayName("프로필 이미지를 변경할 수 있다.")
+  @Test
+  void changeProfileImgTest() {
+
+    String priorImgUrl = "localhost";
+    String changeImgUrl = "profileImgUrl";
+    Member saveMember = memberRepository.save(
+        new Member("rldnd1234@gmail.com", "Chocho", Career.DEVELOP, CareerYear.MORE_THAN_TEN,
+            priorImgUrl, 1995, "man"));
+
+    ProfileImgRequest profileImgRequest = new ProfileImgRequest(changeImgUrl);
+
+    Member foundMember = memberRepository.findById(saveMember.getId())
+        .orElseThrow(MemberNotFoundException::new);
+
+    assertThat(foundMember.getProfileImgUrl()).isEqualTo(changeImgUrl);
+  }
+
+  @DisplayName("프로필 이미지 변경시 해당 member를 찾을 수없다면 MemberNotFoundException을 던진다.")
+  @Test
+  void changeProfileImgInCorrectTest() {
+
+    String changeImgUrl = "profileImgUrl";
+    ProfileImgRequest profileImgRequest = new ProfileImgRequest(changeImgUrl);
+
+    assertThatThrownBy(
+        () -> memberService.changeProfileImg(123444L, profileImgRequest)).isInstanceOf(
         MemberNotFoundException.class);
   }
 }

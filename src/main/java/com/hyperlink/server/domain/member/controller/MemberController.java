@@ -10,12 +10,11 @@ import com.hyperlink.server.domain.member.application.MemberService;
 import com.hyperlink.server.domain.member.dto.MembersUpdateRequest;
 import com.hyperlink.server.domain.member.dto.MembersUpdateResponse;
 import com.hyperlink.server.domain.member.dto.MyPageResponse;
-import com.hyperlink.server.domain.member.dto.ProfileImgResponse;
+import com.hyperlink.server.domain.member.dto.ProfileImgRequest;
 import com.hyperlink.server.domain.member.dto.SignUpRequest;
 import com.hyperlink.server.domain.member.dto.SignUpResponse;
 import com.hyperlink.server.domain.member.dto.SignUpResult;
 import com.hyperlink.server.domain.member.exception.MemberNotFoundException;
-import com.hyperlink.server.domain.member.s3.AwsS3Service;
 import com.hyperlink.server.global.config.LoginMemberId;
 import java.net.URI;
 import java.util.Optional;
@@ -30,10 +29,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
 @RestController
@@ -43,16 +40,14 @@ public class MemberController {
   private final AuthService authService;
   private final MemberService memberService;
   private final RefreshTokenCookieProvider refreshTokenCookieProvider;
-  private final AwsS3Service awsS3Service;
 
   public MemberController(AuthTokenExtractor authTokenExtractor,
       AuthService authService, MemberService memberService,
-      RefreshTokenCookieProvider refreshTokenCookieProvider, AwsS3Service awsS3Service) {
+      RefreshTokenCookieProvider refreshTokenCookieProvider) {
     this.authTokenExtractor = authTokenExtractor;
     this.authService = authService;
     this.memberService = memberService;
     this.refreshTokenCookieProvider = refreshTokenCookieProvider;
-    this.awsS3Service = awsS3Service;
   }
 
   @PostMapping("/members/signup")
@@ -95,14 +90,15 @@ public class MemberController {
     return authService.googleTokenFindById(googleAccessToken);
   }
 
-  @PostMapping("/members/profile-image")
-  public ResponseEntity<ProfileImgResponse> profileImgChange(
+  @PutMapping("/members/profile-image")
+  @ResponseStatus(HttpStatus.OK)
+  public void profileImgChange(
       @LoginMemberId Optional<Long> optionalMemberId,
-      @RequestPart("profileImage") MultipartFile multipartFile) {
+      @RequestBody ProfileImgRequest profileImgRequest) {
 
     Long memberId = optionalMemberId.orElseThrow(MemberNotFoundException::new);
 
-    return ResponseEntity.ok(awsS3Service.changeProfileImg(memberId, multipartFile));
+    memberService.changeProfileImg(memberId, profileImgRequest);
   }
 
   @PutMapping("/members/update")
