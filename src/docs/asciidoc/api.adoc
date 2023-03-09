@@ -115,6 +115,10 @@ operation::ContentControllerTest/retrieveInactiveContents[snippets='http-request
 
 operation::ContentControllerTest/activateContent[snippets='http-request,http-response']
 
+=== 최근 7일 카테고리별 조회수 조회
+
+operation::AdminController/countViewCountByCategory[snippets='http-request,http-response']
+
 == AttentionCategory
 
 === 관심카테고리 변경
