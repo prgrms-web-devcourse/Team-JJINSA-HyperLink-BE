@@ -95,4 +95,10 @@ public class MemberService {
         .orElseThrow(MemberNotFoundException::new);
     foundMember.changeProfileImgUrl(profileImgRequest.profileImgUrl());
   }
+
+  public boolean isAdmin(Long memberId) {
+    Member foundMember = memberRepository.findById(memberId)
+        .orElseThrow(MemberNotFoundException::new);
+    return foundMember.getIsAdmin();
+  }
 }
