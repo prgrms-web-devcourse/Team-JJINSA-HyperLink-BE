@@ -92,6 +92,7 @@ operation::DailyBriefingControllerTest/getDailyBriefing[snippets='http-request,h
 == Admin
 
 === 크리에이터 조회
+
 operation::CreatorControllerTest/retrieveCreatorsAdmin['http-request,http-response']
 
 === 크리에이터 삭제
@@ -117,3 +118,7 @@ operation::Attention-category/update[snippets='http-request,http-response,respon
 === 회사 이메일 인증번호 요청
 
 operation::company/auth[snippets='http-request,http-response']
+
+=== isUsingRecommend 값이 false인 회사 목록 가져오기(admin)
+
+operation::company/getCompanyPage[snippets='http-request,http-response']
