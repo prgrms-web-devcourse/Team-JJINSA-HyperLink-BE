@@ -74,7 +74,7 @@ public class CreatorService {
 
     List<CreatorAdminResponse> creatorAdminResponses = creators.stream()
         .map(CreatorAdminResponse::from).toList();
-    return new CreatorAdminResponses(creatorAdminResponses, creatorPagination.getNumber(),
+    return new CreatorAdminResponses(creatorAdminResponses, creatorPagination.getNumber() + 1,
         creatorPagination.getTotalPages());
   }
 
