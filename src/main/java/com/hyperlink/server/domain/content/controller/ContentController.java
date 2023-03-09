@@ -2,6 +2,7 @@ package com.hyperlink.server.domain.content.controller;
 
 import com.hyperlink.server.domain.auth.token.exception.TokenNotExistsException;
 import com.hyperlink.server.domain.content.application.ContentService;
+import com.hyperlink.server.domain.content.dto.ContentAdminResponses;
 import com.hyperlink.server.domain.content.dto.GetContentsCommonResponse;
 import com.hyperlink.server.domain.content.dto.PatchInquiryResponse;
 import com.hyperlink.server.domain.content.dto.SearchResponse;
@@ -17,6 +18,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -82,6 +84,26 @@ public class ContentController {
     Long memberId = optionalMemberId.orElse(null);
     return contentService.retrieveTrendAllCategoriesContents(
         memberId, sort, PageRequest.of(page, size));
+  }
+
+  @GetMapping("/admin/contents")
+  @ResponseStatus(HttpStatus.OK)
+  public ContentAdminResponses retrieveInactivatedContentsForAdmin(@LoginMemberId Optional<Long> optionalMemberId,
+      @RequestParam("page") @NotNull @Min(0) int page,
+      @RequestParam("size") @NotNull @Min(1) int size
+  ) {
+    optionalMemberId.orElseThrow(MemberNotFoundException::new);
+    return contentService.retrieveInactivatedContents(PageRequest.of(page, size));
+  }
+
+  @DeleteMapping("/admin/contents/{contentId}")
+  @ResponseStatus(HttpStatus.OK)
+  public void deleteContentsForAdmin(
+      @LoginMemberId Optional<Long> optionalMemberId,
+      @PathVariable("contentId") Long contentId
+  ) {
+    optionalMemberId.orElseThrow(MemberNotFoundException::new);
+    contentService.deleteContentsById(contentId);
   }
 
   @PostMapping("/admin/contents/{contentId}/activate")

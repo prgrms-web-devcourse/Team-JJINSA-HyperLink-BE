@@ -1,5 +1,6 @@
 package com.hyperlink.server.memberContent.controller;
 
+import static org.mockito.BDDMockito.given;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
@@ -9,15 +10,22 @@ import static org.springframework.restdocs.operation.preprocess.Preprocessors.pr
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hyperlink.server.AuthSetupForMock;
 import com.hyperlink.server.domain.content.application.ContentService;
+import com.hyperlink.server.domain.content.dto.BookMarkedContentPageResponse;
 import com.hyperlink.server.domain.memberContent.application.BookmarkService;
 import com.hyperlink.server.domain.memberContent.application.LikeService;
 import com.hyperlink.server.domain.memberContent.controller.MemberContentController;
+import com.hyperlink.server.domain.memberContent.dto.BookmarkPageResponse;
 import com.hyperlink.server.domain.memberContent.dto.LikeClickRequest;
+import com.hyperlink.server.domain.memberContent.dto.LikeClickResponse;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -32,6 +40,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 @WebMvcTest(MemberContentController.class)
@@ -130,6 +139,56 @@ public class MemberContentControllerTest extends AuthSetupForMock {
     }
   }
 
+  @Test
+  void getBookmarkPage() throws Exception {
+    List<BookMarkedContentPageResponse> contents = new ArrayList<>();
+    for (int i = 0; i < 3; i++) {
+      contents.add(
+          new BookMarkedContentPageResponse(Long.valueOf(i), "title" + i, "contentImgUrl" + i,
+              "link" + i,
+              i, i, LocalDateTime.now()));
+    }
+
+    BookmarkPageResponse bookmarkPageResponse = new BookmarkPageResponse(contents, true);
+
+    given(bookmarkService.findBookmarkedContentForSlice(memberId, 0, 2))
+        .willReturn(bookmarkPageResponse);
+
+    authSetup();
+
+    mockMvc.perform(
+            MockMvcRequestBuilders.get("/bookmark")
+                .param("page", "0")
+                .param("size", "2")
+                .header(HttpHeaders.AUTHORIZATION, authorizationHeader)
+        )
+        .andExpect(status().isOk())
+        .andDo(
+            document(
+                "MemberContentController/getBookmarks",
+                preprocessRequest(prettyPrint()),
+                preprocessResponse(prettyPrint()),
+                requestHeaders(
+                    headerWithName(HttpHeaders.AUTHORIZATION).description("jwt header")),
+                responseFields(
+                    fieldWithPath("contents.[].contentId").type(JsonFieldType.NUMBER)
+                        .description("컨텐츠 식별자"),
+                    fieldWithPath("contents.[].title").type(JsonFieldType.STRING)
+                        .description("컨텐츠 제목"),
+                    fieldWithPath("contents.[].contentImgUrl").type(JsonFieldType.STRING)
+                        .description("컨텐츠 이미지 URL"),
+                    fieldWithPath("contents.[].link").type(JsonFieldType.STRING)
+                        .description("컨텐츠 바로가기 링크"),
+                    fieldWithPath("contents.[].likeCount").type(JsonFieldType.NUMBER)
+                        .description("컨텐츠 좋아요 수"),
+                    fieldWithPath("contents.[].viewCount").type(JsonFieldType.NUMBER)
+                        .description("컨텐츠 조회수"),
+                    fieldWithPath("contents.[].createdAt").type(JsonFieldType.STRING)
+                        .description("서비스 등록 날짜"),
+                    fieldWithPath("hasNext").type(JsonFieldType.BOOLEAN)
+                        .description("다음 페이지 여부"))));
+  }
+
   @Nested
   @DisplayName("좋아요 클릭 API는")
   class clickLikeTest {
@@ -143,6 +202,13 @@ public class MemberContentControllerTest extends AuthSetupForMock {
     @DisplayName("좋아요 추가에 성공하고 OK를 응답한다")
     void createLikeTest() throws Exception {
       authSetup();
+
+      Long contentId = 1L;
+
+      LikeClickResponse likeClickResponse = new LikeClickResponse(10);
+
+      given(likeService.clickLike(memberId, contentId, likeClickRequestForCreate)).willReturn(
+          likeClickResponse);
 
       mockMvc.perform(
               post("/like/" + contentId)
@@ -159,7 +225,9 @@ public class MemberContentControllerTest extends AuthSetupForMock {
                       headerWithName(HttpHeaders.AUTHORIZATION).description("jwt header")
                   ), requestFields(
                       fieldWithPath("addLike").type(JsonFieldType.BOOLEAN)
-                          .description("좋아요 클릭 요청 타입(true: 좋아요추가, false: 좋아요 취소)"))
+                          .description("좋아요 클릭 요청 타입(true: 좋아요추가, false: 좋아요 취소)")),
+                  responseFields(
+                      fieldWithPath("likeCount").type(JsonFieldType.NUMBER).description("좋아요 수"))
               )
           );
     }
@@ -168,6 +236,12 @@ public class MemberContentControllerTest extends AuthSetupForMock {
     @DisplayName("좋아요 취소에 성공하고 OK를 응답한다")
     void deleteLikeTest() throws Exception {
       authSetup();
+      Long contentId = 1L;
+
+      LikeClickResponse likeClickResponse = new LikeClickResponse(10);
+
+      given(likeService.clickLike(memberId, contentId, likeClickRequestForDelete)).willReturn(
+          likeClickResponse);
 
       mockMvc.perform(
               post("/like/" + contentId)
@@ -184,7 +258,9 @@ public class MemberContentControllerTest extends AuthSetupForMock {
                       headerWithName(HttpHeaders.AUTHORIZATION).description("jwt header")
                   ), requestFields(
                       fieldWithPath("addLike").type(JsonFieldType.BOOLEAN)
-                          .description("좋아요 클릭 요청 타입(true: 좋아요추가, false: 좋아요 취소)"))
+                          .description("좋아요 클릭 요청 타입(true: 좋아요추가, false: 좋아요 취소)")),
+                  responseFields(
+                      fieldWithPath("likeCount").type(JsonFieldType.NUMBER).description("좋아요 수"))
               )
           );
     }

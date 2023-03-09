@@ -68,11 +68,11 @@ public class Content extends BaseEntity {
     this.isViewable = check;
   }
 
-  public void addLike() {
-    this.likeCount++;
+  public int addLike() {
+    return ++this.likeCount;
   }
 
-  public void subtractLike() {
-    this.likeCount--;
+  public int subtractLike() {
+    return --this.likeCount;
   }
 }
