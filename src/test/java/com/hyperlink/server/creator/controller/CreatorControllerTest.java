@@ -470,7 +470,7 @@ public class CreatorControllerTest extends AuthSetupForMock {
             "VOGUE 패션 메거진", "beauty");
         CreatorAdminResponses creatorAdminResponses = new CreatorAdminResponses(
             List.of(creatorAdminResponse1, creatorAdminResponse2, creatorAdminResponse3,
-                creatorAdminResponse4), 0, 1);
+                creatorAdminResponse4), 1, 1);
 
         when(creatorService.retrieveCreatorsForAdmin(any())).thenReturn(creatorAdminResponses);
 

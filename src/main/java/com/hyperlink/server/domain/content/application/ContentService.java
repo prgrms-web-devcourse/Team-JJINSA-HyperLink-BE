@@ -7,6 +7,8 @@ import com.hyperlink.server.domain.category.exception.CategoryNotFoundException;
 import com.hyperlink.server.domain.common.ContentDtoFactoryService;
 import com.hyperlink.server.domain.content.domain.ContentRepository;
 import com.hyperlink.server.domain.content.domain.entity.Content;
+import com.hyperlink.server.domain.content.dto.ContentAdminResponse;
+import com.hyperlink.server.domain.content.dto.ContentAdminResponses;
 import com.hyperlink.server.domain.content.dto.ContentEnrollResponse;
 import com.hyperlink.server.domain.content.dto.GetContentsCommonResponse;
 import com.hyperlink.server.domain.content.dto.SearchResponse;
@@ -22,6 +24,7 @@ import java.util.Arrays;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
@@ -32,6 +35,8 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class ContentService {
+
+  private static final int PLUS_ONE_FOR_CURRENT_PAGE = 1;
 
   private final ContentRepository contentRepository;
   private final CategoryRepository categoryRepository;
@@ -148,6 +153,16 @@ public class ContentService {
     content.makeViewable(true);
   }
 
+  public ContentAdminResponses retrieveInactivatedContents(Pageable pageable) {
+    Page<Content> inactivatedContentsPage = contentRepository.findInactivatedContents(pageable);
+    List<Content> inactivatedContents = inactivatedContentsPage.getContent();
+    List<ContentAdminResponse> inactivatedContentAdminResponses = inactivatedContents.stream()
+        .map(ContentAdminResponse::from).toList();
+    return ContentAdminResponses.of(inactivatedContentAdminResponses,
+        inactivatedContentsPage.getNumber() + PLUS_ONE_FOR_CURRENT_PAGE,
+        inactivatedContentsPage.getTotalPages());
+  }
+
   @Transactional
   public int addLike(Long contentId) {
     Content foundContent = contentRepository.selectForUpdate(contentId)
@@ -160,5 +175,18 @@ public class ContentService {
     Content foundContent = contentRepository.selectForUpdate(contentId)
         .orElseThrow(ContentNotFoundException::new);
     return foundContent.subtractLike();
+  }
+
+  @Transactional
+  public void deleteContentsById(Long contentId) {
+    boolean exists = contentRepository.existsById(contentId);
+    if (!exists) {
+      throw new ContentNotFoundException();
+    }
+    contentRepository.deleteById(contentId);
+  }
+
+  public Content findById(Long contentId) {
+    return contentRepository.findById(contentId).orElseThrow(ContentNotFoundException::new);
   }
 }

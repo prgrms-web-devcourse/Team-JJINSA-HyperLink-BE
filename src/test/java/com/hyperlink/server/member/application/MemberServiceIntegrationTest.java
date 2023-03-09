@@ -163,6 +163,7 @@ class MemberServiceIntegrationTest {
             priorImgUrl, 1995, "man"));
 
     ProfileImgRequest profileImgRequest = new ProfileImgRequest(changeImgUrl);
+    memberService.changeProfileImg(saveMember.getId(), profileImgRequest);
 
     memberService.changeProfileImg(saveMember.getId(), profileImgRequest);
 

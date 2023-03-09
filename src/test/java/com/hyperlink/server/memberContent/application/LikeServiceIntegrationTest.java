@@ -75,11 +75,11 @@ public class LikeServiceIntegrationTest {
     LikeClickResponse likeClickResponse = likeService.clickLike(memberId, contentId,
         likeClickRequest);
 
-    MemberContent like = memberContentRepository.findMemberContentByMemberIdAndContentIdAndType(
-        memberId, contentId, LIKE.getTypeNumber()).orElseThrow(LikeNotFoundException::new);
+    MemberContent like = memberContentRepository.findMemberContentByMemberIdAndContentAndType(
+        memberId, content, LIKE.getTypeNumber()).orElseThrow(LikeNotFoundException::new);
 
     assertThat(like.getMemberId()).isEqualTo(memberId);
-    assertThat(like.getContentId()).isEqualTo(contentId);
+    assertThat(like.getContent().getId()).isEqualTo(contentId);
     assertThat(content.getLikeCount()).isEqualTo(likeClickResponse.likeCount());
   }
 

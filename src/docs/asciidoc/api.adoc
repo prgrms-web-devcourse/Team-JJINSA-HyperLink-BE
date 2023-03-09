@@ -31,6 +31,10 @@ operation::ContentControllerTest/retrieve[snippets="http-request,http-response"]
 
 operation::MemberContentController/includeCreateOrDeleteBookmark[snippets='http-request,http-response']
 
+== 북마크 조회
+
+operation::MemberContentController/getBookmarks[snippets='http-request,http-response']
+
 == Member
 
 === 회원가입
@@ -92,6 +96,7 @@ operation::DailyBriefingControllerTest/getDailyBriefing[snippets='http-request,h
 == Admin
 
 === 크리에이터 조회
+
 operation::CreatorControllerTest/retrieveCreatorsAdmin['http-request,http-response']
 
 === 크리에이터 삭제
@@ -101,6 +106,10 @@ operation::CreatorControllerTest/deleteCreator[snippets='http-request,http-respo
 === 크리에이터 추가
 
 operation::CreatorControllerTest/enrollCreator[snippets='http-request,http-response']
+
+=== 비활성 컨텐츠 조회
+
+operation::ContentControllerTest/retrieveInactiveContents[snippets='http-request,http-response']
 
 === 컨텐츠 활성화
 
@@ -121,3 +130,11 @@ operation::Attention-category/get[snippets='http-request,http-response,response-
 === 회사 이메일 인증번호 요청
 
 operation::company/auth[snippets='http-request,http-response']
+
+=== isUsingRecommend 값이 false인 회사 목록 가져오기(admin)
+
+operation::company/getCompanyPage[snippets='http-request,http-response']
+
+=== 회사 이메일 인증번호 확인 및 등록
+
+operation::company/verification[snippets='http-request,http-response']

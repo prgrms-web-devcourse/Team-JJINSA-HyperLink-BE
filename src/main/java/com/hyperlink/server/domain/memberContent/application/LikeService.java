@@ -3,6 +3,7 @@ package com.hyperlink.server.domain.memberContent.application;
 import static com.hyperlink.server.domain.memberContent.domain.entity.MemberContentActionType.LIKE;
 
 import com.hyperlink.server.domain.content.application.ContentService;
+import com.hyperlink.server.domain.content.domain.entity.Content;
 import com.hyperlink.server.domain.memberContent.domain.MemberContentRepository;
 import com.hyperlink.server.domain.memberContent.domain.entity.MemberContent;
 import com.hyperlink.server.domain.memberContent.dto.LikeClickRequest;
@@ -34,15 +35,16 @@ public class LikeService {
   private LikeClickResponse createLike(Long memberId, Long contentId) {
     int likeCount = contentService.addLike(contentId);
     existLike(memberId, contentId);
-    memberContentRepository.save(new MemberContent(memberId, contentId, LIKE));
+    Content foundContent = contentService.findById(contentId);
+    memberContentRepository.save(new MemberContent(memberId, foundContent, LIKE));
     return new LikeClickResponse(likeCount);
   }
 
   private LikeClickResponse deleteLike(Long memberId, Long contentId) {
     int likeCount = contentService.subTractLike(contentId);
-    MemberContent foundLike = memberContentRepository.findMemberContentByMemberIdAndContentIdAndType(
-        memberId, contentId, LIKE.getTypeNumber()).orElseThrow(
-        LikeNotFoundException::new);
+    Content foundContent = contentService.findById(contentId);
+    MemberContent foundLike = memberContentRepository.findMemberContentByMemberIdAndContentAndType(
+        memberId, foundContent, LIKE.getTypeNumber()).orElseThrow(LikeNotFoundException::new);
     memberContentRepository.delete(foundLike);
     return new LikeClickResponse(likeCount);
   }
