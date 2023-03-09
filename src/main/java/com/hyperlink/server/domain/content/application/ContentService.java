@@ -37,6 +37,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class ContentService {
+  private static final int PLUS_ONE_FOR_CURRENT_PAGE = 1;
 
   private final ContentRepository contentRepository;
   private final CategoryRepository categoryRepository;
@@ -159,8 +160,10 @@ public class ContentService {
     List<Content> inactivatedContents = inactivatedContentsPage.getContent();
     List<ContentAdminResponse> inactivatedContentAdminResponses = inactivatedContents.stream()
         .map(ContentAdminResponse::from).toList();
-    return ContentAdminResponses.of(inactivatedContentAdminResponses, inactivatedContentsPage.getNumber() + 1,
+    return ContentAdminResponses.of(inactivatedContentAdminResponses,
+        inactivatedContentsPage.getNumber() + PLUS_ONE_FOR_CURRENT_PAGE,
         inactivatedContentsPage.getTotalPages());
+  }
 
   @Transactional
   public void addLike(Long contentId) {
