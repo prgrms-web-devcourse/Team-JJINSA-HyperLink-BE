@@ -20,6 +20,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class CompanyService {
 
+  private static final int CHANGE_STANDARD_VALUE = 1;
+
   private final MailAuthRepository mailRepository;
 
   private final CompanyRepository companyRepository;
@@ -36,11 +38,12 @@ public class CompanyService {
 
   public CompanyPageResponse findCompaniesForPage(int page, int size) {
     Page<Company> companies = companyRepository.findCompaniesByIsUsingRecommend(false,
-        PageRequest.of(page, size, Sort.by(Direction.DESC, "id")));
+        PageRequest.of(page - CHANGE_STANDARD_VALUE, size, Sort.by(Direction.DESC, "id")));
 
     List<CompanyResponse> companyResponses = companies.stream()
         .map(company -> CompanyResponse.from(company)).collect(Collectors.toList());
 
-    return new CompanyPageResponse(companies.getTotalPages(), page, companyResponses);
+    return new CompanyPageResponse(companies.getTotalPages(), page + CHANGE_STANDARD_VALUE,
+        companyResponses);
   }
 }
