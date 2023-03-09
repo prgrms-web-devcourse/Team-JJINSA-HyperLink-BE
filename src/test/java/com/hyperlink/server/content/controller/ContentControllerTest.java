@@ -8,6 +8,7 @@ import static org.mockito.Mockito.when;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.patch;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
@@ -636,6 +637,45 @@ public class ContentControllerTest extends AuthSetupForMock {
                             .description("컨텐츠 연결 외부 링크"),
                         fieldWithPath("currentPage").type(JsonFieldType.NUMBER).description("현재 페이지 번호"),
                         fieldWithPath("totalPage").type(JsonFieldType.NUMBER).description("전체 페이지 번호")
+                    )
+                )
+            );
+      }
+    }
+
+  }
+
+  @Nested
+  @DisplayName("[Admin] 컨텐츠 삭제 API는")
+  class DeleteContentByAdmin {
+    @BeforeEach
+    void setUp() {
+      authSetup();
+    }
+
+    @Nested
+    @DisplayName("[성공]")
+    class Success {
+      @Test
+      @DisplayName("컨텐츠를 삭제한다.")
+      void deleteContentById() throws Exception {
+        Long contentId = 1L;
+
+        doNothing().when(contentService).deleteContentsById(contentId);
+
+        mockMvc.perform(
+                delete("/admin/contents/" + contentId)
+                    .header(HttpHeaders.AUTHORIZATION, authorizationHeader)
+                    .characterEncoding("UTF-8")
+            ).andExpect(status().isOk())
+            .andDo(print())
+            .andDo(
+                document(
+                    "ContentControllerTest/deleteContentByAdmin",
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint()),
+                    requestHeaders(
+                        headerWithName(HttpHeaders.AUTHORIZATION).description("AccessToken")
                     )
                 )
             );
