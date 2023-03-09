@@ -46,7 +46,7 @@ public class CompanyController {
     return ResponseEntity.ok().build();
   }
 
-  @GetMapping("/companies")
+  @GetMapping("/admin/companies")
   @ResponseStatus(HttpStatus.OK)
   public CompanyPageResponse getCompanyPage(@RequestParam("page") int page,
       @RequestParam("size") int size) {

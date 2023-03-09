@@ -93,7 +93,7 @@ class CompanyControllerTest extends AuthSetupForMock {
     authSetup();
 
     mockMvc.perform(
-            MockMvcRequestBuilders.get("/companies")
+            MockMvcRequestBuilders.get("/admin/companies")
                 .param("page", "0")
                 .param("size", "2")
                 .header(HttpHeaders.AUTHORIZATION, authorizationHeader)
