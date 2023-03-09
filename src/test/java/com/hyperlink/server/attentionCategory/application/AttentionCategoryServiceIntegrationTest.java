@@ -1,8 +1,12 @@
 package com.hyperlink.server.attentionCategory.application;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
 import com.hyperlink.server.domain.attentionCategory.application.AttentionCategoryService;
 import com.hyperlink.server.domain.attentionCategory.domain.AttentionCategoryRepository;
 import com.hyperlink.server.domain.attentionCategory.domain.entity.AttentionCategory;
+import com.hyperlink.server.domain.attentionCategory.dto.AttentionCategoryResponse;
 import com.hyperlink.server.domain.category.domain.CategoryRepository;
 import com.hyperlink.server.domain.category.domain.entity.Category;
 import com.hyperlink.server.domain.category.exception.CategoryNotFoundException;
@@ -13,7 +17,6 @@ import com.hyperlink.server.domain.member.domain.entity.Member;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,12 +41,12 @@ class AttentionCategoryServiceIntegrationTest {
   void setAttentionCategoryCorrectTest() {
     Category develop = categoryRepository.save(new Category("develop"));
     Category beauty = categoryRepository.save(new Category("beauty"));
-    List<String> attentionCategorys = Arrays.asList("develop", "beauty");
+    List<String> attentionCategories = Arrays.asList("develop", "beauty");
     Member savedMember = memberRepository.save(
         new Member("rldnd5555@gmail.com", "chocho", Career.DEVELOP, CareerYear.MORE_THAN_TEN, "url",
             1990, "man"));
 
-    attentionCategoryService.changeAttentionCategory(savedMember, attentionCategorys);
+    attentionCategoryService.changeAttentionCategory(savedMember.getId(), attentionCategories);
     List<AttentionCategory> allAttentionCategory = attentionCategoryRepository.findAll();
 
     List<Category> result = allAttentionCategory.stream()
@@ -51,24 +54,43 @@ class AttentionCategoryServiceIntegrationTest {
         .map(attentionCategory -> attentionCategory.getCategory())
         .collect(Collectors.toList());
 
-    Assertions.assertThat(result.size()).isEqualTo(2);
-    Assertions.assertThat(result).contains(develop);
-    Assertions.assertThat(result).contains(beauty);
+    assertThat(result.size()).isEqualTo(2);
+    assertThat(result).contains(develop);
+    assertThat(result).contains(beauty);
   }
 
   @DisplayName("관심목록 추가시 해당하는 Category가 없다면 CategoryNotFoundException 을 던진다.")
   @Test
   void setAttentionCategoryInCorrectTest() {
-
-//    Category develop = categoryRepository.save(new Category("develop"));
-    Category beauty = categoryRepository.save(new Category("beauty"));
     List<String> attentionCategorys = Arrays.asList("food", "beauty");
     Member savedMember = memberRepository.save(
         new Member("rldnd5555@gmail.com", "chocho", Career.DEVELOP, CareerYear.MORE_THAN_TEN, "url",
             1990, "man"));
-    Assertions.assertThatThrownBy(() ->
-        attentionCategoryService.changeAttentionCategory(savedMember, attentionCategorys)
+    assertThatThrownBy(() ->
+        attentionCategoryService.changeAttentionCategory(savedMember.getId(), attentionCategorys)
     ).isInstanceOf(
         CategoryNotFoundException.class);
+  }
+
+  @DisplayName("멤버의 관심 목록을 가져올 수 있다.")
+  @Test
+  void getAttentionCategoriesTest() {
+
+    Category develop = categoryRepository.save(new Category("develop"));
+    Category beauty = categoryRepository.save(new Category("beauty"));
+    List<String> attentionCategories = Arrays.asList("develop", "beauty");
+    Member savedMember = memberRepository.save(
+        new Member("rldnd5555@gmail.com", "chocho", Career.DEVELOP, CareerYear.MORE_THAN_TEN, "url",
+            1990, "man"));
+
+    attentionCategoryService.changeAttentionCategory(savedMember.getId(), attentionCategories);
+
+    AttentionCategoryResponse attentionCategoryResponse = attentionCategoryService.getAttentionCategory(
+        savedMember.getId());
+    List<String> categoryNameList = attentionCategoryResponse.attentionCategory();
+    assertThat(categoryNameList).contains("develop");
+    assertThat(categoryNameList).contains("beauty");
+
+
   }
 }

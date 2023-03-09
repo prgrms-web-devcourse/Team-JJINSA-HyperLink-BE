@@ -21,12 +21,15 @@ import com.hyperlink.server.domain.auth.oauth.GoogleAccessTokenRepository;
 import com.hyperlink.server.domain.auth.token.JwtTokenProvider;
 import com.hyperlink.server.domain.category.domain.CategoryRepository;
 import com.hyperlink.server.domain.category.domain.entity.Category;
+import com.hyperlink.server.domain.company.domain.CompanyRepository;
+import com.hyperlink.server.domain.company.domain.entity.Company;
 import com.hyperlink.server.domain.member.domain.Career;
 import com.hyperlink.server.domain.member.domain.CareerYear;
 import com.hyperlink.server.domain.member.domain.MemberRepository;
 import com.hyperlink.server.domain.member.domain.entity.Member;
 import com.hyperlink.server.domain.member.dto.SignUpRequest;
 import java.util.List;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
@@ -62,6 +65,9 @@ public class MemberControllerTest {
 
   @Autowired
   ObjectMapper objectMapper;
+  @Autowired
+  private CompanyRepository companyRepository;
+
 
   @Test
   void signupTest() throws Exception {
@@ -104,8 +110,9 @@ public class MemberControllerTest {
         );
   }
 
+  @DisplayName("company 미인증인 경우 MyPageApi")
   @Test
-  void myPageTest() throws Exception {
+  void myPageTestV1() throws Exception {
     Member saveMember = memberRepository.save(
         new Member("rldnd1234@naver.com", "Chocho", Career.DEVELOP, CareerYear.MORE_THAN_TEN,
             "localhost", 1995, "man"));
@@ -126,7 +133,42 @@ public class MemberControllerTest {
                 fieldWithPath("nickname").type(JsonFieldType.STRING).description("닉네임"),
                 fieldWithPath("career").type(JsonFieldType.STRING).description("직업 분야 "),
                 fieldWithPath("careerYear").type(JsonFieldType.STRING).description("경력"),
-                fieldWithPath("profileUrl").type(JsonFieldType.STRING).description("프로필 url")))
+                fieldWithPath("profileUrl").type(JsonFieldType.STRING).description("프로필 url"),
+                fieldWithPath("companyName").type(JsonFieldType.NULL)
+                    .description("회사 미인증시 null")))
+        );
+  }
+
+  @DisplayName("company인증한 경우 MyPageApi")
+  @Test
+  void myPageTestV2() throws Exception {
+    Member saveMember = memberRepository.save(
+        new Member("rldnd1234@naver.com", "Chocho", Career.DEVELOP, CareerYear.MORE_THAN_TEN,
+            "localhost", 1995, "man"));
+
+    Company savedCompany = companyRepository.save(
+        new Company("rldnd1234@kakao.com", "logoImgUrl", "kakao"));
+    String accessToken = jwtTokenProvider.createAccessToken(saveMember.getId());
+
+    saveMember.changeCompany(savedCompany);
+
+    mockMvc.perform(MockMvcRequestBuilders
+            .get("/members/mypage")
+            .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken))
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andDo(print())
+        .andDo(document("members/mypage",
+            preprocessRequest(prettyPrint()),
+            preprocessResponse(prettyPrint()),
+            requestHeaders(headerWithName(HttpHeaders.AUTHORIZATION).description("AccessToken")),
+            responseFields(
+                fieldWithPath("email").type(JsonFieldType.STRING).description("이메일"),
+                fieldWithPath("nickname").type(JsonFieldType.STRING).description("닉네임"),
+                fieldWithPath("career").type(JsonFieldType.STRING).description("직업 분야 "),
+                fieldWithPath("careerYear").type(JsonFieldType.STRING).description("경력"),
+                fieldWithPath("profileUrl").type(JsonFieldType.STRING).description("프로필 url"),
+                fieldWithPath("companyName").type(JsonFieldType.STRING).description("인증된 회사 이름")))
         );
   }
 

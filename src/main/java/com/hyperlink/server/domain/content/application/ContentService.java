@@ -18,7 +18,6 @@ import com.hyperlink.server.domain.content.infrastructure.ContentRepositoryCusto
 import com.hyperlink.server.domain.creator.domain.CreatorRepository;
 import com.hyperlink.server.domain.creator.domain.entity.Creator;
 import com.hyperlink.server.domain.creator.exception.CreatorNotFoundException;
-import com.hyperlink.server.domain.memberContent.application.MemberContentService;
 import com.hyperlink.server.domain.memberHistory.application.MemberHistoryService;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -44,7 +43,6 @@ public class ContentService {
   private final CreatorRepository creatorRepository;
   private final AttentionCategoryRepository attentionCategoryRepository;
   private final ContentRepositoryCustom contentRepositoryCustom;
-  private final MemberContentService memberContentService;
   private final ContentDtoFactoryService contentDtoFactoryService;
   private final MemberHistoryService memberHistoryService;
 
@@ -65,7 +63,8 @@ public class ContentService {
 
   public SearchResponse search(Long memberId, String keyword, Pageable pageable) {
     List<String> keywords = splitSearchKeywords(keyword);
-    Slice<Content> searchResultContents = contentRepositoryCustom.searchByTitleContainingOrderByLatest(keywords,
+    Slice<Content> searchResultContents = contentRepositoryCustom.searchByTitleContainingOrderByLatest(
+        keywords,
         pageable);
 
     GetContentsCommonResponse contentResponses = contentDtoFactoryService.createContentResponses(
@@ -116,7 +115,7 @@ public class ContentService {
   public GetContentsCommonResponse retrieveTrendAllCategoriesContents(Long memberId,
       String sort, Pageable pageable) {
     List<Long> categoryIds = new ArrayList<>();
-    if(memberId == null) {
+    if (memberId == null) {
       categoryIds = categoryRepository.findAllCategoryIds();
     } else {
       categoryIds = attentionCategoryRepository.findAttentionCategoryIdsByMemberId(memberId);
@@ -154,6 +153,7 @@ public class ContentService {
     content.makeViewable(true);
   }
 
+
   public ContentAdminResponses retrieveInactivatedContents(Pageable pageable) {
     Page<Content> inactivatedContentsPage = contentRepository.findInactivatedContents(pageable);
     List<Content> inactivatedContents = inactivatedContentsPage.getContent();
@@ -161,5 +161,19 @@ public class ContentService {
         .map(ContentAdminResponse::from).toList();
     return ContentAdminResponses.of(inactivatedContentAdminResponses, inactivatedContentsPage.getNumber() + 1,
         inactivatedContentsPage.getTotalPages());
+
+  @Transactional
+  public void addLike(Long contentId) {
+    Content foundContent = contentRepository.selectForUpdate(contentId)
+        .orElseThrow(ContentNotFoundException::new);
+    foundContent.addLike();
+  }
+
+  @Transactional
+  public void subTractLike(Long contentId) {
+    Content foundContent = contentRepository.selectForUpdate(contentId)
+        .orElseThrow(ContentNotFoundException::new);
+    foundContent.subtractLike();
+
   }
 }

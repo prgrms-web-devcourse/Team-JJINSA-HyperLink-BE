@@ -11,4 +11,6 @@ public interface MemberContentRepository extends JpaRepository<MemberContent, Lo
 
   @Override
   void delete(MemberContent entity);
+
+  boolean existsMemberContentByMemberIdAndContentIdAndType(Long memberId, Long contentId, int type);
 }

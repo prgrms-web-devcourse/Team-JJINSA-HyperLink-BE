@@ -45,10 +45,6 @@ operation::members/login[snippets='http-request,http-response,response-fields']
 
 operation::members/mypage[snippets='http-request,http-response,response-fields']
 
-=== 관심목록 변경
-
-operation::members/attention-category[snippets='http-request,http-response,response-fields']
-
 === 프로필 변경
 
 operation::members/update[snippets='http-request,http-response,response-fields']
@@ -88,10 +84,16 @@ operation::SubscriptionControllerTest/retrieveByCategory[snippets='http-request,
 operation::SubscriptionControllerTest/retrieveAllCategory[snippets='http-request,http-response']
 
 == Daily-Briefing
+
 === 데일리 브리핑 조회
+
 operation::DailyBriefingControllerTest/getDailyBriefing[snippets='http-request,http-response']
 
 == Admin
+
+=== 크리에이터 조회
+
+operation::CreatorControllerTest/retrieveCreatorsAdmin['http-request,http-response']
 
 === 크리에이터 삭제
 
@@ -109,8 +111,22 @@ operation::ContentControllerTest/retrieveInactiveContents[snippets='http-request
 
 operation::ContentControllerTest/activateContent[snippets='http-request,http-response']
 
+== AttentionCategory
+
+=== 관심카테고리 변경
+
+operation::Attention-category/update[snippets='http-request,http-response,response-fields']
+
+=== 관심 카테고리 조회
+
+operation::Attention-category/get[snippets='http-request,http-response,response-fields']
+
 == Company
 
-=== 이메일 인증번호 요청
+=== 회사 이메일 인증번호 요청
 
 operation::company/auth[snippets='http-request,http-response']
+
+=== 회사 이메일 인증번호 확인 및 등록
+
+operation::company/verification[snippets='http-request,http-response']

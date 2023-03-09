@@ -14,7 +14,7 @@ import com.hyperlink.server.domain.member.domain.Career;
 import com.hyperlink.server.domain.member.domain.CareerYear;
 import com.hyperlink.server.domain.member.domain.MemberRepository;
 import com.hyperlink.server.domain.member.domain.entity.Member;
-import com.hyperlink.server.domain.memberContent.application.MemberContentService;
+import com.hyperlink.server.domain.memberContent.application.BookmarkService;
 import com.hyperlink.server.domain.memberContent.domain.MemberContentRepository;
 import com.hyperlink.server.domain.memberContent.domain.entity.MemberContent;
 import com.hyperlink.server.domain.memberContent.exception.BookmarkExistedException;
@@ -29,11 +29,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
 @Transactional
-@DisplayName("memberContentService 통합테스트")
-public class MemberContentServiceIntegrationTest {
+@DisplayName("BookmarkService 통합테스트")
+public class BookmarkServiceIntegrationTest {
 
   @Autowired
-  MemberContentService memberContentService;
+  BookmarkService bookmarkService;
+
   @Autowired
   MemberContentRepository memberContentRepository;
   @Autowired
@@ -75,7 +76,7 @@ public class MemberContentServiceIntegrationTest {
         Long memberId = member.getId();
         Long contentId = content.getId();
 
-        memberContentService.createBookmark(memberId, contentId);
+        bookmarkService.createBookmark(memberId, contentId);
 
         MemberContent memberContent = memberContentRepository.findMemberContentByMemberIdAndContentIdAndType(
             memberId, contentId, BOOKMARK.getTypeNumber()).orElseGet(() -> null);
@@ -91,10 +92,10 @@ public class MemberContentServiceIntegrationTest {
         Long memberId = member.getId();
         Long contentId = content.getId();
 
-        memberContentService.createBookmark(memberId, contentId);
+        bookmarkService.createBookmark(memberId, contentId);
 
         assertThrows(BookmarkExistedException.class, () ->
-            memberContentService.createBookmark(memberId, contentId));
+            bookmarkService.createBookmark(memberId, contentId));
       }
 
     }
@@ -110,7 +111,7 @@ public class MemberContentServiceIntegrationTest {
         Long contentId = content.getId();
 
         assertThrows(BookmarkNotFoundException.class,
-            () -> memberContentService.deleteBookmark(memberId, contentId));
+            () -> bookmarkService.deleteBookmark(memberId, contentId));
       }
 
       @Test
@@ -118,16 +119,15 @@ public class MemberContentServiceIntegrationTest {
       void deleteSuccess() {
         Long memberId = member.getId();
         Long contentId = content.getId();
-        memberContentService.createBookmark(memberId, contentId);
+        bookmarkService.createBookmark(memberId, contentId);
 
-        memberContentService.deleteBookmark(memberId, contentId);
+        bookmarkService.deleteBookmark(memberId, contentId);
 
         MemberContent memberContent = memberContentRepository.findMemberContentByMemberIdAndContentIdAndType(
             memberId, contentId, BOOKMARK.getTypeNumber()).orElseGet(() -> null);
         assertThat(memberContent).isNull();
       }
-
     }
-
   }
+
 }
