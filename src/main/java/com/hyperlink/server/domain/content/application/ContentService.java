@@ -179,4 +179,13 @@ public class ContentService {
     foundContent.subtractLike();
 
   }
+
+  @Transactional
+  public void deleteContentsById(Long contentId) {
+    boolean exists = contentRepository.existsById(contentId);
+    if (!exists) {
+      throw new ContentNotFoundException();
+    }
+    contentRepository.deleteById(contentId);
+  }
 }
