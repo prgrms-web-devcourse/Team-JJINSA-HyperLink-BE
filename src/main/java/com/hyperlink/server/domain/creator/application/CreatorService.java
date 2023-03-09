@@ -35,6 +35,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class CreatorService {
 
+  private static final int PLUS_ONE_FOR_CURRENT_PAGE = 1;
+
   private final MemberRepository memberRepository;
   private final CreatorRepository creatorRepository;
   private final CategoryRepository categoryRepository;
@@ -74,7 +76,8 @@ public class CreatorService {
 
     List<CreatorAdminResponse> creatorAdminResponses = creators.stream()
         .map(CreatorAdminResponse::from).toList();
-    return new CreatorAdminResponses(creatorAdminResponses, creatorPagination.getNumber() + 1,
+    return new CreatorAdminResponses(creatorAdminResponses,
+        creatorPagination.getNumber() + PLUS_ONE_FOR_CURRENT_PAGE,
         creatorPagination.getTotalPages());
   }
 
