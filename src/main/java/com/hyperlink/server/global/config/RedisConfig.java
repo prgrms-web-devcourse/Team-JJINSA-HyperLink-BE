@@ -1,5 +1,6 @@
 package com.hyperlink.server.global.config;
 
+import com.hyperlink.server.domain.admin.dto.CategoryViewResponses;
 import com.hyperlink.server.domain.dailyBriefing.dto.GetDailyBriefingResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -30,6 +31,15 @@ public class RedisConfig {
     redisTemplate.setKeySerializer(new StringRedisSerializer());
     redisTemplate.setValueSerializer(
         new Jackson2JsonRedisSerializer<>(GetDailyBriefingResponse.class));
+    redisTemplate.setConnectionFactory(redisConnectionFactory());
+    return redisTemplate;
+  }
+
+  @Bean
+  public RedisTemplate<String, String> categoryViewRedisTemplate() {
+    RedisTemplate<String, String> redisTemplate = new RedisTemplate<>();
+    redisTemplate.setKeySerializer(new StringRedisSerializer());
+    redisTemplate.setValueSerializer(new StringRedisSerializer());
     redisTemplate.setConnectionFactory(redisConnectionFactory());
     return redisTemplate;
   }
