@@ -82,10 +82,10 @@ class CompanyControllerTest extends AuthSetupForMock {
     List<CompanyResponse> companies = new ArrayList<>();
     for (int i = 1; i <= 3; i++) {
       companies.add(
-          new CompanyResponse(Long.valueOf(i), "gmail.com" + i, "gmail" + i));
+          new CompanyResponse(Long.valueOf(i), "gmail" + i));
     }
 
-    CompanyPageResponse companyPageResponse = new CompanyPageResponse(2, companies);
+    CompanyPageResponse companyPageResponse = new CompanyPageResponse(2, 0, companies);
 
     given(companyService.findCompaniesForPage(0, 2))
         .willReturn(companyPageResponse);
@@ -110,10 +110,10 @@ class CompanyControllerTest extends AuthSetupForMock {
                 responseFields(
                     fieldWithPath("totalPage").type(JsonFieldType.NUMBER)
                         .description("전체 페이지 수"),
+                    fieldWithPath("currentPage").type(JsonFieldType.NUMBER)
+                        .description("현재 페이지 번호"),
                     fieldWithPath("companies.[].companyId").type(JsonFieldType.NUMBER)
                         .description("회사 식별자"),
-                    fieldWithPath("companies.[].emailAddress").type(JsonFieldType.STRING)
-                        .description("회사 이메일주소"),
                     fieldWithPath("companies.[].companyName").type(JsonFieldType.STRING)
                         .description("회사 이름"))));
 

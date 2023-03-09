@@ -41,6 +41,6 @@ public class CompanyService {
     List<CompanyResponse> companyResponses = companies.stream()
         .map(company -> CompanyResponse.from(company)).collect(Collectors.toList());
 
-    return new CompanyPageResponse(companies.getTotalPages(), companyResponses);
+    return new CompanyPageResponse(companies.getTotalPages(), page, companyResponses);
   }
 }
