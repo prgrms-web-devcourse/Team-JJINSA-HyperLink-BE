@@ -59,7 +59,7 @@ public class CompanyController {
     companyService.verifyAuthCompanyMail(memberId, mailAuthVerifyRequest);
   }
 
-  @PutMapping("/domain/companies/{companyId}")
+  @PutMapping("/admin/companies/{companyId}")
   @ResponseStatus(HttpStatus.OK)
   public void changeIsUsingRecommend(@PathVariable("companyId") Long companyId) {
     companyService.changeIsUsingRecommend(companyId);
