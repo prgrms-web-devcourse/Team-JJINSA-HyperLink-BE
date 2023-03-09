@@ -1,6 +1,5 @@
 package com.hyperlink.server.company.controller;
 
-
 import static org.mockito.BDDMockito.given;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
@@ -33,6 +32,7 @@ import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -141,6 +141,24 @@ class CompanyControllerTest extends AuthSetupForMock {
                 fieldWithPath("authNumber").type(JsonFieldType.NUMBER).description("인증 번호"),
                 fieldWithPath("logoImgUrl").type(JsonFieldType.STRING)
                     .description("회사 로고 이미지 url"))));
+  }
+
+  @Test
+  void changeIsUsingRecommendTest() throws Exception {
+    authSetup();
+
+    Long companyId = 1L;
+
+    mockMvc.perform(
+            RestDocumentationRequestBuilders.put("/domain/companies/{companyId}", companyId)
+                .header(HttpHeaders.AUTHORIZATION, authorizationHeader))
+        .andExpect(status().isOk())
+        .andDo(print())
+        .andDo(document("company/changeIsUsingRecommend",
+            preprocessRequest(prettyPrint()),
+            preprocessResponse(prettyPrint()),
+            requestHeaders(headerWithName(HttpHeaders.AUTHORIZATION).description("AccessToken"))
+        ));
   }
 
 }

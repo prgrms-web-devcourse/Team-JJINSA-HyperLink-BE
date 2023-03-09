@@ -40,4 +40,8 @@ public class Company extends BaseEntity {
     this.logoImgUrl = logoImgUrl;
     this.isUsingRecommend = false;
   }
+
+  public void changeIsUsingRecommend(Boolean isUsingRecommend) {
+    this.isUsingRecommend = isUsingRecommend;
+  }
 }
