@@ -20,6 +20,7 @@ import com.hyperlink.server.domain.company.application.CompanyService;
 import com.hyperlink.server.domain.company.controller.CompanyController;
 import com.hyperlink.server.domain.company.dto.CompanyPageResponse;
 import com.hyperlink.server.domain.company.dto.CompanyResponse;
+import com.hyperlink.server.domain.company.dto.MailAuthVerifyRequest;
 import com.hyperlink.server.domain.company.dto.MailRequest;
 import java.util.ArrayList;
 import java.util.List;
@@ -53,9 +54,8 @@ class CompanyControllerTest extends AuthSetupForMock {
   @Autowired
   ObjectMapper objectMapper;
 
-
   @Test
-  void sendMailTest() throws Exception {
+  void sendEmailTest() throws Exception {
     authSetup();
 
     String email = "rldnd2637@naver.com";
@@ -116,8 +116,31 @@ class CompanyControllerTest extends AuthSetupForMock {
                         .description("회사 식별자"),
                     fieldWithPath("companies.[].companyName").type(JsonFieldType.STRING)
                         .description("회사 이름"))));
+  }
 
+  void EmailVerificationTest() throws Exception {
+    authSetup();
 
+    String email = "rldnd2637@naver.com";
+
+    MailAuthVerifyRequest mailAuthVerifyRequest = new MailAuthVerifyRequest(email, 1234, "s3URL");
+
+    mockMvc.perform(MockMvcRequestBuilders
+            .post("/companies/verification")
+            .header(HttpHeaders.AUTHORIZATION, authorizationHeader)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(mailAuthVerifyRequest)))
+        .andExpect(status().isOk())
+        .andDo(print())
+        .andDo(document("company/verification",
+            preprocessRequest(prettyPrint()),
+            preprocessResponse(prettyPrint()),
+            requestHeaders(headerWithName(HttpHeaders.AUTHORIZATION).description("AccessToken")),
+            requestFields(
+                fieldWithPath("companyEmail").type(JsonFieldType.STRING).description("회사 이메일"),
+                fieldWithPath("authNumber").type(JsonFieldType.NUMBER).description("인증 번호"),
+                fieldWithPath("logoImgUrl").type(JsonFieldType.STRING)
+                    .description("회사 로고 이미지 url"))));
   }
 
 }

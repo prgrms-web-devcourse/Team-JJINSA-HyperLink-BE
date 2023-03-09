@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class MemberContentService {
+public class BookmarkService {
 
   private final MemberContentRepository memberContentRepository;
 
@@ -31,8 +31,11 @@ public class MemberContentService {
   }
 
   public boolean isBookmarked(Long memberId, Long contentId) {
-    if(memberId == null) return false;
+    if (memberId == null) {
+      return false;
+    }
     return memberContentRepository.findMemberContentByMemberIdAndContentIdAndType(
         memberId, contentId, BOOKMARK.getTypeNumber()).isPresent();
   }
+
 }
