@@ -47,7 +47,7 @@ public class CompanyService {
 
   public CompanyPageResponse findCompaniesForPage(int page, int size) {
     Page<Company> companies = companyRepository.findCompaniesByIsUsingRecommend(false,
-        PageRequest.of(page - CHANGE_STANDARD_VALUE, size, Sort.by(Direction.DESC, "id")));
+        PageRequest.of(page, size, Sort.by(Direction.DESC, "id")));
 
     List<CompanyResponse> companyResponses = companies.stream()
         .map(company -> CompanyResponse.from(company)).collect(Collectors.toList());

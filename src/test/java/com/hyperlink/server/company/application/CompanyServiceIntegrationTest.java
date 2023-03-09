@@ -68,9 +68,9 @@ class CompanyServiceIntegrationTest {
       companyRepository.save(
           new Company("gmail.com" + i, "logImgUrl" + i, "gmail" + i));
     }
-    CompanyPageResponse companyPageResponse1 = companyService.findCompaniesForPage(1, 2);
-    CompanyPageResponse companyPageResponse2 = companyService.findCompaniesForPage(2, 2);
-    CompanyPageResponse companyPageResponse3 = companyService.findCompaniesForPage(3, 2);
+    CompanyPageResponse companyPageResponse1 = companyService.findCompaniesForPage(0, 2);
+    CompanyPageResponse companyPageResponse2 = companyService.findCompaniesForPage(1, 2);
+    CompanyPageResponse companyPageResponse3 = companyService.findCompaniesForPage(2, 2);
 
     assertThat(companyPageResponse1.totalPage()).isEqualTo(3);
     assertThat(companyPageResponse1.companies().size()).isEqualTo(2);
