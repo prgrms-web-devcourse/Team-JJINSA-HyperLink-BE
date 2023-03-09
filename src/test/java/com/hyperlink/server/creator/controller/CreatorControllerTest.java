@@ -8,7 +8,6 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
-import static org.springframework.restdocs.headers.HeaderDocumentation.responseHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessRequest;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessResponse;
@@ -299,10 +298,11 @@ public class CreatorControllerTest extends AuthSetupForMock {
   @Nested
   @DisplayName("크리에이터 조회 API는")
   class CreatorRetrievalTest {
-  
+
     @Nested
     @DisplayName("크리에이터 전체 조회 시")
     class RetrievalAll {
+
       @BeforeEach
       void setUp() {
         authSetup();
@@ -318,9 +318,11 @@ public class CreatorControllerTest extends AuthSetupForMock {
           String page = "0";
           String size = "10";
           String category = "develop";
-          CreatorResponse naverD2 = new CreatorResponse(1L, "네이버 D2", 500000, "네이버 D2 블로그입니다.", true,
+          CreatorResponse naverD2 = new CreatorResponse(1L, "네이버 D2", 500000, "네이버 D2 블로그입니다.",
+              true,
               "https://img.naverd2.com/logo");
-          CreatorResponse kakao = new CreatorResponse(2L, "카카오 디벨로퍼스", 230421, "카카오 디벨로퍼스 블로그입니다.", false,
+          CreatorResponse kakao = new CreatorResponse(2L, "카카오 디벨로퍼스", 230421, "카카오 디벨로퍼스 블로그입니다.",
+              false,
               "https://img.kakao.com/logo");
           CreatorsRetrievalResponse creatorsRetrievalResponse = new CreatorsRetrievalResponse(
               List.of(naverD2, kakao), false);
@@ -344,13 +346,20 @@ public class CreatorControllerTest extends AuthSetupForMock {
                   ),
                   responseFields(
                       fieldWithPath("creators[]").type(JsonFieldType.ARRAY).description("크리에이터 목록"),
-                      fieldWithPath("creators[].creatorId").type(JsonFieldType.NUMBER).description("크리에이터 id"),
-                      fieldWithPath("creators[].creatorName").type(JsonFieldType.STRING).description("크리에이터 이름"),
-                      fieldWithPath("creators[].subscriberAmount").type(JsonFieldType.NUMBER).description("구독자 수"),
-                      fieldWithPath("creators[].creatorDescription").type(JsonFieldType.STRING).description("크리에이터 소개글"),
-                      fieldWithPath("creators[].isSubscribed").type(JsonFieldType.BOOLEAN).description("구독 여부"),
-                      fieldWithPath("creators[].profileImgUrl").type(JsonFieldType.STRING).description("크리에이터 프로필 이미지 URL"),
-                      fieldWithPath("hasNext").type(JsonFieldType.BOOLEAN).description("다음 페이지 존재 여부")
+                      fieldWithPath("creators[].creatorId").type(JsonFieldType.NUMBER)
+                          .description("크리에이터 id"),
+                      fieldWithPath("creators[].creatorName").type(JsonFieldType.STRING)
+                          .description("크리에이터 이름"),
+                      fieldWithPath("creators[].subscriberAmount").type(JsonFieldType.NUMBER)
+                          .description("구독자 수"),
+                      fieldWithPath("creators[].creatorDescription").type(JsonFieldType.STRING)
+                          .description("크리에이터 소개글"),
+                      fieldWithPath("creators[].isSubscribed").type(JsonFieldType.BOOLEAN)
+                          .description("구독 여부"),
+                      fieldWithPath("creators[].profileImgUrl").type(JsonFieldType.STRING)
+                          .description("크리에이터 프로필 이미지 URL"),
+                      fieldWithPath("hasNext").type(JsonFieldType.BOOLEAN)
+                          .description("다음 페이지 존재 여부")
                   )
               ));
         }
@@ -383,6 +392,7 @@ public class CreatorControllerTest extends AuthSetupForMock {
     @Nested
     @DisplayName("크리에이터 단일 조회 시")
     class RetrievalOne {
+
       @BeforeEach
       void setUp() {
         authSetup();
@@ -396,7 +406,8 @@ public class CreatorControllerTest extends AuthSetupForMock {
         @DisplayName("로그인 상태에 맞추어 구독 여부와 구독자 수가 포함된 크리에이터 정보를 반환한다.")
         void retrieveCreatorByCategoryOrAllCategory() throws Exception {
           Long creatorId = 1L;
-          CreatorResponse naverD2Info = new CreatorResponse(1L, "네이버 D2", 500000, "네이버 D2 블로그입니다.", true,
+          CreatorResponse naverD2Info = new CreatorResponse(1L, "네이버 D2", 500000, "네이버 D2 블로그입니다.",
+              true,
               "https://img.naverd2.com/logo");
 
           when(creatorService.getCreatorDetail(any(), any())).thenReturn(naverD2Info);
@@ -414,17 +425,23 @@ public class CreatorControllerTest extends AuthSetupForMock {
                   ),
                   responseFields(
                       fieldWithPath("creatorId").type(JsonFieldType.NUMBER).description("크리에이터 id"),
-                      fieldWithPath("creatorName").type(JsonFieldType.STRING).description("크리에이터 이름"),
-                      fieldWithPath("subscriberAmount").type(JsonFieldType.NUMBER).description("구독자 수"),
-                      fieldWithPath("creatorDescription").type(JsonFieldType.STRING).description("크리에이터 소개글"),
-                      fieldWithPath("isSubscribed").type(JsonFieldType.BOOLEAN).description("구독 여부"),
-                      fieldWithPath("profileImgUrl").type(JsonFieldType.STRING).description("크리에이터 프로필 이미지 URL")
+                      fieldWithPath("creatorName").type(JsonFieldType.STRING)
+                          .description("크리에이터 이름"),
+                      fieldWithPath("subscriberAmount").type(JsonFieldType.NUMBER)
+                          .description("구독자 수"),
+                      fieldWithPath("creatorDescription").type(JsonFieldType.STRING)
+                          .description("크리에이터 소개글"),
+                      fieldWithPath("isSubscribed").type(JsonFieldType.BOOLEAN)
+                          .description("구독 여부"),
+                      fieldWithPath("profileImgUrl").type(JsonFieldType.STRING)
+                          .description("크리에이터 프로필 이미지 URL")
                   )
               ));
         }
       }
     }
   }
+
   @Nested
   @DisplayName("[Admin] 크리에이터 전체 조회 API는")
   class CreatorRetrievalAdminTest {
@@ -479,7 +496,8 @@ public class CreatorControllerTest extends AuthSetupForMock {
                         .description("크리에이터 소개글"),
                     fieldWithPath("creators[].categoryName").type(JsonFieldType.STRING)
                         .description("크리에이터 카테고리 이름"),
-                    fieldWithPath("currentPage").type(JsonFieldType.NUMBER).description("현재 조회중인 페이지 번호"),
+                    fieldWithPath("currentPage").type(JsonFieldType.NUMBER)
+                        .description("현재 조회중인 페이지 번호"),
                     fieldWithPath("totalPage").type(JsonFieldType.NUMBER).description("전체 페이지 번호")
                 )
             ));
@@ -489,7 +507,7 @@ public class CreatorControllerTest extends AuthSetupForMock {
 
   @Nested
   @DisplayName("[Admin] 크리에이터 전체 조회 API는")
-  class CreatorRetrievalAdminTest {
+  class CreatorRetrievalAdminTestV1 {
 
     @Nested
     @DisplayName("[성공]")
@@ -541,7 +559,8 @@ public class CreatorControllerTest extends AuthSetupForMock {
                         .description("크리에이터 소개글"),
                     fieldWithPath("creators[].categoryName").type(JsonFieldType.STRING)
                         .description("크리에이터 카테고리 이름"),
-                    fieldWithPath("currentPage").type(JsonFieldType.NUMBER).description("현재 조회중인 페이지 번호"),
+                    fieldWithPath("currentPage").type(JsonFieldType.NUMBER)
+                        .description("현재 조회중인 페이지 번호"),
                     fieldWithPath("totalPage").type(JsonFieldType.NUMBER).description("전체 페이지 번호")
                 )
             ));
