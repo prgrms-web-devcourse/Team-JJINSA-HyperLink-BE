@@ -674,4 +674,42 @@ public class ContentServiceIntegrationTest {
       categoryRepository.deleteById(category2.getId());
     }
   }
+
+  @Nested
+  @DisplayName("[어드민 페이지] 컨텐츠 삭제 메서드는")
+  class DeleteContentsByAdmin {
+
+    Content content;
+    @BeforeEach
+    void setUp() {
+      content = new Content("제목1", "contentImgUrl", "link1", creator, category);
+      contentRepository.save(content);
+    }
+
+    @Nested
+    @DisplayName("[성공]")
+    class Success {
+
+      @Test
+      @DisplayName("컨텐츠가 존재하면 해당 컨텐츠를 삭제한다.")
+      void deleteContentsById() {
+        contentService.deleteContentsById(content.getId());
+
+        assertThat(contentRepository.findById(content.getId()).isEmpty());
+      }
+    }
+
+    @Nested
+    @DisplayName("[실패]")
+    class Fail {
+      @Test
+      @DisplayName("컨텐츠가 존재하면 해당 컨텐츠를 삭제한다.")
+      void deleteContentsById() {
+        Long invalidContentId = -1L;
+
+        assertThrows(ContentNotFoundException.class,
+            () -> contentService.deleteContentsById(invalidContentId));
+      }
+    }
+  }
 }
