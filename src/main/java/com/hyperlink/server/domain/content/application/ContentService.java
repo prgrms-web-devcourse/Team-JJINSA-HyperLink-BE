@@ -159,7 +159,7 @@ public class ContentService {
     List<Content> inactivatedContents = inactivatedContentsPage.getContent();
     List<ContentAdminResponse> inactivatedContentAdminResponses = inactivatedContents.stream()
         .map(ContentAdminResponse::from).toList();
-    return ContentAdminResponses.of(inactivatedContentAdminResponses, inactivatedContentsPage.getNumber(),
+    return ContentAdminResponses.of(inactivatedContentAdminResponses, inactivatedContentsPage.getNumber() + 1,
         inactivatedContentsPage.getTotalPages());
   }
 }
