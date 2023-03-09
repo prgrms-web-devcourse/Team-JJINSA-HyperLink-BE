@@ -19,6 +19,7 @@ import com.hyperlink.server.domain.memberContent.application.LikeService;
 import com.hyperlink.server.domain.memberContent.domain.MemberContentRepository;
 import com.hyperlink.server.domain.memberContent.domain.entity.MemberContent;
 import com.hyperlink.server.domain.memberContent.dto.LikeClickRequest;
+import com.hyperlink.server.domain.memberContent.dto.LikeClickResponse;
 import com.hyperlink.server.domain.memberContent.exception.LikeExistedException;
 import com.hyperlink.server.domain.memberContent.exception.LikeNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
@@ -55,7 +56,7 @@ public class LikeServiceIntegrationTest {
   void setUp() {
     member = new Member("email", "nickname", Career.DEVELOP, CareerYear.MORE_THAN_TEN,
         "profileImgUrl");
-    Category category = new Category("개발");
+    Category category = new Category("개발2");
     Creator creator = new Creator("name", "profile", "description", category);
     content = new Content("title", "contentImgUrl", "link", creator, category);
     categoryRepository.save(category);
@@ -67,18 +68,19 @@ public class LikeServiceIntegrationTest {
   @Test
   @DisplayName("좋아요 클릭시 memberContent DB에 Like가 추가되고 content의 좋아요 수가 증가한다.")
   void createSuccessTest() {
-    int priorLikeCount = content.getLikeCount();
+
     Long memberId = member.getId();
     Long contentId = content.getId();
     LikeClickRequest likeClickRequest = new LikeClickRequest(true);
-    likeService.clickLike(memberId, contentId, likeClickRequest);
+    LikeClickResponse likeClickResponse = likeService.clickLike(memberId, contentId,
+        likeClickRequest);
 
     MemberContent like = memberContentRepository.findMemberContentByMemberIdAndContentAndType(
         memberId, content, LIKE.getTypeNumber()).orElseThrow(LikeNotFoundException::new);
 
     assertThat(like.getMemberId()).isEqualTo(memberId);
     assertThat(like.getContent().getId()).isEqualTo(contentId);
-    assertThat(content.getLikeCount()).isEqualTo(priorLikeCount + 1);
+    assertThat(content.getLikeCount()).isEqualTo(likeClickResponse.likeCount());
   }
 
   @Test
@@ -100,15 +102,17 @@ public class LikeServiceIntegrationTest {
     Long contentId = content.getId();
     LikeClickRequest likeClickRequestForAdd = new LikeClickRequest(true);
     LikeClickRequest likeClickRequestForDelete = new LikeClickRequest(false);
-    likeService.clickLike(memberId, contentId, likeClickRequestForAdd);
-    int priorLikeCount = content.getLikeCount();
-    likeService.clickLike(memberId, contentId, likeClickRequestForDelete);
+    likeService.clickLike(memberId, contentId,
+        likeClickRequestForAdd);
+
+    LikeClickResponse likeClickResponse = likeService.clickLike(memberId, contentId,
+        likeClickRequestForDelete);
 
     boolean isPresent = memberContentRepository.existsMemberContentByMemberIdAndContentIdAndType(
         memberId, contentId, LIKE.getTypeNumber());
 
     assertThat(isPresent).isFalse();
-    assertThat(content.getLikeCount()).isEqualTo(priorLikeCount - 1);
+    assertThat(content.getLikeCount()).isEqualTo(likeClickResponse.likeCount());
   }
 
   @Test

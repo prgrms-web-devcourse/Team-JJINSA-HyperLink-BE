@@ -153,7 +153,6 @@ public class ContentService {
     content.makeViewable(true);
   }
 
-
   public ContentAdminResponses retrieveInactivatedContents(Pageable pageable) {
     Page<Content> inactivatedContentsPage = contentRepository.findInactivatedContents(pageable);
     List<Content> inactivatedContents = inactivatedContentsPage.getContent();
@@ -165,18 +164,17 @@ public class ContentService {
   }
 
   @Transactional
-  public void addLike(Long contentId) {
+  public int addLike(Long contentId) {
     Content foundContent = contentRepository.selectForUpdate(contentId)
         .orElseThrow(ContentNotFoundException::new);
-    foundContent.addLike();
+    return foundContent.addLike();
   }
 
   @Transactional
-  public void subTractLike(Long contentId) {
+  public int subTractLike(Long contentId) {
     Content foundContent = contentRepository.selectForUpdate(contentId)
         .orElseThrow(ContentNotFoundException::new);
-    foundContent.subtractLike();
-
+    return foundContent.subtractLike();
   }
 
   @Transactional

@@ -22,6 +22,7 @@ import com.hyperlink.server.domain.memberContent.application.LikeService;
 import com.hyperlink.server.domain.memberContent.controller.MemberContentController;
 import com.hyperlink.server.domain.memberContent.dto.BookmarkPageResponse;
 import com.hyperlink.server.domain.memberContent.dto.LikeClickRequest;
+import com.hyperlink.server.domain.memberContent.dto.LikeClickResponse;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -202,6 +203,13 @@ public class MemberContentControllerTest extends AuthSetupForMock {
     void createLikeTest() throws Exception {
       authSetup();
 
+      Long contentId = 1L;
+
+      LikeClickResponse likeClickResponse = new LikeClickResponse(10);
+
+      given(likeService.clickLike(memberId, contentId, likeClickRequestForCreate)).willReturn(
+          likeClickResponse);
+
       mockMvc.perform(
               post("/like/" + contentId)
                   .header(HttpHeaders.AUTHORIZATION, authorizationHeader)
@@ -217,7 +225,9 @@ public class MemberContentControllerTest extends AuthSetupForMock {
                       headerWithName(HttpHeaders.AUTHORIZATION).description("jwt header")
                   ), requestFields(
                       fieldWithPath("addLike").type(JsonFieldType.BOOLEAN)
-                          .description("좋아요 클릭 요청 타입(true: 좋아요추가, false: 좋아요 취소)"))
+                          .description("좋아요 클릭 요청 타입(true: 좋아요추가, false: 좋아요 취소)")),
+                  responseFields(
+                      fieldWithPath("likeCount").type(JsonFieldType.NUMBER).description("좋아요 수"))
               )
           );
     }
@@ -226,6 +236,12 @@ public class MemberContentControllerTest extends AuthSetupForMock {
     @DisplayName("좋아요 취소에 성공하고 OK를 응답한다")
     void deleteLikeTest() throws Exception {
       authSetup();
+      Long contentId = 1L;
+
+      LikeClickResponse likeClickResponse = new LikeClickResponse(10);
+
+      given(likeService.clickLike(memberId, contentId, likeClickRequestForDelete)).willReturn(
+          likeClickResponse);
 
       mockMvc.perform(
               post("/like/" + contentId)
@@ -242,7 +258,9 @@ public class MemberContentControllerTest extends AuthSetupForMock {
                       headerWithName(HttpHeaders.AUTHORIZATION).description("jwt header")
                   ), requestFields(
                       fieldWithPath("addLike").type(JsonFieldType.BOOLEAN)
-                          .description("좋아요 클릭 요청 타입(true: 좋아요추가, false: 좋아요 취소)"))
+                          .description("좋아요 클릭 요청 타입(true: 좋아요추가, false: 좋아요 취소)")),
+                  responseFields(
+                      fieldWithPath("likeCount").type(JsonFieldType.NUMBER).description("좋아요 수"))
               )
           );
     }
