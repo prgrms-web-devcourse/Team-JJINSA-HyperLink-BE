@@ -3,11 +3,13 @@ package com.hyperlink.server.domain.memberContent.controller;
 import com.hyperlink.server.domain.auth.token.exception.TokenNotExistsException;
 import com.hyperlink.server.domain.memberContent.application.BookmarkService;
 import com.hyperlink.server.domain.memberContent.application.LikeService;
+import com.hyperlink.server.domain.memberContent.dto.BookmarkPageResponse;
 import com.hyperlink.server.domain.memberContent.dto.LikeClickRequest;
 import com.hyperlink.server.global.config.LoginMemberId;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -32,6 +34,15 @@ public class MemberContentController {
     } else {
       bookmarkService.deleteBookmark(memberId, contentId);
     }
+  }
+
+  @GetMapping("/bookmark")
+  @ResponseStatus(HttpStatus.OK)
+  public BookmarkPageResponse getBookmarkPage(@LoginMemberId Optional<Long> optionalMemberId,
+      @RequestParam("page") int page,
+      @RequestParam("size") int size) {
+    Long memberId = optionalMemberId.orElseThrow(TokenNotExistsException::new);
+    return bookmarkService.findBookmarkedContentForSlice(memberId, page, size);
   }
 
   @PostMapping("/like/{contentId}")

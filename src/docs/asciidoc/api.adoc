@@ -31,6 +31,10 @@ operation::ContentControllerTest/retrieve[snippets="http-request,http-response"]
 
 operation::MemberContentController/includeCreateOrDeleteBookmark[snippets='http-request,http-response']
 
+== 북마크 조회
+
+operation::MemberContentController/getBookmarks[snippets='http-request,http-response']
+
 == Member
 
 === 회원가입
