@@ -103,6 +103,10 @@ operation::CreatorControllerTest/deleteCreator[snippets='http-request,http-respo
 
 operation::CreatorControllerTest/enrollCreator[snippets='http-request,http-response']
 
+=== 비활성 컨텐츠 조회
+
+operation::ContentControllerTest/retrieveInactiveContents[snippets='http-request,http-response']
+
 === 컨텐츠 활성화
 
 operation::ContentControllerTest/activateContent[snippets='http-request,http-response']

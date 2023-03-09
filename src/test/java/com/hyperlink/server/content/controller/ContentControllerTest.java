@@ -1,8 +1,10 @@
 package com.hyperlink.server.content.controller;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.when;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
@@ -22,12 +24,15 @@ import com.hyperlink.server.AuthSetupForMock;
 import com.hyperlink.server.domain.auth.token.JwtTokenProvider;
 import com.hyperlink.server.domain.content.application.ContentService;
 import com.hyperlink.server.domain.content.controller.ContentController;
+import com.hyperlink.server.domain.content.dto.ContentAdminResponse;
+import com.hyperlink.server.domain.content.dto.ContentAdminResponses;
 import com.hyperlink.server.domain.content.dto.ContentResponse;
 import com.hyperlink.server.domain.content.dto.GetContentsCommonResponse;
 import com.hyperlink.server.domain.content.dto.RecommendationCompanyResponse;
 import com.hyperlink.server.domain.content.dto.SearchResponse;
 import com.hyperlink.server.domain.content.exception.CategoryAndCreatorIdConstraintViolationException;
 import com.hyperlink.server.domain.content.exception.ContentNotFoundException;
+import com.hyperlink.server.domain.member.domain.entity.Member;
 import java.util.List;
 import java.util.stream.Stream;
 import javax.validation.ValidationException;
@@ -574,5 +579,68 @@ public class ContentControllerTest extends AuthSetupForMock {
 
       }
     }
+  }
+
+  @Nested
+  @DisplayName("[Admin] 비활성 컨텐츠 조회 API는")
+  class RetrieveInactivateContent {
+    @BeforeEach
+    void setUp() {
+      authSetup();
+    }
+
+    @Nested
+    @DisplayName("[성공]")
+    class Success {
+      @Test
+      @DisplayName("비활성된 컨텐츠를 조회한다.")
+      void retrieveInactiveContents() throws Exception {
+        String page = "0";
+        String size = "10";
+
+        ContentAdminResponse content1 = new ContentAdminResponse(1L, "컨텐츠 제목1",
+            "https://d2.naver.com/aaa");
+        ContentAdminResponse content2 = new ContentAdminResponse(2L, "컨텐츠 제목2",
+            "https://d2.naver.com/bbb");
+        ContentAdminResponse content3 = new ContentAdminResponse(3L, "컨텐츠 제목3",
+            "https://d2.naver.com/ccc");
+        ContentAdminResponse content4 = new ContentAdminResponse(4L, "컨텐츠 제목4",
+            "https://d2.naver.com/ddd");
+        ContentAdminResponses contentAdminResponses = new ContentAdminResponses(
+            List.of(content1, content2, content3, content4), 0, 1);
+
+        when(contentService.retrieveInactivatedContents(any())).thenReturn(contentAdminResponses);
+
+        mockMvc.perform(
+                get("/admin/contents")
+                    .param("page", page)
+                    .param("size", size)
+                    .header(HttpHeaders.AUTHORIZATION, authorizationHeader)
+                    .characterEncoding("UTF-8")
+            ).andExpect(status().isOk())
+            .andDo(print())
+            .andDo(
+                document(
+                    "ContentControllerTest/retrieveInactiveContents",
+                    preprocessRequest(prettyPrint()),
+                    preprocessResponse(prettyPrint()),
+                    requestHeaders(
+                        headerWithName(HttpHeaders.AUTHORIZATION).description("AccessToken")
+                    ),
+                    responseFields(
+                        fieldWithPath("contents.[].contentId").type(JsonFieldType.NUMBER)
+                            .description("컨텐츠 id"),
+                        fieldWithPath("contents.[].title").type(JsonFieldType.STRING)
+                            .description("컨텐츠 제목"),
+                        fieldWithPath("contents.[].link").type(JsonFieldType.STRING)
+                            .description("컨텐츠 연결 외부 링크"),
+                        fieldWithPath("currentPage").type(JsonFieldType.NUMBER).description("현재 페이지 번호"),
+                        fieldWithPath("totalPage").type(JsonFieldType.NUMBER).description("전체 페이지 번호")
+                    )
+                )
+            );
+      }
+    }
+
   }
 }
