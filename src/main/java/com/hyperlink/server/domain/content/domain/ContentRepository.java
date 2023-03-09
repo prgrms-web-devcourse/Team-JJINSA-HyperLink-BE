@@ -22,6 +22,8 @@ public interface ContentRepository extends JpaRepository<Content, Long> {
 
   Integer countByCreatedAtAfter(LocalDateTime date);
 
-  @Query("select c from Content c where c.isViewable = false order by c.id desc")
+  @Query("select c from Content c where c.isViewable = false order by c.createdAt desc")
   Page<Content> findInactivatedContents(Pageable pageable);
+
+  Content findByTitle(String title);
 }

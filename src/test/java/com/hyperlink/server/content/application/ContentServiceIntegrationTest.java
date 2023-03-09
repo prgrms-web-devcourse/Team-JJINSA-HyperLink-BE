@@ -421,10 +421,13 @@ public class ContentServiceIntegrationTest {
 
       content1 = contentRepository.save(
           new Content("제목1", "contentImgUrl1", "link1", creator, category));
+      Thread.sleep(1000);
       content2 = contentRepository.save(
           new Content("제목2", "contentImgUrl2", "link2", creator, category));
+      Thread.sleep(1000);
       content3 = contentRepository.save(
           new Content("제목3", "contentImgUrl3", "link3", creator, category));
+      Thread.sleep(1000);
       content4 = contentRepository.save(
           new Content("제목4", "contentImgUrl4", "link4", creator2, category2));
       member = new Member("memberEmail", "nickname", Career.DEVELOP,
@@ -598,27 +601,77 @@ public class ContentServiceIntegrationTest {
         assertThat(contents.get(0).title()).isEqualTo("제목3");
       }
     }
+  }
 
-    @Nested
-    @DisplayName("[어드민 페이지] 비활성화된 글을")
-    class InactivatedContent {
+  @TestInstance(Lifecycle.PER_CLASS)
+  @TestMethodOrder(OrderAnnotation.class)
+  @Nested
+  @Rollback(value = false)
+  @DisplayName("[어드민 페이지] 비활성화된 글을")
+  class RetrieveInactivatedContent {
+    Content content1;
+    Content content2;
+    Content content3;
+    Content content4;
+    Creator creator2;
+    Category category2;
+    Member member;
+    AttentionCategory savedAttentionCategory;
 
-      @Nested
-      @DisplayName("[성공]")
-      class Success {
-        @Test
-        @DisplayName("최신순으로 조회할 수 있다.")
-        void retrieveInactivatedContent() {
-          contentService.activateContent(content2.getId());
+    @Order(1)
+    @Test
+    void setUp() throws InterruptedException {
+      creator2 = new Creator("코딩팩토리", "profileUrl", "description", category);
+      creatorRepository.save(creator2);
+      category2 = new Category("패션");
+      categoryRepository.save(category2);
 
-          ContentAdminResponses contentAdminResponses = contentService.retrieveInactivatedContents(
-              PageRequest.of(0, 10));
+      content1 = contentRepository.save(
+          new Content("제목1", "contentImgUrl1", "link1", creator, category));
+      Thread.sleep(1000);
+      content2 = contentRepository.save(
+          new Content("제목2", "contentImgUrl2", "link2", creator, category));
+      Thread.sleep(1000);
+      content3 = contentRepository.save(
+          new Content("제목3", "contentImgUrl3", "link3", creator, category));
+      Thread.sleep(1000);
+      content4 = contentRepository.save(
+          new Content("제목4", "contentImgUrl4", "link4", creator2, category2));
 
-          assertThat(contentAdminResponses.contents()).hasSize(3);
-          assertThat(contentAdminResponses.contents().get(0).title()).isEqualTo("제목4");
-          assertThat(contentAdminResponses.contents().get(2).title()).isEqualTo("제목1");
-        }
-      }
+      member = new Member("memberEmail", "nickname", Career.DEVELOP,
+          CareerYear.LESS_THAN_ONE,
+          "profileImgUrl");
+      memberRepository.save(member);
+      savedAttentionCategory = attentionCategoryRepository.save(
+          new AttentionCategory(member, category));
+    }
+    @Order(2)
+    @Test
+    @DisplayName("최신순으로 조회할 수 있다.")
+    void retrieveInactivatedContent() {
+        Content newContent2 = contentRepository.findById(content2.getId()).get();
+        contentService.activateContent(newContent2.getId());
+
+      ContentAdminResponses contentAdminResponses = contentService.retrieveInactivatedContents(
+          PageRequest.of(0, 10));
+
+      assertThat(contentAdminResponses.contents()).hasSize(3);
+      assertThat(contentAdminResponses.contents().get(0).title()).isEqualTo("제목4");
+      assertThat(contentAdminResponses.contents().get(2).title()).isEqualTo("제목1");
+    }
+
+    @Order(3)
+    @Test
+    @DisplayName("컨텐츠 삭제")
+    void tearDown() {
+      attentionCategoryRepository.deleteById(savedAttentionCategory.getId());
+      contentRepository.deleteById(content1.getId());
+      contentRepository.deleteById(content2.getId());
+      contentRepository.deleteById(content3.getId());
+      contentRepository.deleteById(content4.getId());
+      creatorRepository.deleteById(creator2.getId());
+      memberRepository.deleteById(member.getId());
+      categoryRepository.deleteById(category2.getId());
     }
   }
 }
