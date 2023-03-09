@@ -22,7 +22,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class MemberContentService {
+public class BookmarkService {
 
   private final MemberContentRepository memberContentRepository;
   private final ContentRepository contentRepository;
@@ -72,4 +72,5 @@ public class MemberContentService {
 
     return new BookmarkPageResponse(contents, memberContents.hasNext());
   }
+
 }

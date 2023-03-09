@@ -165,6 +165,8 @@ class MemberServiceIntegrationTest {
     ProfileImgRequest profileImgRequest = new ProfileImgRequest(changeImgUrl);
     memberService.changeProfileImg(saveMember.getId(), profileImgRequest);
 
+    memberService.changeProfileImg(saveMember.getId(), profileImgRequest);
+
     Member foundMember = memberRepository.findById(saveMember.getId())
         .orElseThrow(MemberNotFoundException::new);
 

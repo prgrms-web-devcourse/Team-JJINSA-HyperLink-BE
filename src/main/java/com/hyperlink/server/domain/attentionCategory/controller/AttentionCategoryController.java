@@ -7,6 +7,7 @@ import com.hyperlink.server.domain.member.exception.MemberNotFoundException;
 import com.hyperlink.server.global.config.LoginMemberId;
 import java.util.Optional;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -29,5 +30,13 @@ public class AttentionCategoryController {
     Long memberId = optionalId.orElseThrow(MemberNotFoundException::new);
     return attentionCategoryService.changeAttentionCategory(memberId,
         attentionCategoryRequest.attentionCategory());
+  }
+
+  @GetMapping("/attention-category")
+  @ResponseStatus(HttpStatus.OK)
+  public AttentionCategoryResponse getAttentionCategories(
+      @LoginMemberId Optional<Long> optionalId) {
+    Long memberId = optionalId.orElseThrow(MemberNotFoundException::new);
+    return attentionCategoryService.getAttentionCategory(memberId);
   }
 }

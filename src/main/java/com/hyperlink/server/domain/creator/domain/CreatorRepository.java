@@ -4,6 +4,7 @@ import com.hyperlink.server.domain.creator.domain.entity.Creator;
 import com.hyperlink.server.domain.creator.dto.CreatorAndSubscriptionCountMapper;
 import com.hyperlink.server.domain.creator.dto.SubscribeFlagMapper;
 import java.util.Optional;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -13,6 +14,10 @@ import org.springframework.data.repository.query.Param;
 public interface CreatorRepository extends JpaRepository<Creator, Long> {
 
   Optional<Creator> findByName(String name);
+
+  @Query(value = "select c from Creator c join fetch c.category",
+  countQuery = "select count(c) from Creator c")
+  Page<Creator> findCreators(Pageable pageable);
 
   @Query(value = "select c.id as creatorId, c.name as name, count(sub.creator.id) as subscriberAmount, c.description as description, c.profileImgUrl as profileImgUrl from Creator c "
       + "left join Subscription sub "

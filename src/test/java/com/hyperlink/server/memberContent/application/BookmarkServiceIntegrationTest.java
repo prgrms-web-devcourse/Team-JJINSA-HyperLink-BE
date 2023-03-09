@@ -15,7 +15,7 @@ import com.hyperlink.server.domain.member.domain.Career;
 import com.hyperlink.server.domain.member.domain.CareerYear;
 import com.hyperlink.server.domain.member.domain.MemberRepository;
 import com.hyperlink.server.domain.member.domain.entity.Member;
-import com.hyperlink.server.domain.memberContent.application.MemberContentService;
+import com.hyperlink.server.domain.memberContent.application.BookmarkService;
 import com.hyperlink.server.domain.memberContent.domain.MemberContentRepository;
 import com.hyperlink.server.domain.memberContent.domain.entity.MemberContent;
 import com.hyperlink.server.domain.memberContent.dto.BookmarkPageResponse;
@@ -35,11 +35,12 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 @SpringBootTest
 @Transactional
-@DisplayName("memberContentService 통합테스트")
-public class MemberContentServiceIntegrationTest {
+@DisplayName("BookmarkService 통합테스트")
+public class BookmarkServiceIntegrationTest {
 
   @Autowired
-  MemberContentService memberContentService;
+  BookmarkService bookmarkService;
+
   @Autowired
   MemberContentRepository memberContentRepository;
   @Autowired
@@ -83,7 +84,7 @@ public class MemberContentServiceIntegrationTest {
         Long memberId = member.getId();
         Long contentId = content.getId();
 
-        memberContentService.createBookmark(memberId, contentId);
+        bookmarkService.createBookmark(memberId, contentId);
 
         MemberContent memberContent = memberContentRepository.findMemberContentByMemberIdAndContentAndType(
             memberId, content, BOOKMARK.getTypeNumber()).orElseGet(() -> null);
@@ -99,10 +100,10 @@ public class MemberContentServiceIntegrationTest {
         Long memberId = member.getId();
         Long contentId = content.getId();
 
-        memberContentService.createBookmark(memberId, contentId);
+        bookmarkService.createBookmark(memberId, contentId);
 
         assertThrows(BookmarkExistedException.class, () ->
-            memberContentService.createBookmark(memberId, contentId));
+            bookmarkService.createBookmark(memberId, contentId));
       }
 
     }
@@ -118,7 +119,7 @@ public class MemberContentServiceIntegrationTest {
         Long contentId = content.getId();
 
         assertThrows(BookmarkNotFoundException.class,
-            () -> memberContentService.deleteBookmark(memberId, contentId));
+            () -> bookmarkService.deleteBookmark(memberId, contentId));
       }
 
       @Test
@@ -126,18 +127,17 @@ public class MemberContentServiceIntegrationTest {
       void deleteSuccess() {
         Long memberId = member.getId();
         Long contentId = content.getId();
-        memberContentService.createBookmark(memberId, contentId);
+        bookmarkService.createBookmark(memberId, contentId);
 
-        memberContentService.deleteBookmark(memberId, contentId);
+        bookmarkService.deleteBookmark(memberId, contentId);
 
         MemberContent memberContent = memberContentRepository.findMemberContentByMemberIdAndContentAndType(
             memberId, content, BOOKMARK.getTypeNumber()).orElseGet(() -> null);
         assertThat(memberContent).isNull();
       }
     }
-
   }
-
+  
   @DisplayName("북마크한 컨텐츠들을 가져올 수 있다.")
   @Test
   void findBookmarkedContentForSliceTest() {
@@ -148,13 +148,13 @@ public class MemberContentServiceIntegrationTest {
               newCreator, newCategory));
       contents.add(savedContent);
 
-      memberContentService.createBookmark(member.getId(), savedContent.getId());
+      bookmarkService.createBookmark(member.getId(), savedContent.getId());
     }
-    BookmarkPageResponse bookmarkedContentForSlice1 = memberContentService.findBookmarkedContentForSlice(
+    BookmarkPageResponse bookmarkedContentForSlice1 = bookmarkService.findBookmarkedContentForSlice(
         member.getId(), 0, 2);
-    BookmarkPageResponse bookmarkedContentForSlice2 = memberContentService.findBookmarkedContentForSlice(
+    BookmarkPageResponse bookmarkedContentForSlice2 = bookmarkService.findBookmarkedContentForSlice(
         member.getId(), 1, 2);
-    BookmarkPageResponse bookmarkedContentForSlice3 = memberContentService.findBookmarkedContentForSlice(
+    BookmarkPageResponse bookmarkedContentForSlice3 = bookmarkService.findBookmarkedContentForSlice(
         member.getId(), 2, 2);
 
     assertThat(bookmarkedContentForSlice1.contents().size()).isEqualTo(2);
@@ -171,7 +171,7 @@ public class MemberContentServiceIntegrationTest {
     assertThat(bookmarkedContentForSlice3.hasNext()).isFalse();
     log.info("#### 3" + bookmarkedContentForSlice3.contents().get(0));
 
-    BookmarkPageResponse bookmarkedContentForSlice = memberContentService.findBookmarkedContentForSlice(
+    BookmarkPageResponse bookmarkedContentForSlice = bookmarkService.findBookmarkedContentForSlice(
         member.getId(), 0, 5);
 
     assertThat(bookmarkedContentForSlice.contents().size()).isEqualTo(5);

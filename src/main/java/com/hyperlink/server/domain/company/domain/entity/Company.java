@@ -36,7 +36,8 @@ public class Company extends BaseEntity {
   
   public Company(String emailAddress, String logoImgUrl, String name) {
     this.emailAddress = emailAddress;
-    this.logoImgUrl = logoImgUrl;
     this.name = name;
+    this.logoImgUrl = logoImgUrl;
+    this.isUsingRecommend = false;
   }
 }

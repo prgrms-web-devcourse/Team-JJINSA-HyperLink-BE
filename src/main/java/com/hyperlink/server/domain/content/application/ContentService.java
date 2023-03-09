@@ -7,6 +7,8 @@ import com.hyperlink.server.domain.category.exception.CategoryNotFoundException;
 import com.hyperlink.server.domain.common.ContentDtoFactoryService;
 import com.hyperlink.server.domain.content.domain.ContentRepository;
 import com.hyperlink.server.domain.content.domain.entity.Content;
+import com.hyperlink.server.domain.content.dto.ContentAdminResponse;
+import com.hyperlink.server.domain.content.dto.ContentAdminResponses;
 import com.hyperlink.server.domain.content.dto.ContentEnrollResponse;
 import com.hyperlink.server.domain.content.dto.GetContentsCommonResponse;
 import com.hyperlink.server.domain.content.dto.SearchResponse;
@@ -16,13 +18,13 @@ import com.hyperlink.server.domain.content.infrastructure.ContentRepositoryCusto
 import com.hyperlink.server.domain.creator.domain.CreatorRepository;
 import com.hyperlink.server.domain.creator.domain.entity.Creator;
 import com.hyperlink.server.domain.creator.exception.CreatorNotFoundException;
-import com.hyperlink.server.domain.memberContent.application.MemberContentService;
 import com.hyperlink.server.domain.memberHistory.application.MemberHistoryService;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
@@ -34,12 +36,13 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class ContentService {
 
+  private static final int PLUS_ONE_FOR_CURRENT_PAGE = 1;
+
   private final ContentRepository contentRepository;
   private final CategoryRepository categoryRepository;
   private final CreatorRepository creatorRepository;
   private final AttentionCategoryRepository attentionCategoryRepository;
   private final ContentRepositoryCustom contentRepositoryCustom;
-  private final MemberContentService memberContentService;
   private final ContentDtoFactoryService contentDtoFactoryService;
   private final MemberHistoryService memberHistoryService;
 
@@ -60,7 +63,8 @@ public class ContentService {
 
   public SearchResponse search(Long memberId, String keyword, Pageable pageable) {
     List<String> keywords = splitSearchKeywords(keyword);
-    Slice<Content> searchResultContents = contentRepositoryCustom.searchByTitleContainingOrderByLatest(keywords,
+    Slice<Content> searchResultContents = contentRepositoryCustom.searchByTitleContainingOrderByLatest(
+        keywords,
         pageable);
 
     GetContentsCommonResponse contentResponses = contentDtoFactoryService.createContentResponses(
@@ -111,7 +115,7 @@ public class ContentService {
   public GetContentsCommonResponse retrieveTrendAllCategoriesContents(Long memberId,
       String sort, Pageable pageable) {
     List<Long> categoryIds = new ArrayList<>();
-    if(memberId == null) {
+    if (memberId == null) {
       categoryIds = categoryRepository.findAllCategoryIds();
     } else {
       categoryIds = attentionCategoryRepository.findAttentionCategoryIdsByMemberId(memberId);
@@ -147,5 +151,44 @@ public class ContentService {
     Content content = contentRepository.findById(contentId)
         .orElseThrow(ContentNotFoundException::new);
     content.makeViewable(true);
+  }
+
+
+  public ContentAdminResponses retrieveInactivatedContents(Pageable pageable) {
+    Page<Content> inactivatedContentsPage = contentRepository.findInactivatedContents(pageable);
+    List<Content> inactivatedContents = inactivatedContentsPage.getContent();
+    List<ContentAdminResponse> inactivatedContentAdminResponses = inactivatedContents.stream()
+        .map(ContentAdminResponse::from).toList();
+    return ContentAdminResponses.of(inactivatedContentAdminResponses,
+        inactivatedContentsPage.getNumber() + PLUS_ONE_FOR_CURRENT_PAGE,
+        inactivatedContentsPage.getTotalPages());
+  }
+
+  @Transactional
+  public void addLike(Long contentId) {
+    Content foundContent = contentRepository.selectForUpdate(contentId)
+        .orElseThrow(ContentNotFoundException::new);
+    foundContent.addLike();
+  }
+
+  @Transactional
+  public void subTractLike(Long contentId) {
+    Content foundContent = contentRepository.selectForUpdate(contentId)
+        .orElseThrow(ContentNotFoundException::new);
+    foundContent.subtractLike();
+
+  }
+
+  @Transactional
+  public void deleteContentsById(Long contentId) {
+    boolean exists = contentRepository.existsById(contentId);
+    if (!exists) {
+      throw new ContentNotFoundException();
+    }
+    contentRepository.deleteById(contentId);
+  }
+
+  public Content findById(Long contentId) {
+    return contentRepository.findById(contentId).orElseThrow(ContentNotFoundException::new);
   }
 }
