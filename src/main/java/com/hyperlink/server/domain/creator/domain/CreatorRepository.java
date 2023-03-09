@@ -16,26 +16,29 @@ public interface CreatorRepository extends JpaRepository<Creator, Long> {
   Optional<Creator> findByName(String name);
 
   @Query(value = "select c from Creator c join fetch c.category",
-  countQuery = "select count(c) from Creator c")
+      countQuery = "select count(c) from Creator c")
   Page<Creator> findCreators(Pageable pageable);
 
   @Query(value = "select c.id as creatorId, c.name as name, count(sub.creator.id) as subscriberAmount, c.description as description, c.profileImgUrl as profileImgUrl from Creator c "
       + "left join Subscription sub "
       + "on c.id = sub.creator.id "
-      + "group by c.id ")
+      + "group by c.id "
+      + "order by c.id asc")
   Slice<CreatorAndSubscriptionCountMapper> findAllCreators(Pageable pageable);
 
   @Query("select c.id as creatorId, c.name as name, count(sub.creator.id) as subscriberAmount, c.description as description, c.profileImgUrl as profileImgUrl from Creator c "
       + "left join Subscription sub "
       + "on c.id = sub.creator.id "
       + "where c.category.id = :categoryId "
-      + "group by c.id ")
+      + "group by c.id "
+      + "order by c.id asc")
   Slice<CreatorAndSubscriptionCountMapper> findAllCreatorsByCategoryId(@Param("categoryId") Long categoryId, Pageable pageable);
 
   @Query(
       "select c.id as creatorId, case when sub.member.id = :memberId then TRUE else FALSE end as isSubscribed from Creator c "
           + "left join Subscription sub "
-          + "on c.id = sub.creator.id and sub.member.id = :memberId")
+          + "on c.id = sub.creator.id and sub.member.id = :memberId "
+          + "order by c.id asc")
   Slice<SubscribeFlagMapper> findCreatorIdAndSubscribeFlagByMemberId(
       @Param("memberId") Long memberId, Pageable pageable);
 
@@ -43,7 +46,8 @@ public interface CreatorRepository extends JpaRepository<Creator, Long> {
       "select c.id as creatorId, case when sub.member.id = :memberId then TRUE else FALSE end as isSubscribed from Creator c "
           + "left join Subscription sub "
           + "on c.id = sub.creator.id and sub.member.id = :memberId "
-          + "where c.category.id = :categoryId")
+          + "where c.category.id = :categoryId "
+          + "order by c.id asc")
   Slice<SubscribeFlagMapper> findCreatorIdAndSubscribeFlagByMemberIdAndCategoryId(
       @Param("memberId") Long memberId, @Param("categoryId") Long categoryId, Pageable pageable);
 
