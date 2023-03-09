@@ -2,6 +2,7 @@ package com.hyperlink.server.domain.company.controller;
 
 import com.hyperlink.server.domain.company.application.CompanyService;
 import com.hyperlink.server.domain.company.dto.CompanyPageResponse;
+import com.hyperlink.server.domain.company.dto.CompanyRegisterRequest;
 import com.hyperlink.server.domain.company.dto.MailAuthVerifyRequest;
 import com.hyperlink.server.domain.company.dto.MailRequest;
 import com.hyperlink.server.domain.member.exception.MemberNotFoundException;
@@ -70,5 +71,11 @@ public class CompanyController {
   public CompanyPageResponse getCompanyPage(@RequestParam("page") int page,
       @RequestParam("size") int size) {
     return companyService.findCompaniesForPage(page, size);
+  }
+
+  @PostMapping("/admin/companies")
+  @ResponseStatus(HttpStatus.OK)
+  public void registerCompany(@RequestBody CompanyRegisterRequest companyRegisterRequest) {
+    companyService.createCompany(companyRegisterRequest);
   }
 }

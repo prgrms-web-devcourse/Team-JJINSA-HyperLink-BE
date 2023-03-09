@@ -3,6 +3,7 @@ package com.hyperlink.server.domain.company.application;
 import com.hyperlink.server.domain.company.domain.CompanyRepository;
 import com.hyperlink.server.domain.company.domain.entity.Company;
 import com.hyperlink.server.domain.company.dto.CompanyPageResponse;
+import com.hyperlink.server.domain.company.dto.CompanyRegisterRequest;
 import com.hyperlink.server.domain.company.dto.CompanyResponse;
 import com.hyperlink.server.domain.company.dto.MailAuthVerifyRequest;
 import com.hyperlink.server.domain.company.dto.MailRequest;
@@ -43,7 +44,6 @@ public class CompanyService {
     mailRepository.save(
         new MailAuth(mailRequest.companyEmail(), authNumber));
   }
-
 
   public CompanyPageResponse findCompaniesForPage(int page, int size) {
     Page<Company> companies = companyRepository.findCompaniesByIsUsingRecommend(false,
@@ -88,5 +88,10 @@ public class CompanyService {
     Company foundCompany = companyRepository.findById(companyId)
         .orElseThrow(CompanyNotFoundException::new);
     foundCompany.changeIsUsingRecommend(true);
+  }
+
+  @Transactional
+  public void createCompany(CompanyRegisterRequest companySaveRequest) {
+    companyRepository.save(CompanyRegisterRequest.to(companySaveRequest));
   }
 }

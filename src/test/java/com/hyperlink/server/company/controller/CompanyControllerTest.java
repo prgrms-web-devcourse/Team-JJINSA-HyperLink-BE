@@ -18,6 +18,7 @@ import com.hyperlink.server.AuthSetupForMock;
 import com.hyperlink.server.domain.company.application.CompanyService;
 import com.hyperlink.server.domain.company.controller.CompanyController;
 import com.hyperlink.server.domain.company.dto.CompanyPageResponse;
+import com.hyperlink.server.domain.company.dto.CompanyRegisterRequest;
 import com.hyperlink.server.domain.company.dto.CompanyResponse;
 import com.hyperlink.server.domain.company.dto.MailAuthVerifyRequest;
 import com.hyperlink.server.domain.company.dto.MailRequest;
@@ -118,7 +119,8 @@ class CompanyControllerTest extends AuthSetupForMock {
                         .description("회사 이름"))));
   }
 
-  void EmailVerificationTest() throws Exception {
+  @Test
+  void emailVerificationTest() throws Exception {
     authSetup();
 
     String email = "rldnd2637@naver.com";
@@ -159,6 +161,31 @@ class CompanyControllerTest extends AuthSetupForMock {
             preprocessResponse(prettyPrint()),
             requestHeaders(headerWithName(HttpHeaders.AUTHORIZATION).description("AccessToken"))
         ));
+  }
+
+  @Test
+  void registerTest() throws Exception {
+    authSetup();
+
+    CompanyRegisterRequest companyRegisterRequest = new CompanyRegisterRequest("kakao.com",
+        "LogoURL", "kakao");
+
+    mockMvc.perform(MockMvcRequestBuilders
+            .post("/admin/companies")
+            .header(HttpHeaders.AUTHORIZATION, authorizationHeader)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(companyRegisterRequest)))
+        .andExpect(status().isOk())
+        .andDo(print())
+        .andDo(document("company/verification",
+            preprocessRequest(prettyPrint()),
+            preprocessResponse(prettyPrint()),
+            requestHeaders(headerWithName(HttpHeaders.AUTHORIZATION).description("AccessToken")),
+            requestFields(
+                fieldWithPath("emailAddress").type(JsonFieldType.STRING).description("회사 이메일"),
+                fieldWithPath("logoImgUrl").type(JsonFieldType.STRING).description("회사 로고 이미지 url"),
+                fieldWithPath("name").type(JsonFieldType.STRING)
+                    .description("회사 이름"))));
   }
 
 }
