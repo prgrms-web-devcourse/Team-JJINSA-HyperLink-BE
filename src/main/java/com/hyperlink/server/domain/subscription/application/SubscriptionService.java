@@ -21,9 +21,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class SubscriptionService {
 
   private final SubscriptionRepository subscriptionRepository;
@@ -33,7 +35,7 @@ public class SubscriptionService {
   private final ContentRepositoryCustom contentRepositoryCustom;
   private final ContentDtoFactoryService contentDtoFactoryService;
 
-
+  @Transactional
   public SubscribeResponse subscribeOrUnsubscribeCreator(Long loginMemberId, Long creatorId) {
     Member member = memberRepository.findById(loginMemberId)
         .orElseThrow(MemberNotFoundException::new);

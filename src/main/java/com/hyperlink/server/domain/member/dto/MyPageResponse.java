@@ -7,12 +7,14 @@ public record MyPageResponse(
     String nickname,
     String career,
     String careerYear,
-    String profileUrl
+    String profileUrl,
+    String companyName
 ) {
 
   public static MyPageResponse from(Member member) {
     return new MyPageResponse(member.getEmail(), member.getNickname(),
         member.getCareer().getValue(), member.getCareerYear().getValue(),
-        member.getProfileImgUrl());
+        member.getProfileImgUrl(),
+        (member.getCompany() == null) ? null : member.getCompany().getName());
   }
 }

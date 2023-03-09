@@ -60,7 +60,6 @@ public class Member extends BaseEntity {
   @JoinColumn(name = "company_id")
   private Company company;
 
-
   public Member(String email, String nickname, Career career, CareerYear careerYear,
       String profileImgUrl) {
     this.email = email;
