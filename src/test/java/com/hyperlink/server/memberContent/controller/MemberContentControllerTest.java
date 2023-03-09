@@ -1,5 +1,6 @@
 package com.hyperlink.server.memberContent.controller;
 
+import static org.mockito.BDDMockito.given;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
@@ -9,6 +10,7 @@ import static org.springframework.restdocs.operation.preprocess.Preprocessors.pr
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -18,6 +20,7 @@ import com.hyperlink.server.domain.memberContent.application.BookmarkService;
 import com.hyperlink.server.domain.memberContent.application.LikeService;
 import com.hyperlink.server.domain.memberContent.controller.MemberContentController;
 import com.hyperlink.server.domain.memberContent.dto.LikeClickRequest;
+import com.hyperlink.server.domain.memberContent.dto.LikeClickResponse;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -144,6 +147,13 @@ public class MemberContentControllerTest extends AuthSetupForMock {
     void createLikeTest() throws Exception {
       authSetup();
 
+      Long contentId = 1L;
+
+      LikeClickResponse likeClickResponse = new LikeClickResponse(10);
+
+      given(likeService.clickLike(memberId, contentId, likeClickRequestForCreate)).willReturn(
+          likeClickResponse);
+
       mockMvc.perform(
               post("/like/" + contentId)
                   .header(HttpHeaders.AUTHORIZATION, authorizationHeader)
@@ -159,7 +169,9 @@ public class MemberContentControllerTest extends AuthSetupForMock {
                       headerWithName(HttpHeaders.AUTHORIZATION).description("jwt header")
                   ), requestFields(
                       fieldWithPath("addLike").type(JsonFieldType.BOOLEAN)
-                          .description("좋아요 클릭 요청 타입(true: 좋아요추가, false: 좋아요 취소)"))
+                          .description("좋아요 클릭 요청 타입(true: 좋아요추가, false: 좋아요 취소)")),
+                  responseFields(
+                      fieldWithPath("likeCount").type(JsonFieldType.NUMBER).description("좋아요 수"))
               )
           );
     }
@@ -168,6 +180,12 @@ public class MemberContentControllerTest extends AuthSetupForMock {
     @DisplayName("좋아요 취소에 성공하고 OK를 응답한다")
     void deleteLikeTest() throws Exception {
       authSetup();
+      Long contentId = 1L;
+
+      LikeClickResponse likeClickResponse = new LikeClickResponse(10);
+
+      given(likeService.clickLike(memberId, contentId, likeClickRequestForDelete)).willReturn(
+          likeClickResponse);
 
       mockMvc.perform(
               post("/like/" + contentId)
@@ -184,7 +202,9 @@ public class MemberContentControllerTest extends AuthSetupForMock {
                       headerWithName(HttpHeaders.AUTHORIZATION).description("jwt header")
                   ), requestFields(
                       fieldWithPath("addLike").type(JsonFieldType.BOOLEAN)
-                          .description("좋아요 클릭 요청 타입(true: 좋아요추가, false: 좋아요 취소)"))
+                          .description("좋아요 클릭 요청 타입(true: 좋아요추가, false: 좋아요 취소)")),
+                  responseFields(
+                      fieldWithPath("likeCount").type(JsonFieldType.NUMBER).description("좋아요 수"))
               )
           );
     }

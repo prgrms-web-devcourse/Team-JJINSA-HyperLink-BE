@@ -6,6 +6,7 @@ import com.hyperlink.server.domain.content.application.ContentService;
 import com.hyperlink.server.domain.memberContent.domain.MemberContentRepository;
 import com.hyperlink.server.domain.memberContent.domain.entity.MemberContent;
 import com.hyperlink.server.domain.memberContent.dto.LikeClickRequest;
+import com.hyperlink.server.domain.memberContent.dto.LikeClickResponse;
 import com.hyperlink.server.domain.memberContent.exception.LikeExistedException;
 import com.hyperlink.server.domain.memberContent.exception.LikeNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -22,26 +23,28 @@ public class LikeService {
   private final ContentService contentService;
 
   @Transactional
-  public void clickLike(Long memberId, Long contentId, LikeClickRequest likeClickRequest) {
+  public LikeClickResponse clickLike(Long memberId, Long contentId,
+      LikeClickRequest likeClickRequest) {
     if (likeClickRequest.addLike()) {
-      createLike(memberId, contentId);
-      return;
+      return createLike(memberId, contentId);
     }
-    deleteLike(memberId, contentId);
+    return deleteLike(memberId, contentId);
   }
 
-  private void createLike(Long memberId, Long contentId) {
-    contentService.addLike(contentId);
+  private LikeClickResponse createLike(Long memberId, Long contentId) {
+    int likeCount = contentService.addLike(contentId);
     existLike(memberId, contentId);
     memberContentRepository.save(new MemberContent(memberId, contentId, LIKE));
+    return new LikeClickResponse(likeCount);
   }
 
-  private void deleteLike(Long memberId, Long contentId) {
+  private LikeClickResponse deleteLike(Long memberId, Long contentId) {
+    int likeCount = contentService.subTractLike(contentId);
     MemberContent foundLike = memberContentRepository.findMemberContentByMemberIdAndContentIdAndType(
         memberId, contentId, LIKE.getTypeNumber()).orElseThrow(
         LikeNotFoundException::new);
     memberContentRepository.delete(foundLike);
-    contentService.subTractLike(contentId);
+    return new LikeClickResponse(likeCount);
   }
 
   private void existLike(Long memberId, Long contentId) {

@@ -4,6 +4,7 @@ import com.hyperlink.server.domain.auth.token.exception.TokenNotExistsException;
 import com.hyperlink.server.domain.memberContent.application.BookmarkService;
 import com.hyperlink.server.domain.memberContent.application.LikeService;
 import com.hyperlink.server.domain.memberContent.dto.LikeClickRequest;
+import com.hyperlink.server.domain.memberContent.dto.LikeClickResponse;
 import com.hyperlink.server.global.config.LoginMemberId;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -36,9 +37,9 @@ public class MemberContentController {
 
   @PostMapping("/like/{contentId}")
   @ResponseStatus(HttpStatus.OK)
-  public void clickLike(@LoginMemberId Optional<Long> optionalMemberId,
+  public LikeClickResponse clickLike(@LoginMemberId Optional<Long> optionalMemberId,
       @PathVariable("contentId") Long contentId, @RequestBody LikeClickRequest likeClickRequest) {
     Long memberId = optionalMemberId.orElseThrow(TokenNotExistsException::new);
-    likeService.clickLike(memberId, contentId, likeClickRequest);
+    return likeService.clickLike(memberId, contentId, likeClickRequest);
   }
 }
