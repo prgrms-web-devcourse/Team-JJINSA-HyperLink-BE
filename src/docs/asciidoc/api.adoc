@@ -126,3 +126,7 @@ operation::company/auth[snippets='http-request,http-response']
 === 회사 이메일 인증번호 확인 및 등록
 
 operation::company/verification[snippets='http-request,http-response']
+
+=== 회사를 추천 서비스에 추가하는 api
+
+operation::company/changeIsUsingRecommend[snippets='http-request,http-response']

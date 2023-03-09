@@ -4,6 +4,7 @@ import com.hyperlink.server.domain.company.domain.CompanyRepository;
 import com.hyperlink.server.domain.company.domain.entity.Company;
 import com.hyperlink.server.domain.company.dto.MailAuthVerifyRequest;
 import com.hyperlink.server.domain.company.dto.MailRequest;
+import com.hyperlink.server.domain.company.exception.CompanyNotFoundException;
 import com.hyperlink.server.domain.company.exception.MailAuthInvalidException;
 import com.hyperlink.server.domain.company.mail.MailAuth;
 import com.hyperlink.server.domain.company.mail.MailAuthRepository;
@@ -57,5 +58,12 @@ public class CompanyService {
 
   private String extractCompanyNameFromEmail(String mailAddress) {
     return mailAddress.split("\\.")[DOT_INDEX];
+  }
+
+  @Transactional
+  public void changeIsUsingRecommend(Long companyId) {
+    Company foundCompany = companyRepository.findById(companyId)
+        .orElseThrow(CompanyNotFoundException::new);
+    foundCompany.changeIsUsingRecommend(true);
   }
 }

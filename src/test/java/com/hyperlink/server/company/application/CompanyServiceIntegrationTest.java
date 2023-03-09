@@ -5,9 +5,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import com.hyperlink.server.domain.category.domain.CategoryRepository;
 import com.hyperlink.server.domain.category.domain.entity.Category;
 import com.hyperlink.server.domain.company.application.CompanyService;
+import com.hyperlink.server.domain.company.domain.CompanyRepository;
 import com.hyperlink.server.domain.company.domain.entity.Company;
 import com.hyperlink.server.domain.company.dto.MailAuthVerifyRequest;
 import com.hyperlink.server.domain.company.dto.MailRequest;
+import com.hyperlink.server.domain.company.exception.CompanyNotFoundException;
 import com.hyperlink.server.domain.company.exception.MailAuthInvalidException;
 import com.hyperlink.server.domain.company.mail.MailAuth;
 import com.hyperlink.server.domain.company.mail.MailAuthRepository;
@@ -15,6 +17,7 @@ import com.hyperlink.server.domain.member.domain.Career;
 import com.hyperlink.server.domain.member.domain.CareerYear;
 import com.hyperlink.server.domain.member.domain.MemberRepository;
 import com.hyperlink.server.domain.member.domain.entity.Member;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +30,9 @@ class CompanyServiceIntegrationTest {
 
   @Autowired
   private CompanyService companyService;
+
+  @Autowired
+  private CompanyRepository companyRepository;
 
   @Autowired
   private CategoryRepository categoryRepository;
@@ -51,7 +57,7 @@ class CompanyServiceIntegrationTest {
     assertThat(foundMailAuth.getCompanyEmail()).isEqualTo(email);
     assertThat(foundMailAuth.getAuthNumber()).isEqualTo(authNumber);
   }
-  
+
   @DisplayName("회사 이메일 인증 완료시 해당 회사 이메일을 저장할 수 있다.")
   @Test
   void verifyAuthCompanyMailTest() {
@@ -77,5 +83,20 @@ class CompanyServiceIntegrationTest {
     assertThat(company.getEmailAddress()).isEqualTo("naver.com");
     assertThat(company.getName()).isEqualTo("naver");
     assertThat(company.getLogoImgUrl()).isEqualTo("s3URL");
+  }
+
+  @DisplayName("회사의 추천서비스 여부를 변경할 수 있다.")
+  @Test
+  void changeIsUsingRecommendTest() {
+    Company savedCompany = companyRepository.save(new Company("kakao.com", "logoURL", "kakao"));
+    boolean priorValue = savedCompany.getIsUsingRecommend();
+
+    companyService.changeIsUsingRecommend(savedCompany.getId());
+    Company foundCompany = companyRepository.findById(savedCompany.getId()).orElseThrow(
+        CompanyNotFoundException::new);
+    boolean changeValue = foundCompany.getIsUsingRecommend();
+
+    Assertions.assertThat(priorValue).isFalse();
+    Assertions.assertThat(changeValue).isTrue();
   }
 }
