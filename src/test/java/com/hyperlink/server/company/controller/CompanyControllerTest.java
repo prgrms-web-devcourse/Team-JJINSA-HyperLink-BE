@@ -150,7 +150,7 @@ class CompanyControllerTest extends AuthSetupForMock {
     Long companyId = 1L;
 
     mockMvc.perform(
-            RestDocumentationRequestBuilders.put("/domain/companies/{companyId}", companyId)
+            RestDocumentationRequestBuilders.put("/admin/companies/{companyId}", companyId)
                 .header(HttpHeaders.AUTHORIZATION, authorizationHeader))
         .andExpect(status().isOk())
         .andDo(print())
