@@ -1,13 +1,18 @@
 package com.hyperlink.server.domain.company.controller;
 
 import com.hyperlink.server.domain.company.application.CompanyService;
+import com.hyperlink.server.domain.company.dto.MailAuthVerifyRequest;
 import com.hyperlink.server.domain.company.dto.MailRequest;
+import com.hyperlink.server.domain.member.exception.MemberNotFoundException;
+import com.hyperlink.server.global.config.LoginMemberId;
+import java.util.Optional;
 import java.util.Random;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -28,16 +33,24 @@ public class CompanyController {
   }
 
   @PostMapping("/companies/auth")
-  public ResponseEntity<Void> send(@RequestBody MailRequest mailRequest) {
+  @ResponseStatus(HttpStatus.OK)
+  public void sendEmail(@RequestBody MailRequest mailRequest) {
     int authNumber = random.nextInt(AUTH_MAX_NUMBER);
     companyService.saveMailAuthNumber(mailRequest, authNumber);
 
     SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
     simpleMailMessage.setTo(mailRequest.companyEmail());
+
     simpleMailMessage.setSubject(AUTH_MAIL_TITLE);
     simpleMailMessage.setText(AUTH_MAIL_CONTENT + authNumber);
     javaMailSender.send(simpleMailMessage);
+  }
 
-    return ResponseEntity.ok().build();
+  @PostMapping("/companies/verification")
+  @ResponseStatus(HttpStatus.OK)
+  public void EmailVerification(@LoginMemberId Optional<Long> optionalMemberId,
+      @RequestBody MailAuthVerifyRequest mailAuthVerifyRequest) {
+    Long memberId = optionalMemberId.orElseThrow(MemberNotFoundException::new);
+    companyService.verifyAuthCompanyMail(memberId, mailAuthVerifyRequest);
   }
 }

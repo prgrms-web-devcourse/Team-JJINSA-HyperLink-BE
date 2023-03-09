@@ -92,6 +92,7 @@ operation::DailyBriefingControllerTest/getDailyBriefing[snippets='http-request,h
 == Admin
 
 === 크리에이터 조회
+
 operation::CreatorControllerTest/retrieveCreatorsAdmin['http-request,http-response']
 
 === 크리에이터 삭제
@@ -121,3 +122,7 @@ operation::Attention-category/get[snippets='http-request,http-response,response-
 === 회사 이메일 인증번호 요청
 
 operation::company/auth[snippets='http-request,http-response']
+
+=== 회사 이메일 인증번호 확인 및 등록
+
+operation::company/verification[snippets='http-request,http-response']

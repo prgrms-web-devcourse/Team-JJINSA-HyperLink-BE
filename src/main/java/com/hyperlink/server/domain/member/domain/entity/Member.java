@@ -97,5 +97,4 @@ public class Member extends BaseEntity {
   public void changeCompany(Company company) {
     this.company = company;
   }
-
 }
