@@ -112,6 +112,10 @@ operation::ContentControllerTest/activateContent[snippets='http-request,http-res
 
 operation::Attention-category/update[snippets='http-request,http-response,response-fields']
 
+=== 관심 카테고리 조회
+
+operation::Attention-category/get[snippets='http-request,http-response,response-fields']
+
 == Company
 
 === 회사 이메일 인증번호 요청
