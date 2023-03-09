@@ -127,6 +127,10 @@ operation::Attention-category/get[snippets='http-request,http-response,response-
 
 operation::company/auth[snippets='http-request,http-response']
 
+=== isUsingRecommend 값이 false인 회사 목록 가져오기(admin)
+
+operation::company/getCompanyPage[snippets='http-request,http-response']
+
 === 회사 이메일 인증번호 확인 및 등록
 
 operation::company/verification[snippets='http-request,http-response']

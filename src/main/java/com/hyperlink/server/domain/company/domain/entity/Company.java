@@ -33,8 +33,8 @@ public class Company extends BaseEntity {
   @Column(nullable = false, name = "is_using_recommend", columnDefinition = "TINYINT", length = 1)
   @ColumnDefault("0")
   private Boolean isUsingRecommend;
-
-  public Company(String emailAddress, String name, String logoImgUrl) {
+  
+  public Company(String emailAddress, String logoImgUrl, String name) {
     this.emailAddress = emailAddress;
     this.name = name;
     this.logoImgUrl = logoImgUrl;

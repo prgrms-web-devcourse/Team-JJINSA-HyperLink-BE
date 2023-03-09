@@ -1,6 +1,7 @@
 package com.hyperlink.server.domain.company.controller;
 
 import com.hyperlink.server.domain.company.application.CompanyService;
+import com.hyperlink.server.domain.company.dto.CompanyPageResponse;
 import com.hyperlink.server.domain.company.dto.MailAuthVerifyRequest;
 import com.hyperlink.server.domain.company.dto.MailRequest;
 import com.hyperlink.server.domain.member.exception.MemberNotFoundException;
@@ -10,8 +11,10 @@ import java.util.Random;
 import org.springframework.http.HttpStatus;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -52,5 +55,12 @@ public class CompanyController {
       @RequestBody MailAuthVerifyRequest mailAuthVerifyRequest) {
     Long memberId = optionalMemberId.orElseThrow(MemberNotFoundException::new);
     companyService.verifyAuthCompanyMail(memberId, mailAuthVerifyRequest);
+  }
+
+  @GetMapping("/admin/companies")
+  @ResponseStatus(HttpStatus.OK)
+  public CompanyPageResponse getCompanyPage(@RequestParam("page") int page,
+      @RequestParam("size") int size) {
+    return companyService.findCompaniesForPage(page, size);
   }
 }
