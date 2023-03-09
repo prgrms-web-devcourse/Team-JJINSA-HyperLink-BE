@@ -2,6 +2,7 @@ package com.hyperlink.server.domain.company.application;
 
 import com.hyperlink.server.domain.company.domain.CompanyRepository;
 import com.hyperlink.server.domain.company.domain.entity.Company;
+import com.hyperlink.server.domain.company.dto.CompanyChangeNameRequest;
 import com.hyperlink.server.domain.company.dto.CompanyPageResponse;
 import com.hyperlink.server.domain.company.dto.CompanyResponse;
 import com.hyperlink.server.domain.company.dto.MailAuthVerifyRequest;
@@ -88,5 +89,12 @@ public class CompanyService {
     Company foundCompany = companyRepository.findById(companyId)
         .orElseThrow(CompanyNotFoundException::new);
     foundCompany.changeIsUsingRecommend(true);
+  }
+
+  @Transactional
+  public void changeCompanyName(Long companyId, CompanyChangeNameRequest companyChangeNameRequest) {
+    Company foundCompany = companyRepository.findById(companyId)
+        .orElseThrow(CompanyNotFoundException::new);
+    foundCompany.changeCompanyName(companyChangeNameRequest.companyName());
   }
 }

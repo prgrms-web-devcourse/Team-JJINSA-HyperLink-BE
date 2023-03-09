@@ -7,6 +7,7 @@ import com.hyperlink.server.domain.category.domain.entity.Category;
 import com.hyperlink.server.domain.company.application.CompanyService;
 import com.hyperlink.server.domain.company.domain.CompanyRepository;
 import com.hyperlink.server.domain.company.domain.entity.Company;
+import com.hyperlink.server.domain.company.dto.CompanyChangeNameRequest;
 import com.hyperlink.server.domain.company.dto.CompanyPageResponse;
 import com.hyperlink.server.domain.company.dto.MailAuthVerifyRequest;
 import com.hyperlink.server.domain.company.dto.MailRequest;
@@ -129,4 +130,33 @@ class CompanyServiceIntegrationTest {
     Assertions.assertThat(priorValue).isFalse();
     Assertions.assertThat(changeValue).isTrue();
   }
+
+  @DisplayName("회사 이름을 변경할 수 있다.")
+  @Test
+  void changeCompanyNameTest() {
+
+    Company savedCompany = companyRepository.save(new Company("kakao.com", "logoURL", "kakao"));
+    boolean priorValue = savedCompany.getIsUsingRecommend();
+
+    String companyName = "newKakao";
+    CompanyChangeNameRequest companyChangeNameRequest = new CompanyChangeNameRequest(companyName);
+
+    companyService.changeCompanyName(savedCompany.getId(), companyChangeNameRequest);
+
+    Company foundCompany = companyRepository.findById(savedCompany.getId()).orElseThrow(
+        CompanyNotFoundException::new);
+
+    Assertions.assertThat(foundCompany.getName()).isEqualTo(companyName);
+  }
+
+  @DisplayName("회사 이름을 변경시 존재하지 않는 회사라면 CompanyNotFoundException을 던진다.")
+  @Test
+  void changeCompanyNameInCorrectTest() {
+    String companyName = "newKakao";
+    CompanyChangeNameRequest companyChangeNameRequest = new CompanyChangeNameRequest(companyName);
+    Assertions.assertThatThrownBy(
+            () -> companyService.changeCompanyName(999L, companyChangeNameRequest))
+        .isInstanceOf(CompanyNotFoundException.class);
+  }
+
 }

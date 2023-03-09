@@ -1,6 +1,7 @@
 package com.hyperlink.server.domain.company.controller;
 
 import com.hyperlink.server.domain.company.application.CompanyService;
+import com.hyperlink.server.domain.company.dto.CompanyChangeNameRequest;
 import com.hyperlink.server.domain.company.dto.CompanyPageResponse;
 import com.hyperlink.server.domain.company.dto.MailAuthVerifyRequest;
 import com.hyperlink.server.domain.company.dto.MailRequest;
@@ -12,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -70,5 +72,13 @@ public class CompanyController {
   public CompanyPageResponse getCompanyPage(@RequestParam("page") int page,
       @RequestParam("size") int size) {
     return companyService.findCompaniesForPage(page, size);
+  }
+
+
+  @PatchMapping("/admin/companies/{companyId}")
+  @ResponseStatus(HttpStatus.OK)
+  public void changeCompanyName(@PathVariable("companyId") Long companyId,
+      @RequestBody CompanyChangeNameRequest companyChangeNameRequest) {
+    companyService.changeCompanyName(companyId, companyChangeNameRequest);
   }
 }
