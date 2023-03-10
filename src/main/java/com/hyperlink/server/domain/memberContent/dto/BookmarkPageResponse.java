@@ -1,10 +1,10 @@
 package com.hyperlink.server.domain.memberContent.dto;
 
-import com.hyperlink.server.domain.content.dto.BookMarkedContentPageResponse;
+import com.hyperlink.server.domain.content.dto.ContentResponse;
 import java.util.List;
 
 public record BookmarkPageResponse(
-    List<BookMarkedContentPageResponse> contents,
+    List<ContentResponse> contents,
     boolean hasNext) {
 
 }

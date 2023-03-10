@@ -16,7 +16,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hyperlink.server.AuthSetupForMock;
 import com.hyperlink.server.domain.content.application.ContentService;
-import com.hyperlink.server.domain.content.dto.BookMarkedContentPageResponse;
+import com.hyperlink.server.domain.content.dto.ContentResponse;
+import com.hyperlink.server.domain.content.dto.RecommendationCompanyResponse;
 import com.hyperlink.server.domain.memberContent.application.BookmarkService;
 import com.hyperlink.server.domain.memberContent.application.LikeService;
 import com.hyperlink.server.domain.memberContent.controller.MemberContentController;
@@ -25,6 +26,7 @@ import com.hyperlink.server.domain.memberContent.dto.LikeClickRequest;
 import com.hyperlink.server.domain.memberContent.dto.LikeClickResponse;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -141,12 +143,14 @@ public class MemberContentControllerTest extends AuthSetupForMock {
 
   @Test
   void getBookmarkPage() throws Exception {
-    List<BookMarkedContentPageResponse> contents = new ArrayList<>();
+    List<ContentResponse> contents = new ArrayList<>();
     for (int i = 0; i < 3; i++) {
+      RecommendationCompanyResponse recommendationCompanyResponse = new RecommendationCompanyResponse(
+          "bannserName" + i, "bannerLogoUrl" + i);
       contents.add(
-          new BookMarkedContentPageResponse(Long.valueOf(i), "title" + i, "contentImgUrl" + i,
-              "link" + i,
-              i, i, LocalDateTime.now()));
+          new ContentResponse(Long.valueOf(i), "title" + i, "creatorName" + i,
+              Long.valueOf(i), "contentUrl" + i, "linkUrl" + i, i, i, true, false,
+              LocalDateTime.now().toString(), Arrays.asList(recommendationCompanyResponse)));
     }
 
     BookmarkPageResponse bookmarkPageResponse = new BookmarkPageResponse(contents, true);
@@ -172,21 +176,36 @@ public class MemberContentControllerTest extends AuthSetupForMock {
                     headerWithName(HttpHeaders.AUTHORIZATION).description("jwt header")),
                 responseFields(
                     fieldWithPath("contents.[].contentId").type(JsonFieldType.NUMBER)
-                        .description("컨텐츠 식별자"),
+                        .description("컨텐츠 id"),
                     fieldWithPath("contents.[].title").type(JsonFieldType.STRING)
                         .description("컨텐츠 제목"),
+                    fieldWithPath("contents.[].creatorName").type(JsonFieldType.STRING)
+                        .description("크리에이터 이름"),
+                    fieldWithPath("contents.[].creatorId").type(JsonFieldType.NUMBER)
+                        .description("크리에이터 id"),
                     fieldWithPath("contents.[].contentImgUrl").type(JsonFieldType.STRING)
                         .description("컨텐츠 이미지 URL"),
                     fieldWithPath("contents.[].link").type(JsonFieldType.STRING)
-                        .description("컨텐츠 바로가기 링크"),
+                        .description("컨텐츠 연결 외부 링크"),
                     fieldWithPath("contents.[].likeCount").type(JsonFieldType.NUMBER)
-                        .description("컨텐츠 좋아요 수"),
+                        .description("좋아요 개수"),
                     fieldWithPath("contents.[].viewCount").type(JsonFieldType.NUMBER)
-                        .description("컨텐츠 조회수"),
+                        .description("조회수 개수"),
+                    fieldWithPath("contents.[].isBookmarked").type(JsonFieldType.BOOLEAN)
+                        .description("북마크 여부"),
+                    fieldWithPath("contents.[].isLiked").type(JsonFieldType.BOOLEAN)
+                        .description("좋아요 여부"),
                     fieldWithPath("contents.[].createdAt").type(JsonFieldType.STRING)
-                        .description("서비스 등록 날짜"),
+                        .description("컨텐츠 생성 날짜"),
+                    fieldWithPath("contents.[].recommendations").type(
+                        JsonFieldType.ARRAY).description("회사 추천 배열"),
+                    fieldWithPath("contents.[].recommendations.[].bannerName").type(
+                        JsonFieldType.STRING).description("회사명"),
+                    fieldWithPath(
+                        "contents.[].recommendations.[].bannerLogoImgUrl").type(
+                        JsonFieldType.STRING).description("회사 로고 URL"),
                     fieldWithPath("hasNext").type(JsonFieldType.BOOLEAN)
-                        .description("다음 페이지 여부"))));
+                        .description("다음 페이지 존재여부"))));
   }
 
   @Nested

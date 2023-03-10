@@ -8,7 +8,7 @@ import com.hyperlink.server.domain.category.domain.CategoryRepository;
 import com.hyperlink.server.domain.category.domain.entity.Category;
 import com.hyperlink.server.domain.content.domain.ContentRepository;
 import com.hyperlink.server.domain.content.domain.entity.Content;
-import com.hyperlink.server.domain.content.dto.BookMarkedContentPageResponse;
+import com.hyperlink.server.domain.content.dto.ContentResponse;
 import com.hyperlink.server.domain.creator.domain.CreatorRepository;
 import com.hyperlink.server.domain.creator.domain.entity.Creator;
 import com.hyperlink.server.domain.member.domain.Career;
@@ -137,7 +137,7 @@ public class BookmarkServiceIntegrationTest {
       }
     }
   }
-  
+
   @DisplayName("북마크한 컨텐츠들을 가져올 수 있다.")
   @Test
   void findBookmarkedContentForSliceTest() {
@@ -176,8 +176,8 @@ public class BookmarkServiceIntegrationTest {
 
     assertThat(bookmarkedContentForSlice.contents().size()).isEqualTo(5);
     assertThat(bookmarkedContentForSlice.hasNext()).isFalse();
-    for (BookMarkedContentPageResponse b : bookmarkedContentForSlice.contents()) {
-      log.info("@@@@@@ " + b);
+    for (ContentResponse c : bookmarkedContentForSlice.contents()) {
+      log.info("@@@@@@ " + c);
     }
   }
 }

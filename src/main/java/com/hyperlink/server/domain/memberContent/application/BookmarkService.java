@@ -1,16 +1,19 @@
 package com.hyperlink.server.domain.memberContent.application;
 
 import static com.hyperlink.server.domain.memberContent.domain.entity.MemberContentActionType.BOOKMARK;
+import static com.hyperlink.server.domain.memberContent.domain.entity.MemberContentActionType.LIKE;
 
 import com.hyperlink.server.domain.content.domain.ContentRepository;
 import com.hyperlink.server.domain.content.domain.entity.Content;
-import com.hyperlink.server.domain.content.dto.BookMarkedContentPageResponse;
+import com.hyperlink.server.domain.content.dto.ContentResponse;
+import com.hyperlink.server.domain.content.dto.RecommendationCompanyResponse;
 import com.hyperlink.server.domain.content.exception.ContentNotFoundException;
 import com.hyperlink.server.domain.memberContent.domain.MemberContentRepository;
 import com.hyperlink.server.domain.memberContent.domain.entity.MemberContent;
 import com.hyperlink.server.domain.memberContent.dto.BookmarkPageResponse;
 import com.hyperlink.server.domain.memberContent.exception.BookmarkExistedException;
 import com.hyperlink.server.domain.memberContent.exception.BookmarkNotFoundException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -63,13 +66,20 @@ public class BookmarkService {
 
   public BookmarkPageResponse findBookmarkedContentForSlice(Long memberId, int page, int size) {
     Slice<MemberContent> memberContents = memberContentRepository.findMemberContentForSlice(
-        memberId, PageRequest.of(page, size, Sort.by(Direction.DESC, "id")));
+        memberId, BOOKMARK.getTypeNumber(),
+        PageRequest.of(page, size, Sort.by(Direction.DESC, "id")));
 
-    List<BookMarkedContentPageResponse> contents = memberContents.stream()
-        .map(memberContent -> BookMarkedContentPageResponse.from(memberContent.getContent()))
-        .collect(
-            Collectors.toList());
+    List<ContentResponse> contents = memberContents.stream()
+        .map(memberContent -> {
+          boolean isLiked = memberContentRepository.existsMemberContentByMemberIdAndContentIdAndType(
+              memberId, memberContent.getId(), LIKE.getTypeNumber());
 
+          // TODO : 회사 추천 리스트 추가
+          List<RecommendationCompanyResponse> recommendationCompanyResponses = new ArrayList<>();
+
+          return ContentResponse.from(memberContent.getContent(), true, isLiked,
+              recommendationCompanyResponses);
+        }).collect(Collectors.toList());
     return new BookmarkPageResponse(contents, memberContents.hasNext());
   }
 
