@@ -1,8 +1,10 @@
 package com.hyperlink.server.member.controller;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
+import static org.springframework.restdocs.headers.HeaderDocumentation.responseHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessRequest;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessResponse;
@@ -17,23 +19,31 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hyperlink.server.AuthSetupForMock;
 import com.hyperlink.server.domain.auth.application.AuthService;
+import com.hyperlink.server.domain.auth.oauth.GoogleAccessToken;
 import com.hyperlink.server.domain.auth.oauth.GoogleAccessTokenRepository;
+import com.hyperlink.server.domain.auth.oauth.GoogleOauthClient;
 import com.hyperlink.server.domain.auth.token.RefreshTokenCookieProvider;
-import com.hyperlink.server.domain.member.application.MemberService;
 import com.hyperlink.server.domain.member.controller.MemberController;
+import com.hyperlink.server.domain.member.domain.Career;
+import com.hyperlink.server.domain.member.domain.CareerYear;
 import com.hyperlink.server.domain.member.dto.MembersUpdateRequest;
 import com.hyperlink.server.domain.member.dto.MembersUpdateResponse;
 import com.hyperlink.server.domain.member.dto.MyPageResponse;
 import com.hyperlink.server.domain.member.dto.ProfileImgRequest;
+import com.hyperlink.server.domain.member.dto.SignUpRequest;
+import com.hyperlink.server.domain.member.dto.SignUpResult;
 import com.hyperlink.server.global.config.LoginMemberIdArgumentResolver;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.web.server.Cookie.SameSite;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseCookie;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -50,10 +60,10 @@ public class MemberControllerMockTest extends AuthSetupForMock {
   RefreshTokenCookieProvider refreshTokenCookieProvider;
 
   @MockBean
-  AuthService authService;
+  GoogleOauthClient googleOauthClient;
 
   @MockBean
-  MemberService memberService;
+  AuthService authService;
 
   @MockBean
   LoginMemberIdArgumentResolver loginMemberIdArgumentResolver;
@@ -63,6 +73,58 @@ public class MemberControllerMockTest extends AuthSetupForMock {
 
   @Autowired
   ObjectMapper objectMapper;
+
+  @Test
+  void signupTest() throws Exception {
+    String email = "rldnd1234@gmail.com";
+    String profileUrl = "profileUrl";
+    String refreshToken = "refreshToken";
+
+    SignUpRequest signUpRequest = new SignUpRequest(email, "Chocho",
+        Career.DEVELOP.getValue(),
+        CareerYear.ONE.getValue(), 1995, List.of("develop", "beauty"), "man");
+
+    SignUpResult signUpResult = new SignUpResult(memberId, accessToken, refreshToken);
+    GoogleAccessToken googleAccessToken = new GoogleAccessToken(accessToken, email, profileUrl);
+
+    given(authService.googleTokenFindById(any())).willReturn(googleAccessToken);
+    given(memberService.signUp(signUpRequest, profileUrl)).willReturn(signUpResult);
+
+    ResponseCookie responseCookie = ResponseCookie.from(refreshToken, refreshToken)
+        .httpOnly(true)
+        .secure(true)
+        .path("/")
+        .sameSite(SameSite.NONE.attributeValue()).maxAge(360000L).build();
+
+    given(refreshTokenCookieProvider.createCookie(signUpResult.refreshToken())).willReturn(
+        responseCookie);
+
+    mockMvc.perform(MockMvcRequestBuilders
+            .post("/members/signup")
+            .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(signUpRequest)))
+        .andExpect(status().isCreated())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andDo(print())
+        .andDo(document("members/signup",
+            preprocessRequest(prettyPrint()),
+            preprocessResponse(prettyPrint()),
+            requestHeaders(headerWithName(HttpHeaders.AUTHORIZATION).description("AccessToken")),
+            requestFields(
+                fieldWithPath("email").type(JsonFieldType.STRING).description("이메일"),
+                fieldWithPath("nickname").type(JsonFieldType.STRING).description("닉네임"),
+                fieldWithPath("career").type(JsonFieldType.STRING).description("직업 분야 "),
+                fieldWithPath("careerYear").type(JsonFieldType.STRING).description("경력"),
+                fieldWithPath("birthYear").type(JsonFieldType.NUMBER).description("출생년도"),
+                fieldWithPath("attentionCategory").type(JsonFieldType.ARRAY).description("관심목록"),
+                fieldWithPath("gender").type(JsonFieldType.STRING).description("성별")),
+            responseHeaders(headerWithName(HttpHeaders.SET_COOKIE).description("RefreshToken")),
+            responseFields(
+                fieldWithPath("accessToken").type(JsonFieldType.STRING).description("AccessToken")))
+        );
+  }
 
   @Test
   void myInfoMockTest() throws Exception {

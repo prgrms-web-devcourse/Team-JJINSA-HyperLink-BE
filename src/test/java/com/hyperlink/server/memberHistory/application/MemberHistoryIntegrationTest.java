@@ -15,8 +15,8 @@ import com.hyperlink.server.domain.member.domain.CareerYear;
 import com.hyperlink.server.domain.member.domain.MemberRepository;
 import com.hyperlink.server.domain.member.domain.entity.Member;
 import com.hyperlink.server.domain.memberHistory.application.MemberHistoryService;
-import com.hyperlink.server.domain.memberHistory.domain.entity.MemberHistory;
 import com.hyperlink.server.domain.memberHistory.domain.MemberHistoryRepository;
+import com.hyperlink.server.domain.memberHistory.domain.entity.MemberHistory;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -54,7 +54,7 @@ class MemberHistoryIntegrationTest {
 
   @BeforeEach
   void setUp() {
-    category = new Category("개발");
+    category = new Category("개발10");
     categoryRepository.save(category);
     creator = new Creator("슈카", "profile", "description", category);
     creatorRepository.save(creator);

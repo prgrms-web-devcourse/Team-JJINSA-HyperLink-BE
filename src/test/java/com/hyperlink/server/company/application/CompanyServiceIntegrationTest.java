@@ -7,10 +7,12 @@ import com.hyperlink.server.domain.category.domain.entity.Category;
 import com.hyperlink.server.domain.company.application.CompanyService;
 import com.hyperlink.server.domain.company.domain.CompanyRepository;
 import com.hyperlink.server.domain.company.domain.entity.Company;
+import com.hyperlink.server.domain.company.dto.CompanyChangeNameRequest;
 import com.hyperlink.server.domain.company.dto.CompanyPageResponse;
 import com.hyperlink.server.domain.company.dto.CompanyRegisterRequest;
 import com.hyperlink.server.domain.company.dto.MailAuthVerifyRequest;
 import com.hyperlink.server.domain.company.dto.MailRequest;
+import com.hyperlink.server.domain.company.exception.CompanyAlreadyExistException;
 import com.hyperlink.server.domain.company.exception.CompanyNotFoundException;
 import com.hyperlink.server.domain.company.exception.MailAuthInvalidException;
 import com.hyperlink.server.domain.company.mail.MailAuth;
@@ -146,6 +148,48 @@ class CompanyServiceIntegrationTest {
         .isEqualTo(companyRegisterRequest.emailAddress());
     Assertions.assertThat(foundCompany.getLogoImgUrl())
         .isEqualTo(companyRegisterRequest.logoImgUrl());
-    Assertions.assertThat(foundCompany.getName()).isEqualTo(companyRegisterRequest.name());
+    Assertions.assertThat(foundCompany.getName()).isEqualTo(companyRegisterRequest.companyName());
   }
+
+  @DisplayName("이미 등록된 회사를 등록하려 한다면 CompanyAlreadyExistException을 던진다.")
+  @Test
+  void registerInCorrectTest() {
+    CompanyRegisterRequest companyRegisterRequest = new CompanyRegisterRequest("kakao.com",
+        "LogoURL", "kakao");
+
+    companyService.createCompany(companyRegisterRequest);
+
+    Assertions.assertThatThrownBy(() -> companyService.createCompany(companyRegisterRequest))
+        .isInstanceOf(
+            CompanyAlreadyExistException.class);
+  }
+
+  @DisplayName("회사 이름을 변경할 수 있다.")
+  @Test
+  void changeCompanyNameTest() {
+
+    Company savedCompany = companyRepository.save(new Company("kakao.com", "logoURL", "kakao"));
+    boolean priorValue = savedCompany.getIsUsingRecommend();
+
+    String companyName = "newKakao";
+    CompanyChangeNameRequest companyChangeNameRequest = new CompanyChangeNameRequest(companyName);
+
+    companyService.changeCompanyName(savedCompany.getId(), companyChangeNameRequest);
+
+    Company foundCompany = companyRepository.findById(savedCompany.getId()).orElseThrow(
+        CompanyNotFoundException::new);
+
+    Assertions.assertThat(foundCompany.getName()).isEqualTo(companyName);
+  }
+
+  @DisplayName("회사 이름을 변경시 존재하지 않는 회사라면 CompanyNotFoundException을 던진다.")
+  @Test
+  void changeCompanyNameInCorrectTest() {
+    String companyName = "newKakao";
+    CompanyChangeNameRequest companyChangeNameRequest = new CompanyChangeNameRequest(companyName);
+    Assertions.assertThatThrownBy(
+            () -> companyService.changeCompanyName(999L, companyChangeNameRequest))
+        .isInstanceOf(CompanyNotFoundException.class);
+  }
+
 }

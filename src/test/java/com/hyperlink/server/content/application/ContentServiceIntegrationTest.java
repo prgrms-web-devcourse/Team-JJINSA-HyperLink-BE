@@ -32,11 +32,9 @@ import com.hyperlink.server.domain.member.domain.entity.Member;
 import com.hyperlink.server.domain.memberHistory.application.MemberHistoryService;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -53,10 +51,8 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -86,7 +82,7 @@ public class ContentServiceIntegrationTest {
 
   @BeforeAll
   void setUp() {
-    category = new Category("개발");
+    category = new Category("개발10");
     categoryRepository.save(category);
     creator = new Creator("슈카", "profile", "description", category);
     creatorRepository.save(creator);
@@ -390,6 +386,7 @@ public class ContentServiceIntegrationTest {
     @Nested
     @DisplayName("[실패]")
     class Fail {
+
       @Test
       @DisplayName("유효하지 않은 content id에 대해서는 ContentNotFoundException 을 발생한다.")
       void throwContentNotFoundExceptionWhenInvalidContentId() {
@@ -444,6 +441,7 @@ public class ContentServiceIntegrationTest {
       @Nested
       @DisplayName("카테고리 별로")
       class ByCategory {
+
         @Test
         @DisplayName("최신순으로 조회할 수 있다.")
         void retrieveRecent() {
@@ -474,6 +472,7 @@ public class ContentServiceIntegrationTest {
         @Nested
         @DisplayName("[실패]")
         class Fail {
+
           @Test
           @DisplayName("카테고리가 잘못 입력되면 CategoryNotFoundException을 발생한다.")
           void throwCategoryNotFoundExceptionForInvalidCategory() {
@@ -494,6 +493,7 @@ public class ContentServiceIntegrationTest {
         @Nested
         @DisplayName("로그인하지 않은 유저라면")
         class IsNotLogin {
+
           @Test
           @DisplayName("카테고리 전체에 대해 최신순으로 조회할 수 있다.")
           public void retrieveForAttentionCategoryByRecent() throws Exception {
@@ -529,6 +529,7 @@ public class ContentServiceIntegrationTest {
         @Nested
         @DisplayName("로그인한 유저라면")
         class IsLogin {
+
           @Test
           @DisplayName("유저의 관심 카테고리 전체에 대해 최신순으로 조회할 수 있다.")
           public void retrieveForAttentionCategoryByRecent() throws Exception {
@@ -568,6 +569,7 @@ public class ContentServiceIntegrationTest {
     @Nested
     @DisplayName("크리에이터의 글을")
     class CreatorContent {
+
       @Test
       @DisplayName("최신순으로 조회할 수 있다.")
       void retrieveRecent() {
@@ -609,6 +611,7 @@ public class ContentServiceIntegrationTest {
   @Rollback(value = false)
   @DisplayName("[어드민 페이지] 비활성화된 글을")
   class RetrieveInactivatedContent {
+
     Content content1;
     Content content2;
     Content content3;
@@ -645,12 +648,13 @@ public class ContentServiceIntegrationTest {
       savedAttentionCategory = attentionCategoryRepository.save(
           new AttentionCategory(member, category));
     }
+
     @Order(2)
     @Test
     @DisplayName("최신순으로 조회할 수 있다.")
     void retrieveInactivatedContent() {
-        Content newContent2 = contentRepository.findById(content2.getId()).get();
-        contentService.activateContent(newContent2.getId());
+      Content newContent2 = contentRepository.findById(content2.getId()).get();
+      contentService.activateContent(newContent2.getId());
 
       ContentAdminResponses contentAdminResponses = contentService.retrieveInactivatedContents(
           PageRequest.of(0, 10));
@@ -680,6 +684,7 @@ public class ContentServiceIntegrationTest {
   class DeleteContentsByAdmin {
 
     Content content;
+
     @BeforeEach
     void setUp() {
       content = new Content("제목1", "contentImgUrl", "link1", creator, category);
@@ -702,6 +707,7 @@ public class ContentServiceIntegrationTest {
     @Nested
     @DisplayName("[실패]")
     class Fail {
+
       @Test
       @DisplayName("컨텐츠가 존재하면 해당 컨텐츠를 삭제한다.")
       void deleteContentsById() {
