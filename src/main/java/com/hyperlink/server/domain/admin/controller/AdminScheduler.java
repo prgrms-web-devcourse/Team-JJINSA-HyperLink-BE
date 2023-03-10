@@ -17,17 +17,16 @@ public class AdminScheduler {
 
   private final ObjectMapper objectMapper;
   private final AdminService adminService;
-  private final RedisTemplate<String, String> categoryViewRedisTemplate;
+  private final RedisTemplate<String, Object> redisTemplate;
   private static final String CATEGORY_VIEW = "category-view";
 
-  @Scheduled(cron = "0 5 0 * * *", zone = "Asia/Seoul")
+  @Scheduled(cron = "0 25 20 * * *", zone = "Asia/Seoul")
   void createCategoryViewDashboardData() {
     log.info("[Admin] 카테고리 별 조회수 수집");
     CategoryViewResponses categoryViewResponses = adminService.countViewCountByCategory();
-
     try {
       String categoryViewResponsesJson = objectMapper.writeValueAsString(categoryViewResponses);
-      categoryViewRedisTemplate.opsForValue().set(CATEGORY_VIEW, categoryViewResponsesJson);
+      redisTemplate.opsForValue().set(CATEGORY_VIEW, categoryViewResponsesJson);
     } catch (JsonProcessingException e) {
       log.error("[Admin] 카테고리 별 조회수 수집 실패", e);
     }

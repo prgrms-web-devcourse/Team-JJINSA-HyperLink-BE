@@ -25,7 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class AdminService {
 
   private final CategoryRepository categoryRepository;
-  private final RedisTemplate<String, String> categoryViewRedisTemplate;
+  private final RedisTemplate<String, Object> redisTemplate;
   private static final int VIEW_COUNT_AGGREGATION_START_FROM = 7;
   private static final String STANDARD_TIME_PATTERN = "yyyy-MM-dd";
   private static final String CATEGORY_VIEW = "category-view";
@@ -49,7 +49,7 @@ public class AdminService {
 
   public Optional<CategoryViewResponses> getCategoryView() {
     String standardTime = LocalDate.now().format(DateTimeFormatter.ofPattern(STANDARD_TIME_PATTERN));
-    String categoryView = categoryViewRedisTemplate.opsForValue().get(CATEGORY_VIEW);
+    String categoryView = (String) redisTemplate.opsForValue().get(CATEGORY_VIEW);
     if (categoryView == null) {
       return Optional.empty();
     }
