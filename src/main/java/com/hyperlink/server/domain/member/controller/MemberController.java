@@ -2,7 +2,7 @@ package com.hyperlink.server.domain.member.controller;
 
 import com.hyperlink.server.domain.auth.application.AuthService;
 import com.hyperlink.server.domain.auth.oauth.GoogleAccessToken;
-import com.hyperlink.server.domain.auth.token.AuthTokenExtractor;
+import com.hyperlink.server.domain.auth.oauth.GoogleOauthClient;
 import com.hyperlink.server.domain.auth.token.RefreshTokenCookieProvider;
 import com.hyperlink.server.domain.member.application.MemberService;
 import com.hyperlink.server.domain.member.dto.MembersUpdateRequest;
@@ -34,15 +34,14 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class MemberController {
 
-  private final AuthTokenExtractor authTokenExtractor;
   private final AuthService authService;
   private final MemberService memberService;
   private final RefreshTokenCookieProvider refreshTokenCookieProvider;
+  private final GoogleOauthClient googleOauthClient;
 
-  public MemberController(AuthTokenExtractor authTokenExtractor,
-      AuthService authService, MemberService memberService,
-      RefreshTokenCookieProvider refreshTokenCookieProvider) {
-    this.authTokenExtractor = authTokenExtractor;
+  public MemberController(AuthService authService, MemberService memberService,
+      RefreshTokenCookieProvider refreshTokenCookieProvider, GoogleOauthClient googleOauthClient) {
+    this.googleOauthClient = googleOauthClient;
     this.authService = authService;
     this.memberService = memberService;
     this.refreshTokenCookieProvider = refreshTokenCookieProvider;
@@ -57,6 +56,7 @@ public class MemberController {
         googleAccessToken.getProfileUrl());
     ResponseCookie cookie = refreshTokenCookieProvider.createCookie(signUpResult.refreshToken());
 
+    googleOauthClient.revokeToken(googleAccessToken.getGoogleAccessToken());
     authService.googleTokenDeleteById(googleAccessToken.getGoogleAccessToken());
 
     return ResponseEntity.created(URI.create("/mypage"))
