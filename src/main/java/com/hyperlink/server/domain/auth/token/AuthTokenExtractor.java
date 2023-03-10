@@ -67,6 +67,8 @@ public class AuthTokenExtractor {
       }
     } catch (ExpiredJwtException e) {
       throw new TokenExpiredException();
+    } catch (JwtException e) {
+      throw new TokenInvalidFormatException();
     }
   }
 }

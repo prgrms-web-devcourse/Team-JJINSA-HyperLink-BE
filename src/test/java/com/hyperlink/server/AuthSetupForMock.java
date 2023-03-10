@@ -5,6 +5,7 @@ import static org.mockito.BDDMockito.given;
 
 import com.hyperlink.server.domain.auth.token.AuthTokenExtractor;
 import com.hyperlink.server.domain.auth.token.JwtTokenProvider;
+import com.hyperlink.server.domain.member.application.MemberService;
 import java.util.Optional;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
@@ -15,6 +16,9 @@ public class AuthSetupForMock {
 
   @MockBean
   protected JwtTokenProvider jwtTokenProvider;
+
+  @MockBean
+  protected MemberService memberService;
 
   protected String authorizationHeader = "Bearer ${ACCESS_TOKEN}";
 
@@ -30,5 +34,11 @@ public class AuthSetupForMock {
 
     given(authTokenExtractor.extractMemberId(any()))
         .willReturn(optionalId);
+
+    given(memberService.isAdmin(memberId)).willReturn(true);
+  }
+
+  protected void AuthorizationSetup() {
+
   }
 }
