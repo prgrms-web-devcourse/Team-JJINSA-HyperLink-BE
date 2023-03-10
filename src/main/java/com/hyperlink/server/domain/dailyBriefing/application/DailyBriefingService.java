@@ -33,18 +33,18 @@ public class DailyBriefingService {
   private final ContentRepository contentRepository;
   private final CategoryRepository categoryRepository;
   private final DailyBriefingRepositoryCustom dailyBriefingRepositoryCustom;
-  private final RedisTemplate<String, GetDailyBriefingResponse> dailyBriefingResponseRedisTemplate;
+  private final RedisTemplate<String, Object> redisTemplate;
 
   public GetDailyBriefingResponse getDailyBriefingResponse(LocalDateTime now) {
     final long whenResponseIsNullRetryPastStandardTime = 1L;
     String standardTime = now.format(DateTimeFormatter.ofPattern(STANDARD_TIME_PATTERN));
-    GetDailyBriefingResponse getDailyBriefingResponse = (GetDailyBriefingResponse) dailyBriefingResponseRedisTemplate.opsForHash()
+    GetDailyBriefingResponse getDailyBriefingResponse = (GetDailyBriefingResponse) redisTemplate.opsForHash()
         .get("daily-briefing", standardTime);
 
     if (getDailyBriefingResponse == null) {
       String pastStandardTime = now.minusHours(whenResponseIsNullRetryPastStandardTime)
           .format(DateTimeFormatter.ofPattern(STANDARD_TIME_PATTERN));
-      getDailyBriefingResponse = (GetDailyBriefingResponse) dailyBriefingResponseRedisTemplate.opsForHash()
+      getDailyBriefingResponse = (GetDailyBriefingResponse) redisTemplate.opsForHash()
           .get("daily-briefing", pastStandardTime);
     }
     return getDailyBriefingResponse;

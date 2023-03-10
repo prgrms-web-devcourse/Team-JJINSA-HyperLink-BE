@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 public class DailyBriefingScheduler {
 
   private final DailyBriefingService dailyBriefingService;
-  private final RedisTemplate<String, GetDailyBriefingResponse> dailyBriefingResponseRedisTemplate;
+  private final RedisTemplate<String, Object> redisTemplate;
 
   @Scheduled(cron = "0 0 0-23 * * *", zone = "Asia/Seoul")
   void createDailyBriefing() {
@@ -23,7 +23,7 @@ public class DailyBriefingScheduler {
     GetDailyBriefingResponse dailyBriefing = dailyBriefingService.createDailyBriefing(
         LocalDateTime.now());
 
-    dailyBriefingResponseRedisTemplate.opsForHash().put("daily-briefing", dailyBriefing.standardTime(), dailyBriefing);
+    redisTemplate.opsForHash().put("daily-briefing", dailyBriefing.standardTime(), dailyBriefing);
     log.info("데일리브리핑 스케쥴러 완료");
   }
 
