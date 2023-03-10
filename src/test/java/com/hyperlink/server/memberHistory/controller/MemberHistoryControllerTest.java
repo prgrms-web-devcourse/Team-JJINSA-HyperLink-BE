@@ -17,7 +17,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.hyperlink.server.AuthSetupForMock;
 import com.hyperlink.server.domain.content.dto.ContentResponse;
 import com.hyperlink.server.domain.content.dto.GetContentsCommonResponse;
-import com.hyperlink.server.domain.content.dto.RecommendationCompanyResponse;
+import com.hyperlink.server.domain.content.dto.ContentViewerRecommendationResponse;
 import com.hyperlink.server.domain.memberHistory.application.MemberHistoryService;
 import com.hyperlink.server.domain.memberHistory.controller.MemberHistoryController;
 import java.util.List;
@@ -86,11 +86,11 @@ public class MemberHistoryControllerTest extends AuthSetupForMock {
       void addInquiryOfContentTest() throws Exception {
         authSetup();
 
-        List<RecommendationCompanyResponse> recommendationCompanyResponses = List.of(
-            new RecommendationCompanyResponse("네이버", "https://imglogo.com"));
+        List<ContentViewerRecommendationResponse> contentViewerRecommendationResponses = List.of(
+            new ContentViewerRecommendationResponse("네이버", "https://imglogo.com"));
         ContentResponse contentResponse = new ContentResponse(27L, "개발자의 삶", "슈카", 2L,
             "https://img1.com", "https://okky.kr/articles/503803", 4,
-            100, false, false, "2023-02-17T12:30.334", recommendationCompanyResponses);
+            100, false, false, "2023-02-17T12:30.334", contentViewerRecommendationResponses);
         List<ContentResponse> contentResponses = List.of(contentResponse);
         GetContentsCommonResponse getContentsCommonResponse = new GetContentsCommonResponse(
             contentResponses, true);
