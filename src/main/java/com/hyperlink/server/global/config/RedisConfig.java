@@ -1,5 +1,6 @@
 package com.hyperlink.server.global.config;
 
+import com.hyperlink.server.domain.admin.dto.CategoryViewResponses;
 import com.hyperlink.server.domain.dailyBriefing.dto.GetDailyBriefingResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
