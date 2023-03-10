@@ -13,22 +13,31 @@ import com.hyperlink.server.domain.attentionCategory.domain.entity.AttentionCate
 import com.hyperlink.server.domain.category.domain.CategoryRepository;
 import com.hyperlink.server.domain.category.domain.entity.Category;
 import com.hyperlink.server.domain.category.exception.CategoryNotFoundException;
+import com.hyperlink.server.domain.common.ContentDtoFactoryService;
+import com.hyperlink.server.domain.company.domain.CompanyRepository;
+import com.hyperlink.server.domain.company.domain.entity.Company;
 import com.hyperlink.server.domain.content.application.ContentService;
 import com.hyperlink.server.domain.content.domain.ContentRepository;
 import com.hyperlink.server.domain.content.domain.entity.Content;
 import com.hyperlink.server.domain.content.dto.ContentAdminResponses;
 import com.hyperlink.server.domain.content.dto.ContentEnrollResponse;
 import com.hyperlink.server.domain.content.dto.ContentResponse;
+import com.hyperlink.server.domain.content.dto.ContentViewerRecommendationResponse;
 import com.hyperlink.server.domain.content.dto.GetContentsCommonResponse;
 import com.hyperlink.server.domain.content.dto.SearchResponse;
 import com.hyperlink.server.domain.content.exception.ContentNotFoundException;
 import com.hyperlink.server.domain.creator.domain.CreatorRepository;
 import com.hyperlink.server.domain.creator.domain.entity.Creator;
 import com.hyperlink.server.domain.creator.exception.CreatorNotFoundException;
+import com.hyperlink.server.domain.member.application.MemberService;
 import com.hyperlink.server.domain.member.domain.Career;
 import com.hyperlink.server.domain.member.domain.CareerYear;
 import com.hyperlink.server.domain.member.domain.MemberRepository;
 import com.hyperlink.server.domain.member.domain.entity.Member;
+import com.hyperlink.server.domain.member.dto.MembersUpdateRequest;
+import com.hyperlink.server.domain.memberContent.domain.MemberContentRepository;
+import com.hyperlink.server.domain.memberContent.domain.entity.MemberContent;
+import com.hyperlink.server.domain.memberContent.domain.entity.MemberContentActionType;
 import com.hyperlink.server.domain.memberHistory.application.MemberHistoryService;
 import java.util.ArrayList;
 import java.util.List;
@@ -390,6 +399,7 @@ public class ContentServiceIntegrationTest {
     @Nested
     @DisplayName("[실패]")
     class Fail {
+
       @Test
       @DisplayName("유효하지 않은 content id에 대해서는 ContentNotFoundException 을 발생한다.")
       void throwContentNotFoundExceptionWhenInvalidContentId() {
@@ -444,6 +454,7 @@ public class ContentServiceIntegrationTest {
       @Nested
       @DisplayName("카테고리 별로")
       class ByCategory {
+
         @Test
         @DisplayName("최신순으로 조회할 수 있다.")
         void retrieveRecent() {
@@ -474,6 +485,7 @@ public class ContentServiceIntegrationTest {
         @Nested
         @DisplayName("[실패]")
         class Fail {
+
           @Test
           @DisplayName("카테고리가 잘못 입력되면 CategoryNotFoundException을 발생한다.")
           void throwCategoryNotFoundExceptionForInvalidCategory() {
@@ -494,6 +506,7 @@ public class ContentServiceIntegrationTest {
         @Nested
         @DisplayName("로그인하지 않은 유저라면")
         class IsNotLogin {
+
           @Test
           @DisplayName("카테고리 전체에 대해 최신순으로 조회할 수 있다.")
           public void retrieveForAttentionCategoryByRecent() throws Exception {
@@ -529,6 +542,7 @@ public class ContentServiceIntegrationTest {
         @Nested
         @DisplayName("로그인한 유저라면")
         class IsLogin {
+
           @Test
           @DisplayName("유저의 관심 카테고리 전체에 대해 최신순으로 조회할 수 있다.")
           public void retrieveForAttentionCategoryByRecent() throws Exception {
@@ -568,6 +582,7 @@ public class ContentServiceIntegrationTest {
     @Nested
     @DisplayName("크리에이터의 글을")
     class CreatorContent {
+
       @Test
       @DisplayName("최신순으로 조회할 수 있다.")
       void retrieveRecent() {
@@ -603,12 +618,88 @@ public class ContentServiceIntegrationTest {
     }
   }
 
+  @Nested
+  @DisplayName("컨텐츠 조회자에 대한 추천 메서드는")
+  class ContentViewerRecommend {
+
+    @Autowired
+    MemberContentRepository memberContentRepository;
+    @Autowired
+    CompanyRepository companyRepository;
+    @Autowired
+    ContentDtoFactoryService contentDtoFactoryService;
+
+    @Nested
+    @DisplayName("동일한 추천 대상 회사에 다니는 3명 이상이 좋아요한 글에 대해 해당 회사를 반환한다.")
+    class RecommendCompany {
+
+      Content content1;
+      Member member1;
+      Member member2;
+      Member member3;
+      Category category;
+
+      @BeforeEach
+      void setUp() throws InterruptedException {
+        category = new Category("develop");
+        categoryRepository.save(category);
+
+        content1 = contentRepository.save(
+            new Content("제목1", "contentImgUrl1", "link1", creator, category));
+
+        member1 = new Member("member1Email", "nickname", Career.DEVELOP,
+            CareerYear.LESS_THAN_ONE,
+            "profileImgUrl");
+        memberRepository.save(member1);
+
+        member2 = new Member("member2Email", "nickname", Career.DEVELOP,
+            CareerYear.LESS_THAN_ONE,
+            "profileImgUrl");
+        memberRepository.save(member2);
+
+        member3 = new Member("member3Email", "nickname", Career.DEVELOP,
+            CareerYear.LESS_THAN_ONE,
+            "profileImgUrl");
+        memberRepository.save(member3);
+
+        memberContentRepository.save(
+            new MemberContent(member1.getId(), content1, MemberContentActionType.LIKE));
+        memberContentRepository.save(
+            new MemberContent(member2.getId(), content1, MemberContentActionType.LIKE));
+        memberContentRepository.save(
+            new MemberContent(member3.getId(), content1, MemberContentActionType.LIKE));
+
+        Company kakao = companyRepository.save(
+            new Company("kakaoCorps.com", "cdn.logo.kakao.com", "카카오"));
+        kakao.changeIsUsingRecommend(true);
+
+        member1.changeCompany(kakao);
+        member2.changeCompany(kakao);
+        member3.changeCompany(kakao);
+      }
+
+      @Test
+      @DisplayName("[성공]")
+      void recommendCompanySuccessTest() {
+        List<ContentViewerRecommendationResponse> contentViewerRecommendationResponse = contentDtoFactoryService.getContentViewerRecommendationResponse(
+            category.getName(),
+            content1.getId());
+
+        assertThat(contentViewerRecommendationResponse).hasSize(1);
+        assertThat(contentViewerRecommendationResponse.get(0).bannerName()).isEqualTo("카카오");
+      }
+    }
+
+
+  }
+
   @TestInstance(Lifecycle.PER_CLASS)
   @TestMethodOrder(OrderAnnotation.class)
   @Nested
   @Rollback(value = false)
   @DisplayName("[어드민 페이지] 비활성화된 글을")
   class RetrieveInactivatedContent {
+
     Content content1;
     Content content2;
     Content content3;
@@ -645,12 +736,13 @@ public class ContentServiceIntegrationTest {
       savedAttentionCategory = attentionCategoryRepository.save(
           new AttentionCategory(member, category));
     }
+
     @Order(2)
     @Test
     @DisplayName("최신순으로 조회할 수 있다.")
     void retrieveInactivatedContent() {
-        Content newContent2 = contentRepository.findById(content2.getId()).get();
-        contentService.activateContent(newContent2.getId());
+      Content newContent2 = contentRepository.findById(content2.getId()).get();
+      contentService.activateContent(newContent2.getId());
 
       ContentAdminResponses contentAdminResponses = contentService.retrieveInactivatedContents(
           PageRequest.of(0, 10));
@@ -680,6 +772,7 @@ public class ContentServiceIntegrationTest {
   class DeleteContentsByAdmin {
 
     Content content;
+
     @BeforeEach
     void setUp() {
       content = new Content("제목1", "contentImgUrl", "link1", creator, category);
@@ -702,6 +795,7 @@ public class ContentServiceIntegrationTest {
     @Nested
     @DisplayName("[실패]")
     class Fail {
+
       @Test
       @DisplayName("컨텐츠가 존재하면 해당 컨텐츠를 삭제한다.")
       void deleteContentsById() {
