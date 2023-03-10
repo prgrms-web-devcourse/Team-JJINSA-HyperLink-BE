@@ -17,6 +17,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hyperlink.server.AuthSetupForMock;
 import com.hyperlink.server.domain.company.application.CompanyService;
 import com.hyperlink.server.domain.company.controller.CompanyController;
+import com.hyperlink.server.domain.company.dto.CompanyChangeNameRequest;
 import com.hyperlink.server.domain.company.dto.CompanyPageResponse;
 import com.hyperlink.server.domain.company.dto.CompanyResponse;
 import com.hyperlink.server.domain.company.dto.MailAuthVerifyRequest;
@@ -118,6 +119,7 @@ class CompanyControllerTest extends AuthSetupForMock {
                         .description("회사 이름"))));
   }
 
+  @Test
   void EmailVerificationTest() throws Exception {
     authSetup();
 
@@ -159,6 +161,29 @@ class CompanyControllerTest extends AuthSetupForMock {
             preprocessResponse(prettyPrint()),
             requestHeaders(headerWithName(HttpHeaders.AUTHORIZATION).description("AccessToken"))
         ));
+  }
+
+  @Test
+  void changeCompanyNameTest() throws Exception {
+    authSetup();
+
+    Long companyId = 1L;
+    String companyName = "newKakao";
+    CompanyChangeNameRequest companyChangeNameRequest = new CompanyChangeNameRequest(companyName);
+
+    mockMvc.perform(MockMvcRequestBuilders
+            .patch("/admin/companies/" + companyId)
+            .header(HttpHeaders.AUTHORIZATION, authorizationHeader)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(companyChangeNameRequest)))
+        .andExpect(status().isOk())
+        .andDo(print())
+        .andDo(document("company/changeName",
+            preprocessRequest(prettyPrint()),
+            preprocessResponse(prettyPrint()),
+            requestHeaders(headerWithName(HttpHeaders.AUTHORIZATION).description("AccessToken")),
+            requestFields(
+                fieldWithPath("companyName").type(JsonFieldType.STRING).description("변경할 회사 이름"))));
   }
 
 }
