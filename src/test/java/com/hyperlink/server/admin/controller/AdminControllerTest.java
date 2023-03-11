@@ -19,12 +19,14 @@ import com.hyperlink.server.domain.admin.controller.AdminController;
 import com.hyperlink.server.domain.admin.domain.vo.CategoryAndView;
 import com.hyperlink.server.domain.admin.dto.CategoryViewResponse;
 import com.hyperlink.server.domain.admin.dto.CategoryViewResponses;
+import com.hyperlink.server.global.config.BatchJobConfig;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -43,6 +45,11 @@ public class AdminControllerTest extends AdminAuthSetupForMock {
 
   @MockBean
   AdminService adminService;
+  @MockBean
+  JobLauncher jobLauncher;
+  @MockBean
+  BatchJobConfig batchJobConfig;
+
   @Autowired
   MockMvc mockMvc;
 
