@@ -79,6 +79,11 @@ dependencies {
 
     //mail
     implementation 'org.springframework.boot:spring-boot-starter-mail:2.7.1'
+
+    // spring-batch
+    implementation 'org.springframework.boot:spring-boot-starter-batch'
+    implementation 'com.redis:spring-batch-redis:3.0.7'
+
 }
 
 def querydslDir = "$buildDir/generated/querydsl"
