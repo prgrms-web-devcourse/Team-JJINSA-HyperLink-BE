@@ -11,4 +11,6 @@ public interface CompanyRepository extends JpaRepository<Company, Long> {
   Page<Company> findCompaniesByIsUsingRecommend(Boolean isUsingRecommend, Pageable pageable);
 
   Optional<Company> findByEmailAddress(String emailAddress);
+
+  Boolean existsByEmailAddress(String emailAddress);
 }

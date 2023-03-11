@@ -1,7 +1,9 @@
 package com.hyperlink.server.domain.company.dto;
 
+import javax.validation.constraints.NotBlank;
+
 public record CompanyChangeNameRequest(
-    String companyName
+    @NotBlank String companyName
 ) {
 
 }

@@ -21,7 +21,6 @@ public class AuthorizationFilter implements Filter {
 
   private static final String[] blackList = {"/admin/*"};
 
-
   private final AuthTokenExtractor authTokenExtractor;
   private final MemberService memberService;
   private final ObjectMapper objectMapper;

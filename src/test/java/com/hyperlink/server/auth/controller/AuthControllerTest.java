@@ -41,6 +41,7 @@ class AuthControllerTest {
 
   @Autowired
   private JwtTokenProvider jwtTokenProvider;
+  
   @Autowired
   MockMvc mockMvc;
 

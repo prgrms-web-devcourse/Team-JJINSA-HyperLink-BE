@@ -9,7 +9,7 @@ import com.hyperlink.server.domain.member.application.MemberService;
 import java.util.Optional;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
-public class AuthSetupForMock {
+public class AdminAuthSetupForMock {
 
   @MockBean
   protected AuthTokenExtractor authTokenExtractor;
@@ -35,5 +35,6 @@ public class AuthSetupForMock {
     given(authTokenExtractor.extractMemberId(any()))
         .willReturn(optionalId);
 
+    given(memberService.isAdmin(memberId)).willReturn(true);
   }
 }
