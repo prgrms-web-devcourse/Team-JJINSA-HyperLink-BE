@@ -9,10 +9,10 @@ public class CountStatisticsByCategory {
 
   private static final int RANK_INIT = 1;
 
-  CategoryType categoryType;
-  long count;
-  int ranking;
-  StatisticsType statisticsType;
+  private CategoryType categoryType;
+  private long count;
+  private int ranking;
+  private StatisticsType statisticsType;
 
   public CountStatisticsByCategory(CategoryType categoryType) {
     this.categoryType = categoryType;
