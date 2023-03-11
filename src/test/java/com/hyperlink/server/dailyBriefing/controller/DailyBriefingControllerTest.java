@@ -15,7 +15,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hyperlink.server.AuthSetupForMock;
 import com.hyperlink.server.domain.dailyBriefing.application.DailyBriefingService;
 import com.hyperlink.server.domain.dailyBriefing.controller.DailyBriefingController;
-import com.hyperlink.server.domain.dailyBriefing.dto.DailyBriefing;
+import com.hyperlink.server.domain.dailyBriefing.domain.vo.ContentStatistics;
+import com.hyperlink.server.domain.dailyBriefing.domain.vo.DailyBriefing;
+import com.hyperlink.server.domain.dailyBriefing.domain.vo.MemberStatistics;
+import com.hyperlink.server.domain.dailyBriefing.domain.vo.ViewStatistics;
 import com.hyperlink.server.domain.dailyBriefing.dto.GetDailyBriefingResponse;
 import com.hyperlink.server.domain.dailyBriefing.dto.StatisticsByCategoryResponse;
 import java.time.LocalDateTime;
@@ -67,9 +70,18 @@ public class DailyBriefingControllerTest extends AuthSetupForMock {
             new StatisticsByCategoryResponse("develop", 13, 3),
             new StatisticsByCategoryResponse("beauty", 92, 1),
             new StatisticsByCategoryResponse("finance", 55, 2));
+        List<ContentStatistics> contentIncreaseForWeek = List.of(
+            new ContentStatistics("2023-03-01", 44),
+            new ContentStatistics("2023-03-02", 23),
+            new ContentStatistics("2023-03-03", 63),
+            new ContentStatistics("2023-03-04", 29),
+            new ContentStatistics("2023-03-05", 16),
+            new ContentStatistics("2023-03-06", 45),
+            new ContentStatistics("2023-03-07", 55)
+        );
 
-        DailyBriefing dailyBriefing = new DailyBriefing(300, 1540, viewByCategories,
-            45, memberCountByAttentionCategories);
+        DailyBriefing dailyBriefing = new DailyBriefing(new MemberStatistics(300, 1938), new ViewStatistics(1540, 28304), viewByCategories,
+            contentIncreaseForWeek, memberCountByAttentionCategories);
         getDailyBriefingResponse = new GetDailyBriefingResponse(
             standardTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")), dailyBriefing);
       }
@@ -77,7 +89,7 @@ public class DailyBriefingControllerTest extends AuthSetupForMock {
       @Test
       @DisplayName("데일리브리핑 조회에 성공하고 OK와 데일리브리핑을 응답한다")
       void getDailyBriefing() throws Exception {
-        doReturn(getDailyBriefingResponse).when(dailyBriefingService).createDailyBriefing(any());
+        doReturn(getDailyBriefingResponse).when(dailyBriefingService).getDailyBriefingResponse(any());
 
         mockMvc.perform(
                 get("/daily-briefing")
@@ -93,10 +105,14 @@ public class DailyBriefingControllerTest extends AuthSetupForMock {
                             .description("통계 기준 시간"),
                         fieldWithPath("dailyBriefing").type(JsonFieldType.OBJECT)
                             .description("데일리브리핑 데이터"),
-                        fieldWithPath("dailyBriefing.memberIncrease").type(JsonFieldType.NUMBER)
+                        fieldWithPath("dailyBriefing.memberStatistics.memberIncrease").type(JsonFieldType.NUMBER)
                             .description("24시간 동안 증가된 가입회원 수"),
-                        fieldWithPath("dailyBriefing.viewIncrease").type(JsonFieldType.NUMBER)
+                        fieldWithPath("dailyBriefing.memberStatistics.totalMemberCount").type(JsonFieldType.NUMBER)
+                            .description("전체 가입회원 수"),
+                        fieldWithPath("dailyBriefing.viewStatistics.viewIncrease").type(JsonFieldType.NUMBER)
                             .description("24시간 동안 집계된 총 조회수"),
+                        fieldWithPath("dailyBriefing.viewStatistics.totalViewCount").type(JsonFieldType.NUMBER)
+                            .description("전체 조회수"),
                         fieldWithPath("dailyBriefing.viewByCategories").type(JsonFieldType.ARRAY)
                             .description("24시간 동안 집계된 카테고리별 조회수"),
                         fieldWithPath("dailyBriefing.viewByCategories.[].categoryName").type(
@@ -108,8 +124,15 @@ public class DailyBriefingControllerTest extends AuthSetupForMock {
                         fieldWithPath("dailyBriefing.viewByCategories.[].ranking").type(
                                 JsonFieldType.NUMBER)
                             .description("24시간 동안 집계된 조회수 기준 카테고리 랭킹"),
-                        fieldWithPath("dailyBriefing.contentIncrease").type(JsonFieldType.NUMBER)
-                            .description("오늘 새로 추가된 컨텐츠 수"),
+                        fieldWithPath("dailyBriefing.contentIncreaseForWeek").type(
+                                JsonFieldType.ARRAY)
+                            .description("7일 동안 일자별 새로 추가된 컨텐츠 수"),
+                        fieldWithPath("dailyBriefing.contentIncreaseForWeek.[].date").type(
+                                JsonFieldType.STRING)
+                            .description("기준 날짜"),
+                        fieldWithPath("dailyBriefing.contentIncreaseForWeek.[].contentIncrease").type(
+                                JsonFieldType.NUMBER)
+                            .description("새로 추가된 컨텐츠 수"),
                         fieldWithPath("dailyBriefing.memberCountByAttentionCategories").type(
                                 JsonFieldType.ARRAY)
                             .description("관심 카테고리별 고객 수"),

@@ -14,8 +14,11 @@ import com.hyperlink.server.domain.category.domain.CategoryRepository;
 import com.hyperlink.server.domain.category.domain.entity.Category;
 import com.hyperlink.server.domain.content.domain.ContentRepository;
 import com.hyperlink.server.domain.dailyBriefing.application.DailyBriefingService;
+import com.hyperlink.server.domain.dailyBriefing.domain.vo.ContentStatistics;
 import com.hyperlink.server.domain.dailyBriefing.domain.vo.CountStatisticsByCategory;
-import com.hyperlink.server.domain.dailyBriefing.dto.DailyBriefing;
+import com.hyperlink.server.domain.dailyBriefing.domain.vo.DailyBriefing;
+import com.hyperlink.server.domain.dailyBriefing.domain.vo.MemberStatistics;
+import com.hyperlink.server.domain.dailyBriefing.domain.vo.ViewStatistics;
 import com.hyperlink.server.domain.dailyBriefing.dto.GetDailyBriefingResponse;
 import com.hyperlink.server.domain.dailyBriefing.dto.StatisticsByCategoryResponse;
 import com.hyperlink.server.domain.dailyBriefing.infrastructure.DailyBriefingRepositoryCustom;
@@ -75,9 +78,10 @@ public class DailyBriefingServiceUnitTest {
           new StatisticsByCategoryResponse("develop", 13, 3),
           new StatisticsByCategoryResponse("beauty", 92, 1),
           new StatisticsByCategoryResponse("finance", 55, 2));
+      List<ContentStatistics> contentIncreaseForWeek = List.of();
 
-      DailyBriefing dailyBriefing = new DailyBriefing(300, 1540, viewByCategories,
-          45, memberCountByAttentionCategories);
+      DailyBriefing dailyBriefing = new DailyBriefing(new MemberStatistics(300, 1938), new ViewStatistics(1540, 28304), viewByCategories,
+          contentIncreaseForWeek, memberCountByAttentionCategories);
       getDailyBriefingResponse = new GetDailyBriefingResponse(
           standardTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")), dailyBriefing);
     }
