@@ -13,22 +13,31 @@ import com.hyperlink.server.domain.attentionCategory.domain.entity.AttentionCate
 import com.hyperlink.server.domain.category.domain.CategoryRepository;
 import com.hyperlink.server.domain.category.domain.entity.Category;
 import com.hyperlink.server.domain.category.exception.CategoryNotFoundException;
+import com.hyperlink.server.domain.common.ContentDtoFactoryService;
+import com.hyperlink.server.domain.company.domain.CompanyRepository;
+import com.hyperlink.server.domain.company.domain.entity.Company;
 import com.hyperlink.server.domain.content.application.ContentService;
 import com.hyperlink.server.domain.content.domain.ContentRepository;
 import com.hyperlink.server.domain.content.domain.entity.Content;
 import com.hyperlink.server.domain.content.dto.ContentAdminResponses;
 import com.hyperlink.server.domain.content.dto.ContentEnrollResponse;
 import com.hyperlink.server.domain.content.dto.ContentResponse;
+import com.hyperlink.server.domain.content.dto.ContentViewerRecommendationResponse;
 import com.hyperlink.server.domain.content.dto.GetContentsCommonResponse;
 import com.hyperlink.server.domain.content.dto.SearchResponse;
 import com.hyperlink.server.domain.content.exception.ContentNotFoundException;
 import com.hyperlink.server.domain.creator.domain.CreatorRepository;
 import com.hyperlink.server.domain.creator.domain.entity.Creator;
 import com.hyperlink.server.domain.creator.exception.CreatorNotFoundException;
+import com.hyperlink.server.domain.member.application.MemberService;
 import com.hyperlink.server.domain.member.domain.Career;
 import com.hyperlink.server.domain.member.domain.CareerYear;
 import com.hyperlink.server.domain.member.domain.MemberRepository;
 import com.hyperlink.server.domain.member.domain.entity.Member;
+import com.hyperlink.server.domain.member.dto.MembersUpdateRequest;
+import com.hyperlink.server.domain.memberContent.domain.MemberContentRepository;
+import com.hyperlink.server.domain.memberContent.domain.entity.MemberContent;
+import com.hyperlink.server.domain.memberContent.domain.entity.MemberContentActionType;
 import com.hyperlink.server.domain.memberHistory.application.MemberHistoryService;
 import java.util.ArrayList;
 import java.util.List;
@@ -603,6 +612,81 @@ public class ContentServiceIntegrationTest {
         assertThat(contents.get(0).title()).isEqualTo("제목3");
       }
     }
+  }
+
+  @Nested
+  @DisplayName("컨텐츠 조회자에 대한 추천 메서드는")
+  class ContentViewerRecommend {
+
+    @Autowired
+    MemberContentRepository memberContentRepository;
+    @Autowired
+    CompanyRepository companyRepository;
+    @Autowired
+    ContentDtoFactoryService contentDtoFactoryService;
+
+    @Nested
+    @DisplayName("동일한 추천 대상 회사에 다니는 3명 이상이 좋아요한 글에 대해 해당 회사를 반환한다.")
+    class RecommendCompany {
+
+      Content content1;
+      Member member1;
+      Member member2;
+      Member member3;
+      Category category;
+
+      @BeforeEach
+      void setUp() throws InterruptedException {
+        category = new Category("develop");
+        categoryRepository.save(category);
+
+        content1 = contentRepository.save(
+            new Content("제목1", "contentImgUrl1", "link1", creator, category));
+
+        member1 = new Member("member1Email", "nickname", Career.DEVELOP,
+            CareerYear.LESS_THAN_ONE,
+            "profileImgUrl");
+        memberRepository.save(member1);
+
+        member2 = new Member("member2Email", "nickname", Career.DEVELOP,
+            CareerYear.LESS_THAN_ONE,
+            "profileImgUrl");
+        memberRepository.save(member2);
+
+        member3 = new Member("member3Email", "nickname", Career.DEVELOP,
+            CareerYear.LESS_THAN_ONE,
+            "profileImgUrl");
+        memberRepository.save(member3);
+
+        memberContentRepository.save(
+            new MemberContent(member1.getId(), content1, MemberContentActionType.LIKE));
+        memberContentRepository.save(
+            new MemberContent(member2.getId(), content1, MemberContentActionType.LIKE));
+        memberContentRepository.save(
+            new MemberContent(member3.getId(), content1, MemberContentActionType.LIKE));
+
+        Company kakao = companyRepository.save(
+            new Company("kakaoCorps.com", "cdn.logo.kakao.com", "카카오"));
+        kakao.changeIsUsingRecommend(true);
+
+        member1.changeCompany(kakao);
+        member2.changeCompany(kakao);
+        member3.changeCompany(kakao);
+      }
+
+      @Test
+      @DisplayName("[성공]")
+      void recommendCompanySuccessTest() {
+        List<ContentViewerRecommendationResponse> contentViewerRecommendationResponse = contentDtoFactoryService.getContentViewerRecommendationResponse(
+            category.getName(),
+            content1.getId());
+
+        assertThat(contentViewerRecommendationResponse).hasSize(1);
+        assertThat(contentViewerRecommendationResponse.get(0).bannerName()).isEqualTo("카카오");
+      }
+    }
+
+
   }
 
   @TestInstance(Lifecycle.PER_CLASS)

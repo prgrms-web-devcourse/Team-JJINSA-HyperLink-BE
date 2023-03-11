@@ -21,6 +21,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.hyperlink.server.AuthSetupForMock;
 import com.hyperlink.server.AdminAuthSetupForMock;
 import com.hyperlink.server.domain.content.application.ContentService;
 import com.hyperlink.server.domain.content.controller.ContentController;
@@ -28,7 +29,7 @@ import com.hyperlink.server.domain.content.dto.ContentAdminResponse;
 import com.hyperlink.server.domain.content.dto.ContentAdminResponses;
 import com.hyperlink.server.domain.content.dto.ContentResponse;
 import com.hyperlink.server.domain.content.dto.GetContentsCommonResponse;
-import com.hyperlink.server.domain.content.dto.RecommendationCompanyResponse;
+import com.hyperlink.server.domain.content.dto.ContentViewerRecommendationResponse;
 import com.hyperlink.server.domain.content.dto.SearchResponse;
 import com.hyperlink.server.domain.content.exception.CategoryAndCreatorIdConstraintViolationException;
 import com.hyperlink.server.domain.content.exception.ContentNotFoundException;
@@ -149,11 +150,11 @@ public class ContentControllerTest extends AdminAuthSetupForMock {
       void searchContentsTest() throws Exception {
         authSetup();
 
-        List<RecommendationCompanyResponse> recommendationCompanyResponses = List.of(
-            new RecommendationCompanyResponse("네이버", "https://imglogo.com"));
+        List<ContentViewerRecommendationResponse> contentViewerRecommendationResponses = List.of(
+            new ContentViewerRecommendationResponse("네이버", "https://imglogo.com"));
         ContentResponse contentResponse = new ContentResponse(27L, "개발자의 삶", "슈카", 2L,
             "https://img1.com", "https://okky.kr/articles/503803", 4,
-            100, false, false, "2023-02-17T12:30.334", recommendationCompanyResponses);
+            100, false, false, "2023-02-17T12:30.334", contentViewerRecommendationResponses);
         List<ContentResponse> contentResponses = List.of(contentResponse);
         GetContentsCommonResponse getContentsCommonResponse = new GetContentsCommonResponse(
             contentResponses, true);
@@ -322,17 +323,17 @@ public class ContentControllerTest extends AdminAuthSetupForMock {
       @MethodSource("createInput")
       @DisplayName("[category]와 [sort] 를 입력받으면 인기순, 최신순 트렌드를 조회한다.")
       void retrievePopularTrend(String category, Long creatorId, String sort) throws Exception {
-        List<RecommendationCompanyResponse> recommendationCompanyResponses = List.of(
-            new RecommendationCompanyResponse("네이버", "https://naverlogo.com"));
-        List<RecommendationCompanyResponse> recommendationCompanyResponses2 = List.of(
-            new RecommendationCompanyResponse("네이버", "https://naverlogo.com"),
-            new RecommendationCompanyResponse("카카오", "https://kakaologo.com"));
+        List<ContentViewerRecommendationResponse> contentViewerRecommendationResponses = List.of(
+            new ContentViewerRecommendationResponse("네이버", "https://naverlogo.com"));
+        List<ContentViewerRecommendationResponse> contentViewerRecommendationResponses2 = List.of(
+            new ContentViewerRecommendationResponse("네이버", "https://naverlogo.com"),
+            new ContentViewerRecommendationResponse("카카오", "https://kakaologo.com"));
         ContentResponse contentResponse = new ContentResponse(1L, "개발자의 삶", "개발왕김딴딴", 2L,
             "https://img1.com", "https://okky.kr/articles/503803", 4,
-            100, false, false, "2023-02-17T12:30.334", recommendationCompanyResponses);
+            100, false, false, "2023-02-17T12:30.334", contentViewerRecommendationResponses);
         ContentResponse contentResponse2 = new ContentResponse(2L, "당신은 개발자가 맞는가?", "개발왕김딴딴", 2L,
             "https://img2.com", "https://okky.kr/articles/503343", 1,
-            35, false, false, "2023-02-17T12:30.334", recommendationCompanyResponses2);
+            35, false, false, "2023-02-17T12:30.334", contentViewerRecommendationResponses2);
         List<ContentResponse> contentResponses = List.of(contentResponse, contentResponse2);
         GetContentsCommonResponse getContentsCommonResponse = new GetContentsCommonResponse(
             contentResponses, true);
@@ -402,17 +403,17 @@ public class ContentControllerTest extends AdminAuthSetupForMock {
       @ValueSource(strings = {"popular", "recent"})
       @DisplayName("전체 카테고리에 대해서 인기순, 최신순 트렌드를 조회한다.")
       void retrieveTrendForAllCategories(String sort) throws Exception {
-        List<RecommendationCompanyResponse> recommendationCompanyResponses = List.of(
-            new RecommendationCompanyResponse("네이버", "https://naverlogo.com"));
-        List<RecommendationCompanyResponse> recommendationCompanyResponses2 = List.of(
-            new RecommendationCompanyResponse("네이버", "https://naverlogo.com"),
-            new RecommendationCompanyResponse("카카오", "https://kakaologo.com"));
+        List<ContentViewerRecommendationResponse> recommendationMemberInfoRespons = List.of(
+            new ContentViewerRecommendationResponse("네이버", "https://naverlogo.com"));
+        List<ContentViewerRecommendationResponse> contentViewerRecommendationResponses2 = List.of(
+            new ContentViewerRecommendationResponse("네이버", "https://naverlogo.com"),
+            new ContentViewerRecommendationResponse("카카오", "https://kakaologo.com"));
         ContentResponse contentResponse = new ContentResponse(1L, "개발자의 삶", "개발왕김딴딴", 2L,
             "https://img1.com", "https://okky.kr/articles/503803", 4,
-            100, false, false, "2023-02-17T12:30.334", recommendationCompanyResponses);
+            100, false, false, "2023-02-17T12:30.334", recommendationMemberInfoRespons);
         ContentResponse contentResponse2 = new ContentResponse(2L, "당신은 개발자가 맞는가?", "개발왕김딴딴", 2L,
             "https://img2.com", "https://okky.kr/articles/503343", 1,
-            35, false, false, "2023-02-17T12:30.334", recommendationCompanyResponses2);
+            35, false, false, "2023-02-17T12:30.334", contentViewerRecommendationResponses2);
         List<ContentResponse> contentResponses = List.of(contentResponse, contentResponse2);
         GetContentsCommonResponse getContentsCommonResponse = new GetContentsCommonResponse(
             contentResponses, true);
@@ -494,17 +495,17 @@ public class ContentControllerTest extends AdminAuthSetupForMock {
       @MethodSource("createInput")
       @DisplayName("[creatorId]와 [sort] 를 입력받으면 인기순 트렌드를 조회한다.")
       void retrievePopularTrend(String category, String creatorId, String sort) throws Exception {
-        List<RecommendationCompanyResponse> recommendationCompanyResponses = List.of(
-            new RecommendationCompanyResponse("네이버", "https://naverlogo.com"));
-        List<RecommendationCompanyResponse> recommendationCompanyResponses2 = List.of(
-            new RecommendationCompanyResponse("네이버", "https://naverlogo.com"),
-            new RecommendationCompanyResponse("카카오", "https://kakaologo.com"));
+        List<ContentViewerRecommendationResponse> contentViewerRecommendationResponses = List.of(
+            new ContentViewerRecommendationResponse("네이버", "https://naverlogo.com"));
+        List<ContentViewerRecommendationResponse> contentViewerRecommendationResponses2 = List.of(
+            new ContentViewerRecommendationResponse("네이버", "https://naverlogo.com"),
+            new ContentViewerRecommendationResponse("카카오", "https://kakaologo.com"));
         ContentResponse contentResponse = new ContentResponse(1L, "개발자의 삶", "개발왕김딴딴", 2L,
             "https://img1.com", "https://okky.kr/articles/503803", 4,
-            100, false, false, "2023-02-17T12:30.334", recommendationCompanyResponses);
+            100, false, false, "2023-02-17T12:30.334", contentViewerRecommendationResponses);
         ContentResponse contentResponse2 = new ContentResponse(2L, "당신은 개발자가 맞는가?", "개발왕김딴딴", 2L,
             "https://img2.com", "https://okky.kr/articles/503343", 1,
-            35, false, false, "2023-02-17T12:30.334", recommendationCompanyResponses2);
+            35, false, false, "2023-02-17T12:30.334", contentViewerRecommendationResponses2);
         List<ContentResponse> contentResponses = List.of(contentResponse, contentResponse2);
         GetContentsCommonResponse getContentsCommonResponse = new GetContentsCommonResponse(
             contentResponses, true);
