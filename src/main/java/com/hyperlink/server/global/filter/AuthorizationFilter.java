@@ -37,8 +37,9 @@ public class AuthorizationFilter implements Filter {
     HttpServletRequest httpRequest = (HttpServletRequest) request;
     String requestURI = httpRequest.getRequestURI();
     HttpServletResponse httpResponse = (HttpServletResponse) response;
+    String requestMethod = httpRequest.getMethod();
 
-    if (isAdminPath(requestURI)) {
+    if (!requestMethod.equals("OPTIONS") && isAdminPath(requestURI)) {
       final String authorizationHeader = httpRequest.getHeader(HttpHeaders.AUTHORIZATION);
       final String accessToken = authTokenExtractor.extractToken(authorizationHeader);
       Long memberId = authTokenExtractor.extractMemberId(accessToken).orElseThrow(
