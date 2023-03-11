@@ -2,11 +2,13 @@ package com.hyperlink.server.domain.creator.controller;
 
 import com.hyperlink.server.domain.auth.token.exception.TokenNotExistsException;
 import com.hyperlink.server.domain.creator.application.CreatorService;
+import com.hyperlink.server.domain.creator.domain.CreatorRecommendService;
 import com.hyperlink.server.domain.creator.dto.CreatorAdminResponses;
 import com.hyperlink.server.domain.creator.dto.CreatorEnrollRequest;
 import com.hyperlink.server.domain.creator.dto.CreatorEnrollResponse;
 import com.hyperlink.server.domain.creator.dto.CreatorResponse;
 import com.hyperlink.server.domain.creator.dto.CreatorsRetrievalResponse;
+import com.hyperlink.server.domain.creator.dto.GetCreatorRecommendResponses;
 import com.hyperlink.server.domain.member.exception.MemberNotFoundException;
 import com.hyperlink.server.global.config.LoginMemberId;
 import java.util.Optional;
@@ -32,6 +34,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class CreatorController {
 
   private final CreatorService creatorService;
+  private final CreatorRecommendService creatorRecommendService;
 
   @GetMapping("/admin/creators")
   @ResponseStatus(HttpStatus.OK)
@@ -89,4 +92,13 @@ public class CreatorController {
     Long memberId = optionalMemberId.orElse(null);
     return creatorService.getCreatorDetail(memberId, creatorId);
   }
+
+  @GetMapping("/creators/recommend")
+  @ResponseStatus(HttpStatus.OK)
+  public GetCreatorRecommendResponses getCreatorRecommendResponse(
+      @LoginMemberId Optional<Long> optionalMemberId) {
+    Long memberId = optionalMemberId.orElse(null);
+    return creatorRecommendService.getRecommendCreators(memberId);
+  }
+
 }
