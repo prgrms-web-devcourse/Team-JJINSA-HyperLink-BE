@@ -17,7 +17,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hyperlink.server.AuthSetupForMock;
 import com.hyperlink.server.domain.content.application.ContentService;
 import com.hyperlink.server.domain.content.dto.ContentResponse;
-import com.hyperlink.server.domain.content.dto.RecommendationCompanyResponse;
+import com.hyperlink.server.domain.content.dto.ContentViewerRecommendationResponse;
 import com.hyperlink.server.domain.memberContent.application.BookmarkService;
 import com.hyperlink.server.domain.memberContent.application.LikeService;
 import com.hyperlink.server.domain.memberContent.controller.MemberContentController;
@@ -145,7 +145,7 @@ public class MemberContentControllerTest extends AuthSetupForMock {
   void getBookmarkPage() throws Exception {
     List<ContentResponse> contents = new ArrayList<>();
     for (int i = 0; i < 3; i++) {
-      RecommendationCompanyResponse recommendationCompanyResponse = new RecommendationCompanyResponse(
+      ContentViewerRecommendationResponse recommendationCompanyResponse = new ContentViewerRecommendationResponse(
           "bannserName" + i, "bannerLogoUrl" + i);
       contents.add(
           new ContentResponse(Long.valueOf(i), "title" + i, "creatorName" + i,

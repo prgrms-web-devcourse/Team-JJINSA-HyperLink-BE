@@ -20,12 +20,12 @@ public record ContentResponse(
 ) {
 
   public static ContentResponse from(Content content, boolean isBookmarked, boolean isLiked,
-      List<RecommendationCompanyResponse> recommendationCompanyResponses) {
+      List<ContentViewerRecommendationResponse> recommendations) {
     Creator creator = content.getCreator();
 
     return new ContentResponse(content.getId(), content.getTitle(), creator.getName(),
         creator.getId(), content.getContentImgUrl(), content.getLink(), content.getLikeCount(),
         content.getViewCount(), isBookmarked, isLiked, content.getCreatedAt().toString(),
-        recommendationCompanyResponses);
+        recommendations);
   }
 }
