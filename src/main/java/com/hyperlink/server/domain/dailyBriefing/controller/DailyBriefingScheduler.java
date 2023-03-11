@@ -1,4 +1,4 @@
-package com.hyperlink.server.domain.dailyBriefing;
+package com.hyperlink.server.domain.dailyBriefing.controller;
 
 import com.hyperlink.server.domain.dailyBriefing.application.DailyBriefingService;
 import com.hyperlink.server.domain.dailyBriefing.dto.GetDailyBriefingResponse;

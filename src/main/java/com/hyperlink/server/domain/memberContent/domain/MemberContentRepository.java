@@ -2,6 +2,8 @@ package com.hyperlink.server.domain.memberContent.domain;
 
 import com.hyperlink.server.domain.content.domain.entity.Content;
 import com.hyperlink.server.domain.memberContent.domain.entity.MemberContent;
+import com.hyperlink.server.domain.memberContent.dto.CreatorAndLikeCountByMember;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -23,4 +25,8 @@ public interface MemberContentRepository extends JpaRepository<MemberContent, Lo
 
   boolean existsMemberContentByMemberIdAndContentIdAndType(Long memberId, Long contentId, int type);
 
+  @Query("select cre.id as creatorId, count(mc.id) as likeCount from MemberContent mc join Content c on mc.content.id = c.id join Creator cre on c.creator.id = cre.id where mc.memberId = :memberId and mc.type = 1 group by cre.id ORDER BY cre.id ASC")
+  List<CreatorAndLikeCountByMember> findLikeCountByMemberId(@Param("memberId") Long memberId);
+
+  long countByMemberId(@Param("memberId") Long memberId);
 }
