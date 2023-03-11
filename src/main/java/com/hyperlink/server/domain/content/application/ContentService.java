@@ -63,14 +63,13 @@ public class ContentService {
 
   public SearchResponse search(Long memberId, String keyword, Pageable pageable) {
     List<String> keywords = splitSearchKeywords(keyword);
-    Slice<Content> searchResultContents = contentRepositoryCustom.searchByTitleContainingOrderByLatest(
-        keywords,
-        pageable);
+    Page<Content> searchResultContents = contentRepositoryCustom.searchByTitleContainingOrderByLatest(
+        keywords, pageable);
 
     GetContentsCommonResponse contentResponses = contentDtoFactoryService.createContentResponses(
         memberId, searchResultContents.getContent(), searchResultContents.hasNext());
     return new SearchResponse(contentResponses, keyword,
-        searchResultContents.getNumberOfElements());
+        (int) searchResultContents.getTotalElements());
   }
 
   private List<String> splitSearchKeywords(String keyword) {
