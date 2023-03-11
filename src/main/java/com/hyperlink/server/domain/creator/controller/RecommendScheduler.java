@@ -1,12 +1,8 @@
-package com.hyperlink.server.domain.admin.controller;
+package com.hyperlink.server.domain.creator.controller;
 
-import com.hyperlink.server.domain.admin.application.AdminService;
-import com.hyperlink.server.domain.admin.dto.CategoryViewResponses;
 import com.hyperlink.server.global.config.BatchJobConfig;
-import com.hyperlink.server.global.config.LoginMemberId;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.JobParameter;
@@ -15,30 +11,20 @@ import org.springframework.batch.core.JobParametersInvalidException;
 import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.batch.core.repository.JobExecutionAlreadyRunningException;
 import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
 
-@RestController
-@RequiredArgsConstructor
+@Component
 @Slf4j
-public class AdminController {
+@RequiredArgsConstructor
+public class RecommendScheduler {
 
-  private final AdminService adminService;
   private final JobLauncher jobLauncher;
   private final BatchJobConfig batchJobConfig;
 
-  @GetMapping("/admin/dashboard/all-category/view")
-  @ResponseStatus(HttpStatus.OK)
-  public CategoryViewResponses getDailyBriefingForAdmin(@LoginMemberId Optional<Long> optionalMemberId) {
-    return adminService.getCategoryView().orElseGet(adminService::countViewCountByCategory);
-  }
-
-  @GetMapping("/test/scheduler-trigger/recommend")
-  @ResponseStatus(HttpStatus.OK)
-  public void startScheduler(@LoginMemberId Optional<Long> optionalMemberId) {
-    log.info("RecommendJob 수동 실행");
+  @Scheduled(cron = "0 0 4 * * *", zone = "Asia/Seoul")
+  void runBatchRecommendJob() {
+    log.info("RecommendJob 실행");
 
     Map<String, JobParameter> confMap = new HashMap<>();
     confMap.put("time", new JobParameter(System.currentTimeMillis()));
@@ -53,6 +39,7 @@ public class AdminController {
       log.error(e.getMessage());
     }
 
-    log.info("RecommendJob 수동 실행 완료");
+    log.info("RecommendJob 완료");
   }
+
 }

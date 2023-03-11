@@ -22,18 +22,17 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hyperlink.server.AuthSetupForMock;
-import com.hyperlink.server.domain.auth.token.JwtTokenProvider;
+import com.hyperlink.server.AdminAuthSetupForMock;
 import com.hyperlink.server.domain.content.application.ContentService;
 import com.hyperlink.server.domain.content.controller.ContentController;
 import com.hyperlink.server.domain.content.dto.ContentAdminResponse;
 import com.hyperlink.server.domain.content.dto.ContentAdminResponses;
 import com.hyperlink.server.domain.content.dto.ContentResponse;
 import com.hyperlink.server.domain.content.dto.GetContentsCommonResponse;
-import com.hyperlink.server.domain.content.dto.RecommendationCompanyResponse;
+import com.hyperlink.server.domain.content.dto.ContentViewerRecommendationResponse;
 import com.hyperlink.server.domain.content.dto.SearchResponse;
 import com.hyperlink.server.domain.content.exception.CategoryAndCreatorIdConstraintViolationException;
 import com.hyperlink.server.domain.content.exception.ContentNotFoundException;
-import com.hyperlink.server.domain.member.domain.entity.Member;
 import java.util.List;
 import java.util.stream.Stream;
 import javax.validation.ValidationException;
@@ -67,7 +66,7 @@ import org.springframework.web.bind.MissingServletRequestParameterException;
 @MockBean(JpaMetamodelMappingContext.class)
 @AutoConfigureRestDocs
 @AutoConfigureMockMvc
-public class ContentControllerTest extends AuthSetupForMock {
+public class ContentControllerTest extends AdminAuthSetupForMock {
 
   @MockBean
   ContentService contentService;
@@ -151,11 +150,11 @@ public class ContentControllerTest extends AuthSetupForMock {
       void searchContentsTest() throws Exception {
         authSetup();
 
-        List<RecommendationCompanyResponse> recommendationCompanyResponses = List.of(
-            new RecommendationCompanyResponse("네이버", "https://imglogo.com"));
+        List<ContentViewerRecommendationResponse> contentViewerRecommendationResponses = List.of(
+            new ContentViewerRecommendationResponse("네이버", "https://imglogo.com"));
         ContentResponse contentResponse = new ContentResponse(27L, "개발자의 삶", "슈카", 2L,
             "https://img1.com", "https://okky.kr/articles/503803", 4,
-            100, false, false, "2023-02-17T12:30.334", recommendationCompanyResponses);
+            100, false, false, "2023-02-17T12:30.334", contentViewerRecommendationResponses);
         List<ContentResponse> contentResponses = List.of(contentResponse);
         GetContentsCommonResponse getContentsCommonResponse = new GetContentsCommonResponse(
             contentResponses, true);
@@ -217,7 +216,8 @@ public class ContentControllerTest extends AuthSetupForMock {
                             .description("컨텐츠 생성 날짜"),
                         fieldWithPath("getContentsCommonResponse.contents.[].recommendations").type(
                             JsonFieldType.ARRAY).description("회사 추천 배열"),
-                        fieldWithPath("getContentsCommonResponse.contents.[].recommendations.[].bannerName").type(
+                        fieldWithPath(
+                            "getContentsCommonResponse.contents.[].recommendations.[].bannerName").type(
                             JsonFieldType.STRING).description("회사명"),
                         fieldWithPath(
                             "getContentsCommonResponse.contents.[].recommendations.[].bannerLogoImgUrl").type(
@@ -323,17 +323,17 @@ public class ContentControllerTest extends AuthSetupForMock {
       @MethodSource("createInput")
       @DisplayName("[category]와 [sort] 를 입력받으면 인기순, 최신순 트렌드를 조회한다.")
       void retrievePopularTrend(String category, Long creatorId, String sort) throws Exception {
-        List<RecommendationCompanyResponse> recommendationCompanyResponses = List.of(
-            new RecommendationCompanyResponse("네이버", "https://naverlogo.com"));
-        List<RecommendationCompanyResponse> recommendationCompanyResponses2 = List.of(
-            new RecommendationCompanyResponse("네이버", "https://naverlogo.com"),
-            new RecommendationCompanyResponse("카카오", "https://kakaologo.com"));
+        List<ContentViewerRecommendationResponse> contentViewerRecommendationResponses = List.of(
+            new ContentViewerRecommendationResponse("네이버", "https://naverlogo.com"));
+        List<ContentViewerRecommendationResponse> contentViewerRecommendationResponses2 = List.of(
+            new ContentViewerRecommendationResponse("네이버", "https://naverlogo.com"),
+            new ContentViewerRecommendationResponse("카카오", "https://kakaologo.com"));
         ContentResponse contentResponse = new ContentResponse(1L, "개발자의 삶", "개발왕김딴딴", 2L,
             "https://img1.com", "https://okky.kr/articles/503803", 4,
-            100, false, false, "2023-02-17T12:30.334", recommendationCompanyResponses);
+            100, false, false, "2023-02-17T12:30.334", contentViewerRecommendationResponses);
         ContentResponse contentResponse2 = new ContentResponse(2L, "당신은 개발자가 맞는가?", "개발왕김딴딴", 2L,
             "https://img2.com", "https://okky.kr/articles/503343", 1,
-            35, false, false, "2023-02-17T12:30.334", recommendationCompanyResponses2);
+            35, false, false, "2023-02-17T12:30.334", contentViewerRecommendationResponses2);
         List<ContentResponse> contentResponses = List.of(contentResponse, contentResponse2);
         GetContentsCommonResponse getContentsCommonResponse = new GetContentsCommonResponse(
             contentResponses, true);
@@ -403,17 +403,17 @@ public class ContentControllerTest extends AuthSetupForMock {
       @ValueSource(strings = {"popular", "recent"})
       @DisplayName("전체 카테고리에 대해서 인기순, 최신순 트렌드를 조회한다.")
       void retrieveTrendForAllCategories(String sort) throws Exception {
-        List<RecommendationCompanyResponse> recommendationCompanyResponses = List.of(
-            new RecommendationCompanyResponse("네이버", "https://naverlogo.com"));
-        List<RecommendationCompanyResponse> recommendationCompanyResponses2 = List.of(
-            new RecommendationCompanyResponse("네이버", "https://naverlogo.com"),
-            new RecommendationCompanyResponse("카카오", "https://kakaologo.com"));
+        List<ContentViewerRecommendationResponse> recommendationMemberInfoRespons = List.of(
+            new ContentViewerRecommendationResponse("네이버", "https://naverlogo.com"));
+        List<ContentViewerRecommendationResponse> contentViewerRecommendationResponses2 = List.of(
+            new ContentViewerRecommendationResponse("네이버", "https://naverlogo.com"),
+            new ContentViewerRecommendationResponse("카카오", "https://kakaologo.com"));
         ContentResponse contentResponse = new ContentResponse(1L, "개발자의 삶", "개발왕김딴딴", 2L,
             "https://img1.com", "https://okky.kr/articles/503803", 4,
-            100, false, false, "2023-02-17T12:30.334", recommendationCompanyResponses);
+            100, false, false, "2023-02-17T12:30.334", recommendationMemberInfoRespons);
         ContentResponse contentResponse2 = new ContentResponse(2L, "당신은 개발자가 맞는가?", "개발왕김딴딴", 2L,
             "https://img2.com", "https://okky.kr/articles/503343", 1,
-            35, false, false, "2023-02-17T12:30.334", recommendationCompanyResponses2);
+            35, false, false, "2023-02-17T12:30.334", contentViewerRecommendationResponses2);
         List<ContentResponse> contentResponses = List.of(contentResponse, contentResponse2);
         GetContentsCommonResponse getContentsCommonResponse = new GetContentsCommonResponse(
             contentResponses, true);
@@ -495,17 +495,17 @@ public class ContentControllerTest extends AuthSetupForMock {
       @MethodSource("createInput")
       @DisplayName("[creatorId]와 [sort] 를 입력받으면 인기순 트렌드를 조회한다.")
       void retrievePopularTrend(String category, String creatorId, String sort) throws Exception {
-        List<RecommendationCompanyResponse> recommendationCompanyResponses = List.of(
-            new RecommendationCompanyResponse("네이버", "https://naverlogo.com"));
-        List<RecommendationCompanyResponse> recommendationCompanyResponses2 = List.of(
-            new RecommendationCompanyResponse("네이버", "https://naverlogo.com"),
-            new RecommendationCompanyResponse("카카오", "https://kakaologo.com"));
+        List<ContentViewerRecommendationResponse> contentViewerRecommendationResponses = List.of(
+            new ContentViewerRecommendationResponse("네이버", "https://naverlogo.com"));
+        List<ContentViewerRecommendationResponse> contentViewerRecommendationResponses2 = List.of(
+            new ContentViewerRecommendationResponse("네이버", "https://naverlogo.com"),
+            new ContentViewerRecommendationResponse("카카오", "https://kakaologo.com"));
         ContentResponse contentResponse = new ContentResponse(1L, "개발자의 삶", "개발왕김딴딴", 2L,
             "https://img1.com", "https://okky.kr/articles/503803", 4,
-            100, false, false, "2023-02-17T12:30.334", recommendationCompanyResponses);
+            100, false, false, "2023-02-17T12:30.334", contentViewerRecommendationResponses);
         ContentResponse contentResponse2 = new ContentResponse(2L, "당신은 개발자가 맞는가?", "개발왕김딴딴", 2L,
             "https://img2.com", "https://okky.kr/articles/503343", 1,
-            35, false, false, "2023-02-17T12:30.334", recommendationCompanyResponses2);
+            35, false, false, "2023-02-17T12:30.334", contentViewerRecommendationResponses2);
         List<ContentResponse> contentResponses = List.of(contentResponse, contentResponse2);
         GetContentsCommonResponse getContentsCommonResponse = new GetContentsCommonResponse(
             contentResponses, true);
@@ -585,6 +585,7 @@ public class ContentControllerTest extends AuthSetupForMock {
   @Nested
   @DisplayName("[Admin] 비활성 컨텐츠 조회 API는")
   class RetrieveInactivateContent {
+
     @BeforeEach
     void setUp() {
       authSetup();
@@ -593,6 +594,7 @@ public class ContentControllerTest extends AuthSetupForMock {
     @Nested
     @DisplayName("[성공]")
     class Success {
+
       @Test
       @DisplayName("비활성된 컨텐츠를 조회한다.")
       void retrieveInactiveContents() throws Exception {
@@ -635,8 +637,10 @@ public class ContentControllerTest extends AuthSetupForMock {
                             .description("컨텐츠 제목"),
                         fieldWithPath("contents.[].link").type(JsonFieldType.STRING)
                             .description("컨텐츠 연결 외부 링크"),
-                        fieldWithPath("currentPage").type(JsonFieldType.NUMBER).description("현재 페이지 번호"),
-                        fieldWithPath("totalPage").type(JsonFieldType.NUMBER).description("전체 페이지 번호")
+                        fieldWithPath("currentPage").type(JsonFieldType.NUMBER)
+                            .description("현재 페이지 번호"),
+                        fieldWithPath("totalPage").type(JsonFieldType.NUMBER)
+                            .description("전체 페이지 번호")
                     )
                 )
             );
@@ -648,6 +652,7 @@ public class ContentControllerTest extends AuthSetupForMock {
   @Nested
   @DisplayName("[Admin] 컨텐츠 삭제 API는")
   class DeleteContentByAdmin {
+
     @BeforeEach
     void setUp() {
       authSetup();
@@ -656,6 +661,7 @@ public class ContentControllerTest extends AuthSetupForMock {
     @Nested
     @DisplayName("[성공]")
     class Success {
+
       @Test
       @DisplayName("컨텐츠를 삭제한다.")
       void deleteContentById() throws Exception {

@@ -9,8 +9,10 @@ import com.hyperlink.server.domain.company.domain.CompanyRepository;
 import com.hyperlink.server.domain.company.domain.entity.Company;
 import com.hyperlink.server.domain.company.dto.CompanyChangeNameRequest;
 import com.hyperlink.server.domain.company.dto.CompanyPageResponse;
+import com.hyperlink.server.domain.company.dto.CompanyRegisterRequest;
 import com.hyperlink.server.domain.company.dto.MailAuthVerifyRequest;
 import com.hyperlink.server.domain.company.dto.MailRequest;
+import com.hyperlink.server.domain.company.exception.CompanyAlreadyExistException;
 import com.hyperlink.server.domain.company.exception.CompanyNotFoundException;
 import com.hyperlink.server.domain.company.exception.MailAuthInvalidException;
 import com.hyperlink.server.domain.company.mail.MailAuth;
@@ -129,6 +131,37 @@ class CompanyServiceIntegrationTest {
 
     Assertions.assertThat(priorValue).isFalse();
     Assertions.assertThat(changeValue).isTrue();
+  }
+
+  @DisplayName("회사를 등록할 수 있다.")
+  @Test
+  void registerTest() {
+    CompanyRegisterRequest companyRegisterRequest = new CompanyRegisterRequest("kakao.com",
+        "LogoURL", "kakao");
+
+    companyService.createCompany(companyRegisterRequest);
+    Company foundCompany = companyRepository.findByEmailAddress(
+        companyRegisterRequest.emailAddress()).orElseThrow(
+        CompanyNotFoundException::new);
+
+    Assertions.assertThat(foundCompany.getEmailAddress())
+        .isEqualTo(companyRegisterRequest.emailAddress());
+    Assertions.assertThat(foundCompany.getLogoImgUrl())
+        .isEqualTo(companyRegisterRequest.logoImgUrl());
+    Assertions.assertThat(foundCompany.getName()).isEqualTo(companyRegisterRequest.companyName());
+  }
+
+  @DisplayName("이미 등록된 회사를 등록하려 한다면 CompanyAlreadyExistException을 던진다.")
+  @Test
+  void registerInCorrectTest() {
+    CompanyRegisterRequest companyRegisterRequest = new CompanyRegisterRequest("kakao.com",
+        "LogoURL", "kakao");
+
+    companyService.createCompany(companyRegisterRequest);
+
+    Assertions.assertThatThrownBy(() -> companyService.createCompany(companyRegisterRequest))
+        .isInstanceOf(
+            CompanyAlreadyExistException.class);
   }
 
   @DisplayName("회사 이름을 변경할 수 있다.")

@@ -22,10 +22,11 @@ import org.springframework.util.PatternMatchUtils;
 @Slf4j
 public class AuthenticationFilter implements Filter {
 
+  // TODO: /test/scheduler 삭제
   private static final String[] whitelist = {"/", "/members/logout", "/members/login",
       "/members/signup", "/profile", "/actuator/health", "/members/oauth/code/google",
       "/members/access-token", "/contents/*/view", "/daily-briefing", "/contents/all",
-      "/contents", "/creators", "/creators/*"};
+      "/contents", "/creators", "/creators/*", "/creators/recommend", "/test/scheduler-trigger/recommend"};
 
 
   private final AuthTokenExtractor authTokenExtractor;

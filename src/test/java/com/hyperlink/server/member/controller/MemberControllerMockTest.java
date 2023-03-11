@@ -23,7 +23,6 @@ import com.hyperlink.server.domain.auth.oauth.GoogleAccessToken;
 import com.hyperlink.server.domain.auth.oauth.GoogleAccessTokenRepository;
 import com.hyperlink.server.domain.auth.oauth.GoogleOauthClient;
 import com.hyperlink.server.domain.auth.token.RefreshTokenCookieProvider;
-import com.hyperlink.server.domain.member.application.MemberService;
 import com.hyperlink.server.domain.member.controller.MemberController;
 import com.hyperlink.server.domain.member.domain.Career;
 import com.hyperlink.server.domain.member.domain.CareerYear;
@@ -65,9 +64,6 @@ public class MemberControllerMockTest extends AuthSetupForMock {
 
   @MockBean
   AuthService authService;
-
-  @MockBean
-  MemberService memberService;
 
   @MockBean
   LoginMemberIdArgumentResolver loginMemberIdArgumentResolver;

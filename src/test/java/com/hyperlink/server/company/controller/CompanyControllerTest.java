@@ -14,11 +14,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.hyperlink.server.AuthSetupForMock;
+import com.hyperlink.server.AdminAuthSetupForMock;
 import com.hyperlink.server.domain.company.application.CompanyService;
 import com.hyperlink.server.domain.company.controller.CompanyController;
 import com.hyperlink.server.domain.company.dto.CompanyChangeNameRequest;
 import com.hyperlink.server.domain.company.dto.CompanyPageResponse;
+import com.hyperlink.server.domain.company.dto.CompanyRegisterRequest;
 import com.hyperlink.server.domain.company.dto.CompanyResponse;
 import com.hyperlink.server.domain.company.dto.MailAuthVerifyRequest;
 import com.hyperlink.server.domain.company.dto.MailRequest;
@@ -41,7 +42,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 @AutoConfigureRestDocs
 @MockBean(JpaMetamodelMappingContext.class)
 @WebMvcTest(controllers = CompanyController.class)
-class CompanyControllerTest extends AuthSetupForMock {
+class CompanyControllerTest extends AdminAuthSetupForMock {
 
   @MockBean
   CompanyService companyService;
@@ -164,6 +165,32 @@ class CompanyControllerTest extends AuthSetupForMock {
   }
 
   @Test
+  void registerTest() throws Exception {
+    authSetup();
+
+    CompanyRegisterRequest companyRegisterRequest = new CompanyRegisterRequest("kakao.com",
+        "LogoURL", "kakao");
+
+    mockMvc.perform(MockMvcRequestBuilders
+            .post("/admin/companies")
+            .header(HttpHeaders.AUTHORIZATION, authorizationHeader)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(companyRegisterRequest)))
+        .andExpect(status().isOk())
+        .andDo(print())
+        .andDo(document("company/register",
+            preprocessRequest(prettyPrint()),
+            preprocessResponse(prettyPrint()),
+            requestHeaders(headerWithName(HttpHeaders.AUTHORIZATION).description("AccessToken")),
+            requestFields(
+                fieldWithPath("emailAddress").type(JsonFieldType.STRING).description("회사 이메일"),
+                fieldWithPath("logoImgUrl").type(JsonFieldType.STRING).description("회사 로고 이미지 url"),
+                fieldWithPath("companyName").type(JsonFieldType.STRING)
+                    .description("회사 이름"))));
+
+  }
+
+  @Test
   void changeCompanyNameTest() throws Exception {
     authSetup();
 
@@ -185,5 +212,4 @@ class CompanyControllerTest extends AuthSetupForMock {
             requestFields(
                 fieldWithPath("companyName").type(JsonFieldType.STRING).description("변경할 회사 이름"))));
   }
-
 }

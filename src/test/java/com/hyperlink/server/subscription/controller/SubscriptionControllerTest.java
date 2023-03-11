@@ -19,10 +19,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hyperlink.server.AuthSetupForMock;
-import com.hyperlink.server.domain.auth.token.exception.TokenNotExistsException;
 import com.hyperlink.server.domain.content.dto.ContentResponse;
 import com.hyperlink.server.domain.content.dto.GetContentsCommonResponse;
-import com.hyperlink.server.domain.content.dto.RecommendationCompanyResponse;
+import com.hyperlink.server.domain.content.dto.ContentViewerRecommendationResponse;
 import com.hyperlink.server.domain.creator.exception.CreatorNotFoundException;
 import com.hyperlink.server.domain.member.exception.MemberNotFoundException;
 import com.hyperlink.server.domain.subscription.application.SubscriptionService;
@@ -189,17 +188,17 @@ public class SubscriptionControllerTest extends AuthSetupForMock {
   class SubscriptionCreatorContentsRetrievalTest {
 
     private GetContentsCommonResponse setUpForRetrieval() {
-      List<RecommendationCompanyResponse> recommendationCompanyResponses = List.of(
-          new RecommendationCompanyResponse("네이버", "https://naverlogo.com"));
-      List<RecommendationCompanyResponse> recommendationCompanyResponses2 = List.of(
-          new RecommendationCompanyResponse("네이버", "https://naverlogo.com"),
-          new RecommendationCompanyResponse("카카오", "https://kakaologo.com"));
+      List<ContentViewerRecommendationResponse> contentViewerRecommendationResponses = List.of(
+          new ContentViewerRecommendationResponse("네이버", "https://naverlogo.com"));
+      List<ContentViewerRecommendationResponse> contentViewerRecommendationResponses2 = List.of(
+          new ContentViewerRecommendationResponse("네이버", "https://naverlogo.com"),
+          new ContentViewerRecommendationResponse("카카오", "https://kakaologo.com"));
       ContentResponse contentResponse = new ContentResponse(1L, "개발자의 삶", "개발왕김딴딴", 2L,
           "https://img1.com", "https://okky.kr/articles/503803", 4,
-          100, false, false, "2023-02-17T12:30.334", recommendationCompanyResponses);
+          100, false, false, "2023-02-17T12:30.334", contentViewerRecommendationResponses);
       ContentResponse contentResponse2 = new ContentResponse(2L, "당신은 개발자가 맞는가?", "개발왕김딴딴", 2L,
           "https://img2.com", "https://okky.kr/articles/503343", 1,
-          35, false, false, "2023-02-17T12:30.334", recommendationCompanyResponses2);
+          35, false, false, "2023-02-17T12:30.334", contentViewerRecommendationResponses2);
       List<ContentResponse> contentResponses = List.of(contentResponse, contentResponse2);
       GetContentsCommonResponse getContentsCommonResponse = new GetContentsCommonResponse(
           contentResponses, true);

@@ -47,9 +47,10 @@ public class AuthControllerMockTest extends AuthSetupForMock {
   private RefreshTokenCookieProvider refreshTokenCookieProvider;
   @MockBean
   private AuthService authService;
-  @MockBean
-  private GoogleOauthClient googleOauthClient;
 
+  @MockBean
+  protected GoogleOauthClient googleOauthClient;
+  
   @Autowired
   MockMvc mockMvc;
 

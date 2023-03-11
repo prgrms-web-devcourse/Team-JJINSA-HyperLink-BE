@@ -22,7 +22,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.hyperlink.server.AuthSetupForMock;
+import com.hyperlink.server.AdminAuthSetupForMock;
 import com.hyperlink.server.domain.category.domain.entity.Category;
 import com.hyperlink.server.domain.creator.application.CreatorService;
 import com.hyperlink.server.domain.creator.controller.CreatorController;
@@ -61,7 +61,7 @@ import org.springframework.web.bind.MissingServletRequestParameterException;
 @MockBean(JpaMetamodelMappingContext.class)
 @AutoConfigureRestDocs
 @AutoConfigureMockMvc
-public class CreatorControllerTest extends AuthSetupForMock {
+public class CreatorControllerTest extends AdminAuthSetupForMock {
 
   @MockBean
   CreatorService creatorService;

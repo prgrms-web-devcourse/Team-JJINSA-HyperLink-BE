@@ -3,9 +3,10 @@ package com.hyperlink.server.domain.common;
 import static com.hyperlink.server.domain.memberContent.domain.entity.MemberContentActionType.LIKE;
 
 import com.hyperlink.server.domain.content.domain.entity.Content;
+import com.hyperlink.server.domain.content.domain.service.ContentViewerRecommenderFactory;
 import com.hyperlink.server.domain.content.dto.ContentResponse;
 import com.hyperlink.server.domain.content.dto.GetContentsCommonResponse;
-import com.hyperlink.server.domain.content.dto.RecommendationCompanyResponse;
+import com.hyperlink.server.domain.content.dto.ContentViewerRecommendationResponse;
 import com.hyperlink.server.domain.memberContent.application.BookmarkService;
 import com.hyperlink.server.domain.memberContent.domain.MemberContentRepository;
 import java.util.ArrayList;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Service;
 public class ContentDtoFactoryService {
 
   private final BookmarkService bookmarkService;
+  private final ContentViewerRecommenderFactory contentViewerRecommenderFactory;
   private final MemberContentRepository memberContentRepository;
 
   /**
@@ -31,17 +33,23 @@ public class ContentDtoFactoryService {
       boolean isLiked = (memberId == null) ? false
           : memberContentRepository.existsMemberContentByMemberIdAndContentIdAndType(
               memberId, content.getId(), LIKE.getTypeNumber());
-      // TODO : 회사 추천 리스트 추가
-      List<RecommendationCompanyResponse> recommendationCompanyResponses = new ArrayList<>();
+      List<ContentViewerRecommendationResponse> contentViewerRecommendationResponses = getContentViewerRecommendationResponse(
+          content.getCategory().getName(), content.getId()
+      );
 
       ContentResponse contentResponse = new ContentResponse(content.getId(), content.getTitle(),
           content.getCreator().getName(), content.getCreator().getId(), content.getContentImgUrl(),
           content.getLink(), content.getLikeCount(), content.getViewCount(), isBookmarked, isLiked,
-          content.getCreatedAt().toString(), recommendationCompanyResponses);
+          content.getCreatedAt().toString(), contentViewerRecommendationResponses);
       contentResponses.add(contentResponse);
     }
 
     return new GetContentsCommonResponse(contentResponses, hasNext);
   }
 
+  public List<ContentViewerRecommendationResponse> getContentViewerRecommendationResponse(
+      String categoryName, Long contentId) {
+    return contentViewerRecommenderFactory.getContentViewerRecommender(categoryName)
+        .getContentViewerRecommendationResponse(contentId);
+  }
 }

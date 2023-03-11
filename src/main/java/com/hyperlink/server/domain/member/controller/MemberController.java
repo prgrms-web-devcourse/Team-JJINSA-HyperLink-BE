@@ -83,7 +83,7 @@ public class MemberController {
   @ResponseStatus(HttpStatus.OK)
   public void profileImgChange(
       @LoginMemberId Optional<Long> optionalMemberId,
-      @RequestBody ProfileImgRequest profileImgRequest) {
+      @RequestBody @Valid ProfileImgRequest profileImgRequest) {
 
     Long memberId = optionalMemberId.orElseThrow(MemberNotFoundException::new);
 
@@ -93,7 +93,7 @@ public class MemberController {
   @PutMapping("/members/update")
   @ResponseStatus(HttpStatus.OK)
   public MembersUpdateResponse updateProfile(@LoginMemberId Optional<Long> optionalMemberId,
-      @RequestBody MembersUpdateRequest membersUpdateRequest) {
+      @RequestBody @Valid MembersUpdateRequest membersUpdateRequest) {
     Long memberId = optionalMemberId.orElseThrow(MemberNotFoundException::new);
     return memberService.changeProfile(memberId, membersUpdateRequest);
   }

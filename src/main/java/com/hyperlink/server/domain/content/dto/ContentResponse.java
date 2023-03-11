@@ -16,7 +16,7 @@ public record ContentResponse(
     boolean isBookmarked,
     boolean isLiked,
     String createdAt,
-    List<RecommendationCompanyResponse> recommendations
+    List<ContentViewerRecommendationResponse> recommendations
 ) {
 
   public static ContentResponse from(Content content, boolean isBookmarked, boolean isLiked,

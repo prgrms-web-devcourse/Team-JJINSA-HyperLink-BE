@@ -147,6 +147,10 @@ operation::company/verification[snippets='http-request,http-response']
 
 operation::company/changeIsUsingRecommend[snippets='http-request,http-response']
 
-=== 회사 이름 변경 api(admin)
+=== 회사 이름 변경
 
 operation::company/changeName[snippets='http-request,http-response']
+
+=== 회사 등록
+
+operation::company/register[snippets='http-request,http-response']

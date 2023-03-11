@@ -74,14 +74,16 @@ dependencies {
     implementation "com.querydsl:querydsl-jpa:${queryDslVersion}"
     annotationProcessor "com.querydsl:querydsl-apt:${queryDslVersion}"
 
-    // apache kafka
-    implementation 'org.springframework.kafka:spring-kafka'
-
     // amqp
     implementation 'org.springframework.boot:spring-boot-starter-amqp'
 
     //mail
     implementation 'org.springframework.boot:spring-boot-starter-mail:2.7.1'
+
+    // spring-batch
+    implementation 'org.springframework.boot:spring-boot-starter-batch'
+    implementation 'com.redis:spring-batch-redis:3.0.7'
+
 }
 
 def querydslDir = "$buildDir/generated/querydsl"
