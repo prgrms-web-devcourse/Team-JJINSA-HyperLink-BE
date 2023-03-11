@@ -5,6 +5,7 @@ import com.hyperlink.server.domain.memberContent.domain.entity.MemberContent;
 import com.hyperlink.server.domain.memberContent.dto.ContentViewerAgeAndGenderRecommendDto;
 import com.hyperlink.server.domain.memberContent.dto.ContentViewerCompanyRecommendDto;
 import java.time.LocalDate;
+import com.hyperlink.server.domain.memberContent.dto.CreatorAndLikeCountByMember;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Pageable;
@@ -54,4 +55,9 @@ public interface MemberContentRepository extends JpaRepository<MemberContent, Lo
       @Param("now") LocalDate now,
       @Param("contentId") Long contentId,
       @Param("standardRecommendCount") int standardRecommendCount);
+      
+  @Query("select cre.id as creatorId, count(mc.id) as likeCount from MemberContent mc join Content c on mc.content.id = c.id join Creator cre on c.creator.id = cre.id where mc.memberId = :memberId and mc.type = 1 group by cre.id ORDER BY cre.id ASC")
+  List<CreatorAndLikeCountByMember> findLikeCountByMemberId(@Param("memberId") Long memberId);
+
+  long countByMemberId(@Param("memberId") Long memberId);
 }

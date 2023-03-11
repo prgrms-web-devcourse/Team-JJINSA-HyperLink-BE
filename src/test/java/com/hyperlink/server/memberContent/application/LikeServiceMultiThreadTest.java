@@ -60,7 +60,7 @@ public class LikeServiceMultiThreadTest {
 
   @BeforeAll
   void setup() {
-    category = new Category("개발");
+    category = new Category("개발2");
     creator = new Creator("name", "profile", "description", category);
     content = new Content("title", "contentImgUrl", "link", creator, category);
     categoryRepository.save(category);

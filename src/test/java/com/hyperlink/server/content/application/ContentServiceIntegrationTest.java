@@ -41,11 +41,9 @@ import com.hyperlink.server.domain.memberContent.domain.entity.MemberContentActi
 import com.hyperlink.server.domain.memberHistory.application.MemberHistoryService;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -62,10 +60,8 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -95,7 +91,7 @@ public class ContentServiceIntegrationTest {
 
   @BeforeAll
   void setUp() {
-    category = new Category("개발");
+    category = new Category("개발10");
     categoryRepository.save(category);
     creator = new Creator("슈카", "profile", "description", category);
     creatorRepository.save(creator);

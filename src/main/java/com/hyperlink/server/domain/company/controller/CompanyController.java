@@ -1,17 +1,21 @@
 package com.hyperlink.server.domain.company.controller;
 
 import com.hyperlink.server.domain.company.application.CompanyService;
+import com.hyperlink.server.domain.company.dto.CompanyChangeNameRequest;
 import com.hyperlink.server.domain.company.dto.CompanyPageResponse;
+import com.hyperlink.server.domain.company.dto.CompanyRegisterRequest;
 import com.hyperlink.server.domain.company.dto.MailAuthVerifyRequest;
 import com.hyperlink.server.domain.company.dto.MailRequest;
 import com.hyperlink.server.domain.member.exception.MemberNotFoundException;
 import com.hyperlink.server.global.config.LoginMemberId;
 import java.util.Optional;
 import java.util.Random;
+import javax.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -39,7 +43,7 @@ public class CompanyController {
 
   @PostMapping("/companies/auth")
   @ResponseStatus(HttpStatus.OK)
-  public void sendEmail(@RequestBody MailRequest mailRequest) {
+  public void sendEmail(@RequestBody @Valid MailRequest mailRequest) {
     int authNumber = random.nextInt(AUTH_MAX_NUMBER);
     companyService.saveMailAuthNumber(mailRequest, authNumber);
 
@@ -54,7 +58,7 @@ public class CompanyController {
   @PostMapping("/companies/verification")
   @ResponseStatus(HttpStatus.OK)
   public void EmailVerification(@LoginMemberId Optional<Long> optionalMemberId,
-      @RequestBody MailAuthVerifyRequest mailAuthVerifyRequest) {
+      @RequestBody @Valid MailAuthVerifyRequest mailAuthVerifyRequest) {
     Long memberId = optionalMemberId.orElseThrow(MemberNotFoundException::new);
     companyService.verifyAuthCompanyMail(memberId, mailAuthVerifyRequest);
   }
@@ -70,5 +74,18 @@ public class CompanyController {
   public CompanyPageResponse getCompanyPage(@RequestParam("page") int page,
       @RequestParam("size") int size) {
     return companyService.findCompaniesForPage(page, size);
+  }
+
+  @PostMapping("/admin/companies")
+  @ResponseStatus(HttpStatus.OK)
+  public void registerCompany(@RequestBody @Valid CompanyRegisterRequest companyRegisterRequest) {
+    companyService.createCompany(companyRegisterRequest);
+  }
+
+  @PatchMapping("/admin/companies/{companyId}")
+  @ResponseStatus(HttpStatus.OK)
+  public void changeCompanyName(@PathVariable("companyId") Long companyId,
+      @RequestBody @Valid CompanyChangeNameRequest companyChangeNameRequest) {
+    companyService.changeCompanyName(companyId, companyChangeNameRequest);
   }
 }

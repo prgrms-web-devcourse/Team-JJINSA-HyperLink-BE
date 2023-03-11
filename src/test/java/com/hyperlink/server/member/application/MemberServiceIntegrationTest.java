@@ -184,4 +184,17 @@ class MemberServiceIntegrationTest {
         () -> memberService.changeProfileImg(123444L, profileImgRequest)).isInstanceOf(
         MemberNotFoundException.class);
   }
+
+  @DisplayName("멤버가 어드민인지 아닌지 알 수 있다.")
+  @Test
+  void isAdminTest() {
+
+    String priorImgUrl = "localhost";
+    String changeImgUrl = "profileImgUrl";
+    Member savedMember = memberRepository.save(
+        new Member("rldnd1234@gmail.com", "Chocho", Career.DEVELOP, CareerYear.MORE_THAN_TEN,
+            priorImgUrl, 1995, "man"));
+
+    assertThat(memberService.isAdmin(savedMember.getId())).isFalse();
+  }
 }

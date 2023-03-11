@@ -22,6 +22,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hyperlink.server.AuthSetupForMock;
+import com.hyperlink.server.AdminAuthSetupForMock;
 import com.hyperlink.server.domain.content.application.ContentService;
 import com.hyperlink.server.domain.content.controller.ContentController;
 import com.hyperlink.server.domain.content.dto.ContentAdminResponse;
@@ -65,7 +66,7 @@ import org.springframework.web.bind.MissingServletRequestParameterException;
 @MockBean(JpaMetamodelMappingContext.class)
 @AutoConfigureRestDocs
 @AutoConfigureMockMvc
-public class ContentControllerTest extends AuthSetupForMock {
+public class ContentControllerTest extends AdminAuthSetupForMock {
 
   @MockBean
   ContentService contentService;
@@ -215,7 +216,8 @@ public class ContentControllerTest extends AuthSetupForMock {
                             .description("컨텐츠 생성 날짜"),
                         fieldWithPath("getContentsCommonResponse.contents.[].recommendations").type(
                             JsonFieldType.ARRAY).description("회사 추천 배열"),
-                        fieldWithPath("getContentsCommonResponse.contents.[].recommendations.[].bannerName").type(
+                        fieldWithPath(
+                            "getContentsCommonResponse.contents.[].recommendations.[].bannerName").type(
                             JsonFieldType.STRING).description("회사명"),
                         fieldWithPath(
                             "getContentsCommonResponse.contents.[].recommendations.[].bannerLogoImgUrl").type(
@@ -583,6 +585,7 @@ public class ContentControllerTest extends AuthSetupForMock {
   @Nested
   @DisplayName("[Admin] 비활성 컨텐츠 조회 API는")
   class RetrieveInactivateContent {
+
     @BeforeEach
     void setUp() {
       authSetup();
@@ -591,6 +594,7 @@ public class ContentControllerTest extends AuthSetupForMock {
     @Nested
     @DisplayName("[성공]")
     class Success {
+
       @Test
       @DisplayName("비활성된 컨텐츠를 조회한다.")
       void retrieveInactiveContents() throws Exception {
@@ -633,8 +637,10 @@ public class ContentControllerTest extends AuthSetupForMock {
                             .description("컨텐츠 제목"),
                         fieldWithPath("contents.[].link").type(JsonFieldType.STRING)
                             .description("컨텐츠 연결 외부 링크"),
-                        fieldWithPath("currentPage").type(JsonFieldType.NUMBER).description("현재 페이지 번호"),
-                        fieldWithPath("totalPage").type(JsonFieldType.NUMBER).description("전체 페이지 번호")
+                        fieldWithPath("currentPage").type(JsonFieldType.NUMBER)
+                            .description("현재 페이지 번호"),
+                        fieldWithPath("totalPage").type(JsonFieldType.NUMBER)
+                            .description("전체 페이지 번호")
                     )
                 )
             );
@@ -646,6 +652,7 @@ public class ContentControllerTest extends AuthSetupForMock {
   @Nested
   @DisplayName("[Admin] 컨텐츠 삭제 API는")
   class DeleteContentByAdmin {
+
     @BeforeEach
     void setUp() {
       authSetup();
@@ -654,6 +661,7 @@ public class ContentControllerTest extends AuthSetupForMock {
     @Nested
     @DisplayName("[성공]")
     class Success {
+
       @Test
       @DisplayName("컨텐츠를 삭제한다.")
       void deleteContentById() throws Exception {

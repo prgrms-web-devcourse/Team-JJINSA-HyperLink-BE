@@ -6,6 +6,7 @@ import com.hyperlink.server.domain.auth.dto.LoginResult;
 import com.hyperlink.server.domain.auth.dto.RenewResponse;
 import com.hyperlink.server.domain.auth.dto.RenewResult;
 import com.hyperlink.server.domain.auth.oauth.GoogleAccessToken;
+import com.hyperlink.server.domain.auth.oauth.GoogleOauthClient;
 import com.hyperlink.server.domain.auth.token.RefreshTokenCookieProvider;
 import com.hyperlink.server.domain.auth.token.exception.InValidAccessException;
 import javax.servlet.http.HttpServletRequest;
@@ -24,11 +25,13 @@ public class AuthController {
 
   private final RefreshTokenCookieProvider refreshTokenCookieProvider;
   private final AuthService authService;
+  private final GoogleOauthClient googleOauthClient;
 
   public AuthController(RefreshTokenCookieProvider refreshTokenCookieProvider,
-      AuthService authService) {
+      AuthService authService, GoogleOauthClient googleOauthClient) {
     this.refreshTokenCookieProvider = refreshTokenCookieProvider;
     this.authService = authService;
+    this.googleOauthClient = googleOauthClient;
   }
 
   @PostMapping("/members/login")
@@ -36,6 +39,9 @@ public class AuthController {
     GoogleAccessToken googleAccessToken = getGoogleAccessToken(httpServletRequest);
     LoginResult loginResult = authService.login(googleAccessToken);
     ResponseCookie cookie = refreshTokenCookieProvider.createCookie(loginResult.refreshToken());
+
+    googleOauthClient.revokeToken(googleAccessToken.getGoogleAccessToken());
+    authService.googleTokenDeleteById(googleAccessToken.getGoogleAccessToken());
 
     return ResponseEntity.ok()
         .header(HttpHeaders.SET_COOKIE, cookie.toString())
@@ -52,7 +58,6 @@ public class AuthController {
   @PostMapping("/members/logout")
   public ResponseEntity<Void> logout(
       @CookieValue(name = "refreshToken", required = false) String refreshToken) {
-    log.info("#### refreshToken: " + refreshToken);
     validateRefreshTokenExists(refreshToken);
 
     authService.logout(refreshToken);

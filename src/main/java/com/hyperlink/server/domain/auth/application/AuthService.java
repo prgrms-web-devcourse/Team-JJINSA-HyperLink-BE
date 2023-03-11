@@ -47,18 +47,12 @@ public class AuthService {
     RefreshToken savedRefreshToken = refreshTokenRepository.save(
         new RefreshToken(UUID.randomUUID().toString(), memberId));
 
-    googleAccessTokenRepository.deleteById(googleAccessToken.getGoogleAccessToken());
-
     return new LoginResult(foundMember.getIsAdmin(), accessToken,
         savedRefreshToken.getRefreshToken());
   }
 
   public void logout(String refreshToken) {
     refreshTokenRepository.deleteById(refreshToken);
-  }
-
-  public boolean googleTokenExistsById(String googleAccessToken) {
-    return googleAccessTokenRepository.existsById(googleAccessToken);
   }
 
   public GoogleAccessToken googleTokenFindById(String googleAccessToken) {

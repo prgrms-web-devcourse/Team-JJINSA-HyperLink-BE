@@ -2,7 +2,9 @@ package com.hyperlink.server.domain.creator.domain;
 
 import com.hyperlink.server.domain.creator.domain.entity.Creator;
 import com.hyperlink.server.domain.creator.dto.CreatorAndSubscriptionCountMapper;
+import com.hyperlink.server.domain.creator.dto.CreatorIdAndSubscriptionCountMapper;
 import com.hyperlink.server.domain.creator.dto.SubscribeFlagMapper;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -14,6 +16,9 @@ import org.springframework.data.repository.query.Param;
 public interface CreatorRepository extends JpaRepository<Creator, Long> {
 
   Optional<Creator> findByName(String name);
+
+  @Query("select c.id from Creator c")
+  List<Long> findAllIds();
 
   @Query(value = "select c from Creator c join fetch c.category",
       countQuery = "select count(c) from Creator c")
@@ -67,4 +72,11 @@ public interface CreatorRepository extends JpaRepository<Creator, Long> {
           + "where c.id = :creatorId")
   SubscribeFlagMapper findCreatorAndSubscribeFlag(@Param("memberId") Long memberId,
       @Param("creatorId") Long creatorId);
+
+  @Query("select c.id as creatorId, count(sub.creator.id) as subscriberAmount from Creator c "
+      + "left join Subscription sub "
+      + "on c.id = sub.creator.id "
+      + "group by c.id "
+      + "order by subscriberAmount asc")
+  List<CreatorIdAndSubscriptionCountMapper> findAllCreatorIdAndSubscriptionCountOrderBySubscriberAmountDesc();
 }

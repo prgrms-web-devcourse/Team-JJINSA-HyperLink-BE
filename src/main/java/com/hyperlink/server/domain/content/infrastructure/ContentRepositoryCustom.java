@@ -10,6 +10,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -27,7 +28,7 @@ public class ContentRepositoryCustom {
 
   private final JPAQueryFactory queryFactory;
 
-  public Slice<Content> searchByTitleContainingOrderByLatest(List<String> keywords,
+  public Page<Content> searchByTitleContainingOrderByLatest(List<String> keywords,
       Pageable pageable) {
     BooleanBuilder builder = new BooleanBuilder();
     for (String keyword : keywords) {

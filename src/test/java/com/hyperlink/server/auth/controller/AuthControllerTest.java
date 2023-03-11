@@ -1,20 +1,10 @@
 package com.hyperlink.server.auth.controller;
 
-import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
-import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
-import static org.springframework.restdocs.headers.HeaderDocumentation.responseHeaders;
-import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessRequest;
-import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessResponse;
-import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
-import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
-import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.hyperlink.server.domain.auth.oauth.GoogleAccessToken;
 import com.hyperlink.server.domain.auth.oauth.GoogleAccessTokenRepository;
 import com.hyperlink.server.domain.auth.token.JwtTokenProvider;
 import com.hyperlink.server.domain.auth.token.RefreshToken;
@@ -34,7 +24,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
@@ -52,6 +41,7 @@ class AuthControllerTest {
 
   @Autowired
   private JwtTokenProvider jwtTokenProvider;
+  
   @Autowired
   MockMvc mockMvc;
 
@@ -60,39 +50,39 @@ class AuthControllerTest {
   @Autowired
   private RefreshTokenRepository refreshTokenRepository;
 
-  @DisplayName("로그인을 통해 인증토큰을 받을 수 있다.")
-  @Test
-  void loginCorrectTest() throws Exception {
-    String email = "rldnd1234@naver.com";
-    String profileUrl = "profileurl";
-    Member saveMember = memberRepository.save(
-        new Member(email, "Chocho", Career.DEVELOP, CareerYear.MORE_THAN_TEN, "localhost", 1995,
-            "man"));
-
-    String accessToken = jwtTokenProvider.createAccessToken(saveMember.getId());
-
-    GoogleAccessToken savedGoogleAccessToken = googleAccessTokenRepository.save(
-        new GoogleAccessToken(accessToken, email, profileUrl));
-
-    mockMvc.perform(MockMvcRequestBuilders
-            .post("/members/login")
-            .header(HttpHeaders.AUTHORIZATION,
-                "Bearer " + savedGoogleAccessToken.getGoogleAccessToken())
-            .contentType(MediaType.APPLICATION_JSON)
-            .accept(MediaType.APPLICATION_JSON))
-        .andExpect(status().isOk())
-        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andDo(print())
-        .andDo(document("members/login",
-            preprocessRequest(prettyPrint()),
-            preprocessResponse(prettyPrint()),
-            requestHeaders(headerWithName(HttpHeaders.AUTHORIZATION).description("AccessToken")),
-            responseHeaders(headerWithName(HttpHeaders.SET_COOKIE).description("RefreshToken")),
-            responseFields(
-                fieldWithPath("admin").type(JsonFieldType.BOOLEAN).description("관리자 여부"),
-                fieldWithPath("accessToken").type(JsonFieldType.STRING).description("AccessToken")))
-        );
-  }
+//  @DisplayName("로그인을 통해 인증토큰을 받을 수 있다.")
+//  @Test
+//  void loginCorrectTest() throws Exception {
+//    String email = "rldnd1234@naver.com";
+//    String profileUrl = "profileurl";
+//    Member saveMember = memberRepository.save(
+//        new Member(email, "Chocho", Career.DEVELOP, CareerYear.MORE_THAN_TEN, "localhost", 1995,
+//            "man"));
+//
+//    String accessToken = jwtTokenProvider.createAccessToken(saveMember.getId());
+//
+//    GoogleAccessToken savedGoogleAccessToken = googleAccessTokenRepository.save(
+//        new GoogleAccessToken(accessToken, email, profileUrl));
+//
+//    mockMvc.perform(MockMvcRequestBuilders
+//            .post("/members/login")
+//            .header(HttpHeaders.AUTHORIZATION,
+//                "Bearer " + savedGoogleAccessToken.getGoogleAccessToken())
+//            .contentType(MediaType.APPLICATION_JSON)
+//            .accept(MediaType.APPLICATION_JSON))
+//        .andExpect(status().isOk())
+//        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+//        .andDo(print())
+//        .andDo(document("members/login",
+//            preprocessRequest(prettyPrint()),
+//            preprocessResponse(prettyPrint()),
+//            requestHeaders(headerWithName(HttpHeaders.AUTHORIZATION).description("AccessToken")),
+//            responseHeaders(headerWithName(HttpHeaders.SET_COOKIE).description("RefreshToken")),
+//            responseFields(
+//                fieldWithPath("admin").type(JsonFieldType.BOOLEAN).description("관리자 여부"),
+//                fieldWithPath("accessToken").type(JsonFieldType.STRING).description("AccessToken")))
+//        );
+//  }
 
   @DisplayName("로그인시 accessToken이 존재하지않는다면 401을 반환한다.")
   @Test
