@@ -4,8 +4,12 @@ import com.hyperlink.server.domain.category.domain.CategoryRepository;
 import com.hyperlink.server.domain.category.domain.entity.Category;
 import com.hyperlink.server.domain.category.domain.vo.CategoryType;
 import com.hyperlink.server.domain.content.domain.ContentRepository;
+import com.hyperlink.server.domain.dailyBriefing.domain.ContentStatisticsRepository;
+import com.hyperlink.server.domain.dailyBriefing.domain.vo.ContentStatistics;
 import com.hyperlink.server.domain.dailyBriefing.domain.vo.CountStatisticsByCategory;
-import com.hyperlink.server.domain.dailyBriefing.dto.DailyBriefing;
+import com.hyperlink.server.domain.dailyBriefing.domain.vo.DailyBriefing;
+import com.hyperlink.server.domain.dailyBriefing.domain.vo.MemberStatistics;
+import com.hyperlink.server.domain.dailyBriefing.domain.vo.ViewStatistics;
 import com.hyperlink.server.domain.dailyBriefing.dto.GetDailyBriefingResponse;
 import com.hyperlink.server.domain.dailyBriefing.dto.StatisticsByCategoryResponse;
 import com.hyperlink.server.domain.dailyBriefing.infrastructure.DailyBriefingRepositoryCustom;
@@ -18,20 +22,24 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class DailyBriefingService {
 
   public static final int STANDARD_HOUR = 24;
   public static final String STANDARD_TIME_PATTERN = "yyyy-MM-dd HH";
+  public static final String STANDARD_DATE_PATTERN = "yyyy-MM-dd";
 
   private final MemberRepository memberRepository;
   private final MemberHistoryRepository memberHistoryRepository;
   private final ContentRepository contentRepository;
   private final CategoryRepository categoryRepository;
+  private final ContentStatisticsRepository contentStatisticsRepository;
   private final DailyBriefingRepositoryCustom dailyBriefingRepositoryCustom;
   private final RedisTemplate<String, Object> redisTemplate;
 
@@ -42,32 +50,84 @@ public class DailyBriefingService {
         .get("daily-briefing", standardTime);
 
     if (getDailyBriefingResponse == null) {
-      String pastStandardTime = now.minusHours(whenResponseIsNullRetryPastStandardTime)
-          .format(DateTimeFormatter.ofPattern(STANDARD_TIME_PATTERN));
-      getDailyBriefingResponse = (GetDailyBriefingResponse) redisTemplate.opsForHash()
-          .get("daily-briefing", pastStandardTime);
+      getDailyBriefingResponse = getPastDailyBriefingResponse(now,
+          whenResponseIsNullRetryPastStandardTime);
     }
+
+    List<ContentStatistics> contentStatisticsList = getContentStatisticsListForPastSixDays();
+    ContentStatistics todayContentStatistics = getDailyBriefingResponse.dailyBriefing()
+        .getContentIncreaseForWeek().get(0);
+    contentStatisticsList.add(todayContentStatistics);
+    getDailyBriefingResponse.dailyBriefing().changeContentIncreaseForWeek(contentStatisticsList);
+
     return getDailyBriefingResponse;
+  }
+
+  public GetDailyBriefingResponse getPastDailyBriefingResponse(LocalDateTime now,
+      long pastStandardTime) {
+    String pastStandardTimePattern = now.minusHours(pastStandardTime)
+        .format(DateTimeFormatter.ofPattern(STANDARD_TIME_PATTERN));
+    return (GetDailyBriefingResponse) redisTemplate.opsForHash()
+        .get("daily-briefing", pastStandardTimePattern);
+  }
+
+  public List<ContentStatistics> getContentStatisticsListForPastSixDays() {
+    List<ContentStatistics> contentStatisticsList = new ArrayList<>();
+    for (int i = 6; i > 0; i--) {
+      LocalDateTime standardDate = LocalDateTime.now().minusDays(i);
+      String standardDatePattern = standardDate.format(DateTimeFormatter.ofPattern(
+          STANDARD_DATE_PATTERN));
+
+      contentStatisticsRepository.findById(
+          standardDatePattern).ifPresentOrElse(contentStatisticsList::add, () -> {
+        log.info("{} 컨텐츠 증가분 데이터 redis에서 찾지 못함", standardDatePattern);
+        int contentCountByDate = findContentCountByDate(standardDate);
+        ContentStatistics contentStatistics = new ContentStatistics(standardDatePattern,
+            contentCountByDate);
+        contentStatisticsList.add(contentStatistics);
+      });
+    }
+    return contentStatisticsList;
   }
 
   public GetDailyBriefingResponse createDailyBriefing(LocalDateTime standardTime) {
     LocalDateTime pastOneDay = standardTime.minusHours(STANDARD_HOUR);
 
-    Integer memberIncrease = memberRepository.countByCreatedAtAfter(pastOneDay);
+    MemberStatistics memberStatistics = createMemberStatistics(pastOneDay);
     List<String> findCategoryNameOfHistoryPastOneDayAfter = memberHistoryRepository.findAllByCreatedAtAfter(
         pastOneDay);
-    int viewIncrease = findCategoryNameOfHistoryPastOneDayAfter.size();
+    ViewStatistics viewStatistics = createViewStatistics(findCategoryNameOfHistoryPastOneDayAfter);
     List<StatisticsByCategoryResponse> viewByCategories = getViewAndRankingByCategories(
         findCategoryNameOfHistoryPastOneDayAfter);
-
-    LocalDateTime startOfToday = standardTime.toLocalDate().atStartOfDay();
-    Integer contentIncrease = contentRepository.countByCreatedAtAfter(startOfToday);
+    List<ContentStatistics> todayContentStatisticsList = createTodayContentStatisticsList(
+        standardTime);
     List<StatisticsByCategoryResponse> memberCountByAttentionCategories = getMemberCountAndRankingByAttentionCategories();
 
-    DailyBriefing dailyBriefing = new DailyBriefing(memberIncrease, viewIncrease, viewByCategories,
-        contentIncrease, memberCountByAttentionCategories);
+    DailyBriefing dailyBriefing = new DailyBriefing(memberStatistics, viewStatistics,
+        viewByCategories, todayContentStatisticsList, memberCountByAttentionCategories);
     return new GetDailyBriefingResponse(
         standardTime.format(DateTimeFormatter.ofPattern(STANDARD_TIME_PATTERN)), dailyBriefing);
+  }
+
+  private MemberStatistics createMemberStatistics(LocalDateTime standardTime) {
+    long totalMemberCount = memberRepository.count();
+    Integer memberIncrease = memberRepository.countByCreatedAtAfter(standardTime);
+    return new MemberStatistics(memberIncrease, totalMemberCount);
+  }
+
+  private ViewStatistics createViewStatistics(
+      List<String> findCategoryNameOfHistoryPastOneDayAfter) {
+    long totalViewCount = memberHistoryRepository.count();
+    int viewIncrease = findCategoryNameOfHistoryPastOneDayAfter.size();
+    return new ViewStatistics(viewIncrease, totalViewCount);
+  }
+
+  private List<ContentStatistics> createTodayContentStatisticsList(LocalDateTime standardTime) {
+    LocalDateTime startOfToday = standardTime.toLocalDate().atStartOfDay();
+    Integer contentIncrease = contentRepository.countByCreatedAtAfter(startOfToday);
+    String todayDate = startOfToday.format(DateTimeFormatter.ofPattern(
+        STANDARD_DATE_PATTERN));
+    return List.of(new ContentStatistics(todayDate, contentIncrease));
   }
 
   public List<StatisticsByCategoryResponse> getViewAndRankingByCategories(
@@ -132,5 +192,17 @@ public class DailyBriefingService {
         }
       }
     }
+  }
+
+  public ContentStatistics createYesterdayContentStatistics() {
+    LocalDateTime yesterday = LocalDateTime.now().minusDays(1);
+    String standardDate = yesterday.format(DateTimeFormatter.ofPattern(
+        STANDARD_DATE_PATTERN));
+    int contentIncrease = findContentCountByDate(yesterday);
+    return new ContentStatistics(standardDate, contentIncrease);
+  }
+
+  private int findContentCountByDate(LocalDateTime date) {
+    return contentRepository.countByDate(date.toString());
   }
 }

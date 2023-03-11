@@ -17,8 +17,8 @@ public interface MemberHistoryRepository extends JpaRepository<MemberHistory, Lo
 
   Long countByCreatedAtAfter(LocalDateTime dateTime);
 
-  @Query("select ca.name from MemberHistory mh join mh.content con join con.category ca")
-  List<String> findAllByCreatedAtAfter(LocalDateTime dateTime);
+  @Query("select ca.name from MemberHistory mh join mh.content con join con.category ca where mh.createdAt >= :dateTime")
+  List<String> findAllByCreatedAtAfter(@Param("dateTime") LocalDateTime dateTime);
 
   @Query("select c.id from MemberHistory mh join mh.content con join con.creator c where mh.member.id = :memberId order by mh.createdAt")
   List<Long> findCreatorIdsByMemberId(@Param("memberId") Long memberId, Pageable pageable);
