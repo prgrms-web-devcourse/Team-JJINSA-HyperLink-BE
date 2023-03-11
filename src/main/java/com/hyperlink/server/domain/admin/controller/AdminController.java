@@ -35,7 +35,7 @@ public class AdminController {
     return adminService.getCategoryView().orElseGet(adminService::countViewCountByCategory);
   }
 
-  @GetMapping("/admin/scheduler-trigger/recommend")
+  @GetMapping("/test/scheduler-trigger/recommend")
   @ResponseStatus(HttpStatus.OK)
   public void startScheduler(@LoginMemberId Optional<Long> optionalMemberId) {
     log.info("RecommendJob 수동 실행");
