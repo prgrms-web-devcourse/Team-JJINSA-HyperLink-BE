@@ -22,8 +22,10 @@ public interface MemberContentRepository extends JpaRepository<MemberContent, Lo
   @Override
   void delete(MemberContent entity);
 
-  @Query("select mc from MemberContent mc join fetch mc.content where mc.memberId = :memberId")
-  Slice<MemberContent> findMemberContentForSlice(@Param("memberId") Long memberId,
+  @Query("select mc from MemberContent mc join fetch mc.content left join mc.content.creator where mc.memberId = :memberId and mc.type = :type")
+  Slice<MemberContent> findMemberContentForSlice(
+      @Param("memberId") Long memberId,
+      @Param("type") int type,
       Pageable pageable);
 
   boolean existsMemberContentByMemberIdAndContentIdAndType(Long memberId, Long contentId, int type);

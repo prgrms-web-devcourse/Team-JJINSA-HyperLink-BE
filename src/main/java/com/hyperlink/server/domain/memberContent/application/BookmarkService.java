@@ -1,10 +1,13 @@
 package com.hyperlink.server.domain.memberContent.application;
 
 import static com.hyperlink.server.domain.memberContent.domain.entity.MemberContentActionType.BOOKMARK;
+import static com.hyperlink.server.domain.memberContent.domain.entity.MemberContentActionType.LIKE;
 
 import com.hyperlink.server.domain.content.domain.ContentRepository;
 import com.hyperlink.server.domain.content.domain.entity.Content;
-import com.hyperlink.server.domain.content.dto.BookMarkedContentPageResponse;
+import com.hyperlink.server.domain.content.domain.service.ContentViewerRecommenderFactory;
+import com.hyperlink.server.domain.content.dto.ContentResponse;
+import com.hyperlink.server.domain.content.dto.ContentViewerRecommendationResponse;
 import com.hyperlink.server.domain.content.exception.ContentNotFoundException;
 import com.hyperlink.server.domain.memberContent.domain.MemberContentRepository;
 import com.hyperlink.server.domain.memberContent.domain.entity.MemberContent;
@@ -25,6 +28,7 @@ import org.springframework.stereotype.Service;
 public class BookmarkService {
 
   private final MemberContentRepository memberContentRepository;
+  private final ContentViewerRecommenderFactory contentViewerRecommenderFactory;
   private final ContentRepository contentRepository;
 
   public void createBookmark(Long memberId, Long contentId) {
@@ -63,13 +67,22 @@ public class BookmarkService {
 
   public BookmarkPageResponse findBookmarkedContentForSlice(Long memberId, int page, int size) {
     Slice<MemberContent> memberContents = memberContentRepository.findMemberContentForSlice(
-        memberId, PageRequest.of(page, size, Sort.by(Direction.DESC, "id")));
+        memberId, BOOKMARK.getTypeNumber(),
+        PageRequest.of(page, size, Sort.by(Direction.DESC, "id")));
 
-    List<BookMarkedContentPageResponse> contents = memberContents.stream()
-        .map(memberContent -> BookMarkedContentPageResponse.from(memberContent.getContent()))
-        .collect(
-            Collectors.toList());
+    List<ContentResponse> contents = memberContents.stream()
+        .map(memberContent -> {
+          boolean isLiked = memberContentRepository.existsMemberContentByMemberIdAndContentIdAndType(
+              memberId, memberContent.getId(), LIKE.getTypeNumber());
+          Content content = memberContent.getContent();
+          
+          List<ContentViewerRecommendationResponse> recommendations = contentViewerRecommenderFactory.getContentViewerRecommender(
+                  content.getCategory().getName())
+              .getContentViewerRecommendationResponse(content.getId());
 
+          return ContentResponse.from(content, true, isLiked,
+              recommendations);
+        }).collect(Collectors.toList());
     return new BookmarkPageResponse(contents, memberContents.hasNext());
   }
 
