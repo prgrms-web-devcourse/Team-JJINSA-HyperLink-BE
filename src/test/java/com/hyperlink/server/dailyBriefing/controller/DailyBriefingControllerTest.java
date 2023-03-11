@@ -77,7 +77,7 @@ public class DailyBriefingControllerTest extends AuthSetupForMock {
       @Test
       @DisplayName("데일리브리핑 조회에 성공하고 OK와 데일리브리핑을 응답한다")
       void getDailyBriefing() throws Exception {
-        doReturn(getDailyBriefingResponse).when(dailyBriefingService).createDailyBriefing(any());
+        doReturn(getDailyBriefingResponse).when(dailyBriefingService).getDailyBriefingResponse(any());
 
         mockMvc.perform(
                 get("/daily-briefing")
