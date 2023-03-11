@@ -20,7 +20,7 @@ public class AdminScheduler {
   private final RedisTemplate<String, Object> redisTemplate;
   private static final String CATEGORY_VIEW = "category-view";
 
-  @Scheduled(cron = "0 25 20 * * *", zone = "Asia/Seoul")
+  @Scheduled(cron = "0 5 0 * * *", zone = "Asia/Seoul")
   void createCategoryViewDashboardData() {
     log.info("[Admin] 카테고리 별 조회수 수집");
     CategoryViewResponses categoryViewResponses = adminService.countViewCountByCategory();

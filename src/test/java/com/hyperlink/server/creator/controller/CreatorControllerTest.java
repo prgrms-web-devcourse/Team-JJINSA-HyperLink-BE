@@ -26,6 +26,7 @@ import com.hyperlink.server.AdminAuthSetupForMock;
 import com.hyperlink.server.domain.category.domain.entity.Category;
 import com.hyperlink.server.domain.creator.application.CreatorService;
 import com.hyperlink.server.domain.creator.controller.CreatorController;
+import com.hyperlink.server.domain.creator.domain.CreatorRecommendService;
 import com.hyperlink.server.domain.creator.domain.entity.Creator;
 import com.hyperlink.server.domain.creator.dto.CreatorAdminResponse;
 import com.hyperlink.server.domain.creator.dto.CreatorAdminResponses;
@@ -65,6 +66,8 @@ public class CreatorControllerTest extends AdminAuthSetupForMock {
 
   @MockBean
   CreatorService creatorService;
+  @MockBean
+  CreatorRecommendService creatorRecommendService;
   @Autowired
   MockMvc mockMvc;
   @Autowired

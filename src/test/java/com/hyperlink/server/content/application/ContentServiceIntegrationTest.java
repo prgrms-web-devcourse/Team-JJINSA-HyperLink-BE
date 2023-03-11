@@ -455,7 +455,7 @@ public class ContentServiceIntegrationTest {
         @DisplayName("최신순으로 조회할 수 있다.")
         void retrieveRecent() {
           GetContentsCommonResponse getContentsCommonResponse = contentService.retrieveTrendContents(
-              null, "개발", "recent", PageRequest.of(0, 10));
+              null, "개발10", "recent", PageRequest.of(0, 10));
 
           List<ContentResponse> contents = getContentsCommonResponse.contents();
           assertThat(contents).hasSize(3);
@@ -470,7 +470,7 @@ public class ContentServiceIntegrationTest {
           contentService.addView(member.getId(), content3.getId());
 
           GetContentsCommonResponse getContentsCommonResponse = contentService.retrieveTrendContents(
-              null, "개발", "popular", PageRequest.of(0, 10));
+              null, "개발10", "popular", PageRequest.of(0, 10));
 
           List<ContentResponse> contents = getContentsCommonResponse.contents();
           assertThat(contents).hasSize(3);
