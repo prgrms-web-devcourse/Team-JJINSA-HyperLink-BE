@@ -41,7 +41,7 @@ class AuthControllerTest {
 
   @Autowired
   private JwtTokenProvider jwtTokenProvider;
-  
+
   @Autowired
   MockMvc mockMvc;
 
@@ -49,40 +49,6 @@ class AuthControllerTest {
   ObjectMapper objectMapper;
   @Autowired
   private RefreshTokenRepository refreshTokenRepository;
-
-//  @DisplayName("로그인을 통해 인증토큰을 받을 수 있다.")
-//  @Test
-//  void loginCorrectTest() throws Exception {
-//    String email = "rldnd1234@naver.com";
-//    String profileUrl = "profileurl";
-//    Member saveMember = memberRepository.save(
-//        new Member(email, "Chocho", Career.DEVELOP, CareerYear.MORE_THAN_TEN, "localhost", 1995,
-//            "man"));
-//
-//    String accessToken = jwtTokenProvider.createAccessToken(saveMember.getId());
-//
-//    GoogleAccessToken savedGoogleAccessToken = googleAccessTokenRepository.save(
-//        new GoogleAccessToken(accessToken, email, profileUrl));
-//
-//    mockMvc.perform(MockMvcRequestBuilders
-//            .post("/members/login")
-//            .header(HttpHeaders.AUTHORIZATION,
-//                "Bearer " + savedGoogleAccessToken.getGoogleAccessToken())
-//            .contentType(MediaType.APPLICATION_JSON)
-//            .accept(MediaType.APPLICATION_JSON))
-//        .andExpect(status().isOk())
-//        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-//        .andDo(print())
-//        .andDo(document("members/login",
-//            preprocessRequest(prettyPrint()),
-//            preprocessResponse(prettyPrint()),
-//            requestHeaders(headerWithName(HttpHeaders.AUTHORIZATION).description("AccessToken")),
-//            responseHeaders(headerWithName(HttpHeaders.SET_COOKIE).description("RefreshToken")),
-//            responseFields(
-//                fieldWithPath("admin").type(JsonFieldType.BOOLEAN).description("관리자 여부"),
-//                fieldWithPath("accessToken").type(JsonFieldType.STRING).description("AccessToken")))
-//        );
-//  }
 
   @DisplayName("로그인시 accessToken이 존재하지않는다면 401을 반환한다.")
   @Test
@@ -92,7 +58,7 @@ class AuthControllerTest {
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isUnauthorized())
-        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(content().contentType("application/json;charset=utf-8"))
         .andDo(print());
   }
 

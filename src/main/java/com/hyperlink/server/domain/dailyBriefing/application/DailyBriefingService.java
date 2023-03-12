@@ -44,10 +44,11 @@ public class DailyBriefingService {
   private final RedisTemplate<String, Object> redisTemplate;
 
   public GetDailyBriefingResponse getDailyBriefingResponse(LocalDateTime now) {
+    String todayDate = now.toLocalDate().toString();
     final long whenResponseIsNullRetryPastStandardTime = 1L;
     String standardTime = now.format(DateTimeFormatter.ofPattern(STANDARD_TIME_PATTERN));
     GetDailyBriefingResponse getDailyBriefingResponse = (GetDailyBriefingResponse) redisTemplate.opsForHash()
-        .get("daily-briefing", standardTime);
+        .get("daily-briefing" + todayDate, standardTime);
 
     if (getDailyBriefingResponse == null) {
       getDailyBriefingResponse = getPastDailyBriefingResponse(now,
