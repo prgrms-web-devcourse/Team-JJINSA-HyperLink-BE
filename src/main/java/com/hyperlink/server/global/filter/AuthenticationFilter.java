@@ -26,7 +26,8 @@ public class AuthenticationFilter implements Filter {
   private static final String[] whitelist = {"/", "/members/logout", "/members/login",
       "/members/signup", "/profile", "/actuator/health", "/members/oauth/code/google",
       "/members/access-token", "/contents/*/view", "/daily-briefing", "/contents/all",
-      "/contents", "/creators", "/creators/*", "/test/scheduler-trigger/recommend", "/save", "/docs/api.html"};
+      "/contents", "/creators", "/creators/*", "/test/scheduler-trigger/recommend", "/save",
+      "/docs/api.html"};
 
   private final AuthTokenExtractor authTokenExtractor;
   private final ObjectMapper objectMapper;
@@ -42,6 +43,7 @@ public class AuthenticationFilter implements Filter {
     HttpServletRequest httpRequest = (HttpServletRequest) request;
     String requestURI = httpRequest.getRequestURI();
     HttpServletResponse httpResponse = (HttpServletResponse) response;
+    httpResponse.setCharacterEncoding("utf-8");
     String requestMethod = httpRequest.getMethod();
     if (!requestMethod.equals("OPTIONS") && isLoginCheckPath(requestURI)) {
       try {
