@@ -59,7 +59,7 @@ jobs:
         run: chmod +x ./gradlew
 
       - name: 빌드
-        run: ./gradlew clean build -x jacocoTestCoverageVerification
+        run: ./gradlew clean build -x jacocoTestReport -x jacocoTestCoverageVerification
 
       - name: aws 세팅
         uses: aws-actions/configure-aws-credentials@v1
