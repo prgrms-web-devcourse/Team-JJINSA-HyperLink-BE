@@ -37,6 +37,7 @@ public class AuthorizationFilter implements Filter {
     HttpServletRequest httpRequest = (HttpServletRequest) request;
     String requestURI = httpRequest.getRequestURI();
     HttpServletResponse httpResponse = (HttpServletResponse) response;
+    httpResponse.setCharacterEncoding("utf-8");
     String requestMethod = httpRequest.getMethod();
 
     if (!requestMethod.equals("OPTIONS") && isAdminPath(requestURI)) {
