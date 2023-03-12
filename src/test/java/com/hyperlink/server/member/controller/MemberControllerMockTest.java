@@ -106,7 +106,7 @@ public class MemberControllerMockTest extends AuthSetupForMock {
             .accept(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(signUpRequest)))
         .andExpect(status().isCreated())
-        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(content().contentType("application/json;charset=utf-8"))
         .andDo(print())
         .andDo(document("members/signup",
             preprocessRequest(prettyPrint()),
@@ -141,7 +141,7 @@ public class MemberControllerMockTest extends AuthSetupForMock {
             .get("/members/mypage")
             .header(HttpHeaders.AUTHORIZATION, authorizationHeader))
         .andExpect(status().isOk())
-        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(content().contentType("application/json;charset=utf-8"))
         .andDo(print());
   }
 
@@ -188,7 +188,7 @@ public class MemberControllerMockTest extends AuthSetupForMock {
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(membersUpdateRequest)))
         .andExpect(status().isOk())
-        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(content().contentType("application/json;charset=utf-8"))
         .andDo(print())
         .andDo(document("members/update",
             preprocessRequest(prettyPrint()),

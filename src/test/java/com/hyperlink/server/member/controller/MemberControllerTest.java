@@ -30,7 +30,6 @@ import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDoc
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -62,46 +61,6 @@ public class MemberControllerTest {
   @Autowired
   private CompanyRepository companyRepository;
 
-//  @Test
-//  void signupTest() throws Exception {
-//    Category develop = categoryRepository.save(new Category("develop"));
-//    Category beauty = categoryRepository.save(new Category("beauty"));
-//
-//    String email = "rldnd1234@naver.com";
-//    String accessToken = jwtTokenProvider.createAccessToken(1L);
-//
-//    GoogleAccessToken savedGoogleAccessToken = googleAccessTokenRepository.save(
-//        new GoogleAccessToken(accessToken, email, "loalhost"));
-//
-//    SignUpRequest signUpRequest = new SignUpRequest(email, "Chocho", "develop",
-//        "ten", 1995, List.of("develop", "beauty"), "man");
-//
-//    mockMvc.perform(MockMvcRequestBuilders
-//            .post("/members/signup")
-//            .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
-//            .contentType(MediaType.APPLICATION_JSON)
-//            .accept(MediaType.APPLICATION_JSON)
-//            .content(objectMapper.writeValueAsString(signUpRequest)))
-//        .andExpect(status().isCreated())
-//        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-//        .andDo(print())
-//        .andDo(document("members/signup",
-//            preprocessRequest(prettyPrint()),
-//            preprocessResponse(prettyPrint()),
-//            requestHeaders(headerWithName(HttpHeaders.AUTHORIZATION).description("AccessToken")),
-//            requestFields(
-//                fieldWithPath("email").type(JsonFieldType.STRING).description("이메일"),
-//                fieldWithPath("nickname").type(JsonFieldType.STRING).description("닉네임"),
-//                fieldWithPath("career").type(JsonFieldType.STRING).description("직업 분야 "),
-//                fieldWithPath("careerYear").type(JsonFieldType.STRING).description("경력"),
-//                fieldWithPath("birthYear").type(JsonFieldType.NUMBER).description("출생년도"),
-//                fieldWithPath("attentionCategory").type(JsonFieldType.ARRAY).description("관심목록"),
-//                fieldWithPath("gender").type(JsonFieldType.STRING).description("성별")),
-//            responseHeaders(headerWithName(HttpHeaders.SET_COOKIE).description("RefreshToken")),
-//            responseFields(
-//                fieldWithPath("accessToken").type(JsonFieldType.STRING).description("AccessToken")))
-//        );
-//  }
 
   @DisplayName("company 미인증인 경우 MyPageApi")
   @Test
@@ -115,7 +74,7 @@ public class MemberControllerTest {
             .get("/members/mypage")
             .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken))
         .andExpect(status().isOk())
-        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(content().contentType("application/json;charset=utf-8"))
         .andDo(print())
         .andDo(document("members/mypage",
             preprocessRequest(prettyPrint()),
@@ -149,7 +108,7 @@ public class MemberControllerTest {
             .get("/members/mypage")
             .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken))
         .andExpect(status().isOk())
-        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(content().contentType("application/json;charset=utf-8"))
         .andDo(print())
         .andDo(document("members/mypage",
             preprocessRequest(prettyPrint()),
@@ -173,7 +132,7 @@ public class MemberControllerTest {
             .get("/members/mypage")
             .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken))
         .andExpect(status().isNotFound())
-        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(content().contentType("application/json;charset=utf-8"))
         .andDo(print());
   }
 }

@@ -50,7 +50,7 @@ public class AuthControllerMockTest extends AuthSetupForMock {
 
   @MockBean
   protected GoogleOauthClient googleOauthClient;
-  
+
   @Autowired
   MockMvc mockMvc;
 
@@ -84,7 +84,7 @@ public class AuthControllerMockTest extends AuthSetupForMock {
             .post("/members/login")
             .header(HttpHeaders.AUTHORIZATION,
                 "Bearer " + googleAccessToken.getGoogleAccessToken())
-            .contentType(MediaType.APPLICATION_JSON)
+            .contentType("application/json;charset=utf-8")
             .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
