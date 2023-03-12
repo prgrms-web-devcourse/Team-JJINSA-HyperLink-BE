@@ -58,7 +58,7 @@ class AuthControllerTest {
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isUnauthorized())
-        .andExpect(content().contentType("application/json;charset=utf-8"))
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andDo(print());
   }
 
