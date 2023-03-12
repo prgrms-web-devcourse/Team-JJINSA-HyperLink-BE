@@ -30,7 +30,7 @@ import org.springframework.stereotype.Service;
 public class CreatorRecommendService {
 
   private static final int FIRST_INDEX = 0;
-  private static final int LAST_INDEX = 29;
+  private static final int LAST_INDEX = 19;
   private Map<Long, CreatorScore> creatorScoreMap;
 
   private final CreatorRepository creatorRepository;
