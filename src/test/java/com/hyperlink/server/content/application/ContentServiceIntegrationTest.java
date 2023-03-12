@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -29,12 +30,10 @@ import com.hyperlink.server.domain.content.exception.ContentNotFoundException;
 import com.hyperlink.server.domain.creator.domain.CreatorRepository;
 import com.hyperlink.server.domain.creator.domain.entity.Creator;
 import com.hyperlink.server.domain.creator.exception.CreatorNotFoundException;
-import com.hyperlink.server.domain.member.application.MemberService;
 import com.hyperlink.server.domain.member.domain.Career;
 import com.hyperlink.server.domain.member.domain.CareerYear;
 import com.hyperlink.server.domain.member.domain.MemberRepository;
 import com.hyperlink.server.domain.member.domain.entity.Member;
-import com.hyperlink.server.domain.member.dto.MembersUpdateRequest;
 import com.hyperlink.server.domain.memberContent.domain.MemberContentRepository;
 import com.hyperlink.server.domain.memberContent.domain.entity.MemberContent;
 import com.hyperlink.server.domain.memberContent.domain.entity.MemberContentActionType;
@@ -85,6 +84,13 @@ public class ContentServiceIntegrationTest {
   AttentionCategoryRepository attentionCategoryRepository;
   @MockBean
   MemberHistoryService memberHistoryService;
+  @Autowired
+  MemberContentRepository memberContentRepository;
+  @Autowired
+  CompanyRepository companyRepository;
+  @Autowired
+  ContentDtoFactoryService contentDtoFactoryService;
+
 
   Creator creator;
   Category category;
@@ -170,7 +176,7 @@ public class ContentServiceIntegrationTest {
 
         contentService.addView(member.getId(), content.getId(), false);
 
-        verify(memberHistoryService, times(1)).insertMemberHistory(any(), any(), any());
+        verify(memberHistoryService, times(1)).insertMemberHistory(any(), any(), anyBoolean());
       }
     }
 
@@ -617,13 +623,6 @@ public class ContentServiceIntegrationTest {
   @Nested
   @DisplayName("컨텐츠 조회자에 대한 추천 메서드는")
   class ContentViewerRecommend {
-
-    @Autowired
-    MemberContentRepository memberContentRepository;
-    @Autowired
-    CompanyRepository companyRepository;
-    @Autowired
-    ContentDtoFactoryService contentDtoFactoryService;
 
     @Nested
     @DisplayName("동일한 추천 대상 회사에 다니는 3명 이상이 좋아요한 글에 대해 해당 회사를 반환한다.")
