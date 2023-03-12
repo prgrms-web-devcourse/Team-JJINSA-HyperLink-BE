@@ -73,6 +73,9 @@ operation::CreatorControllerTest/retrieveCreatorDetail[snippets='http-request,ht
 
 operation::CreatorControllerTest/retrieveCreator[snippets='http-request,http-response']
 
+=== 유저 맞춤 추천 크리에이터 조회
+operation::CreatorControllerTest/getRecommendCreators[snippets='http-request,http-response']
+
 == Subscription
 
 === 크리에이터 구독/구독 취소

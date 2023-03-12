@@ -34,6 +34,8 @@ import com.hyperlink.server.domain.creator.dto.CreatorEnrollRequest;
 import com.hyperlink.server.domain.creator.dto.CreatorEnrollResponse;
 import com.hyperlink.server.domain.creator.dto.CreatorResponse;
 import com.hyperlink.server.domain.creator.dto.CreatorsRetrievalResponse;
+import com.hyperlink.server.domain.creator.dto.GetCreatorRecommendResponse;
+import com.hyperlink.server.domain.creator.dto.GetCreatorRecommendResponses;
 import com.hyperlink.server.domain.creator.exception.CreatorNotFoundException;
 import com.hyperlink.server.domain.member.domain.Career;
 import com.hyperlink.server.domain.member.domain.CareerYear;
@@ -571,4 +573,61 @@ public class CreatorControllerTest extends AdminAuthSetupForMock {
     }
   }
 
-}
+  @Nested
+  @DisplayName("유저 맞춤 추천 크리에이터 조회 API는")
+  class Recommend {
+
+    @Nested
+    @DisplayName("유효한 요청값이 들어오면")
+    class Success {
+
+      @Test
+      @DisplayName("추천크리에이터 4명 데이터와 OK를 응답한다")
+      void getRecommendCreators() throws Exception {
+        authSetup();
+
+        List<GetCreatorRecommendResponse> creators = List.of(
+            new GetCreatorRecommendResponse(12L, "요즘IT", "https://img1824734.com",
+                "최신 유행하는 기술을 전하는 IT 블로거", 30),
+            new GetCreatorRecommendResponse(13L, "슈카", "https://img134734.com",
+                "최신 유행하는 기술을 전하는 IT 블로거", 150),
+            new GetCreatorRecommendResponse(28L, "보그 코리아", "https://img1834.com",
+                "최신 유행하는 기술을 전하는 IT 블로거", 49),
+            new GetCreatorRecommendResponse(103L, "이데일리", "https://img4734.com",
+                "최신 유행하는 기술을 전하는 IT 블로거", 120)
+        );
+
+        GetCreatorRecommendResponses getCreatorRecommendResponses = new GetCreatorRecommendResponses(
+            creators);
+
+        when(creatorRecommendService.getRecommendCreators(any())).thenReturn(getCreatorRecommendResponses);
+
+        mockMvc.perform(get("/creators/recommend")
+                .header(HttpHeaders.AUTHORIZATION, authorizationHeader))
+            .andExpect(status().isOk())
+            .andDo(print())
+            .andDo(document("CreatorControllerTest/getRecommendCreators",
+                preprocessRequest(prettyPrint()),
+                preprocessResponse(prettyPrint()),
+                requestHeaders(
+                    headerWithName("Authorization").description("accessToken")
+                ),
+                responseFields(
+                    fieldWithPath("creators[]").type(JsonFieldType.ARRAY).description("크리에이터 목록"),
+                    fieldWithPath("creators[].creatorId").type(JsonFieldType.NUMBER)
+                        .description("크리에이터 id"),
+                    fieldWithPath("creators[].creatorName").type(JsonFieldType.STRING)
+                        .description("크리에이터 이름"),
+                    fieldWithPath("creators[].profileImgUrl").type(JsonFieldType.STRING)
+                        .description("크리에이터 프로필 이미지 url"),
+                    fieldWithPath("creators[].creatorDescription").type(JsonFieldType.STRING)
+                        .description("크리에이터 한줄 설명"),
+                    fieldWithPath("creators[].subscriberAmount").type(JsonFieldType.NUMBER)
+                        .description("크리에이터 구독자 수")
+                )
+            ));
+      }
+    }
+  }
+
+      }
