@@ -97,7 +97,7 @@ public class CreatorController {
   @ResponseStatus(HttpStatus.OK)
   public GetCreatorRecommendResponses getCreatorRecommendResponse(
       @LoginMemberId Optional<Long> optionalMemberId) {
-    Long memberId = optionalMemberId.orElse(null);
+    Long memberId = optionalMemberId.orElseThrow(TokenNotExistsException::new);
     return creatorRecommendService.getRecommendCreators(memberId);
   }
 

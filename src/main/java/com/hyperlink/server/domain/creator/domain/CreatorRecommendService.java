@@ -41,13 +41,6 @@ public class CreatorRecommendService {
   private final RedisTemplate<String, Object> redisTemplate;
 
   public GetCreatorRecommendResponses getRecommendCreators(Long memberId) {
-    if (memberId == null) {
-      List<Long> allCreatorIds = creatorRepository.findAllIds();
-      List<GetCreatorRecommendResponse> randomCreators = extractRandomCreators(
-          allCreatorIds, allCreatorIds.size());
-      return new GetCreatorRecommendResponses(randomCreators);
-    }
-
     Set<Object> recommendedPoolCreatorIdsSet = redisTemplate.opsForZSet()
         .reverseRange(memberId.toString(), FIRST_INDEX, LAST_INDEX);
     List<Long> recommendedPoolCreatorIds = Objects.requireNonNull(recommendedPoolCreatorIdsSet)
