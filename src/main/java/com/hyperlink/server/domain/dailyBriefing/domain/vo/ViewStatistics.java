@@ -7,11 +7,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ViewStatistics {
 
-  private int viewIncrease;
-  private long totalViewCount;
+  private int increase;
+  private long totalCount;
 
-  public ViewStatistics(int viewIncrease, long totalViewCount) {
-    this.viewIncrease = viewIncrease;
-    this.totalViewCount = totalViewCount;
+  public ViewStatistics(int increase, long totalCount) {
+    this.increase = increase;
+    this.totalCount = totalCount;
   }
 }
