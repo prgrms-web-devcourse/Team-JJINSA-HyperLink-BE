@@ -30,7 +30,14 @@ jobs:
         with:
           redis-version: '6.x'
           run: redis-cli ping
-          
+
+      - name: Start RabbitMQ
+          uses: namoshek/rabbitmq-github-action@v1
+          with:
+            version: '3.8.9'
+            ports: '1883:1883 8883:8883'
+
+
       - name: application.yml 생성
         run: |
           mkdir src/test/resources
