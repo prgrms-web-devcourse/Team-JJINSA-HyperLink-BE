@@ -7,11 +7,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class MemberStatistics {
 
-  private int memberIncrease;
-  private long totalMemberCount;
+  private int increase;
+  private long totalCount;
 
-  public MemberStatistics(int memberIncrease, long totalMemberCount) {
-    this.memberIncrease = memberIncrease;
-    this.totalMemberCount = totalMemberCount;
+  public MemberStatistics(int increase, long totalCount) {
+    this.increase = increase;
+    this.totalCount = totalCount;
   }
 }
