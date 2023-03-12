@@ -9,6 +9,7 @@ import javax.persistence.Id;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
 
 @Entity
 @Getter
@@ -29,4 +30,22 @@ public class Company extends BaseEntity {
   @Column(length = 30, nullable = false)
   private String name;
 
+  @Column(nullable = false, name = "is_using_recommend", columnDefinition = "TINYINT", length = 1)
+  @ColumnDefault("0")
+  private Boolean isUsingRecommend;
+
+  public Company(String emailAddress, String logoImgUrl, String name) {
+    this.emailAddress = emailAddress;
+    this.name = name;
+    this.logoImgUrl = logoImgUrl;
+    this.isUsingRecommend = false;
+  }
+
+  public void changeIsUsingRecommend(Boolean isUsingRecommend) {
+    this.isUsingRecommend = isUsingRecommend;
+  }
+
+  public void changeCompanyName(String companyName) {
+    this.name = companyName;
+  }
 }

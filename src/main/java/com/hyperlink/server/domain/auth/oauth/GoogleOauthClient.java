@@ -30,6 +30,7 @@ public class GoogleOauthClient {
   private final String redirectUri;
   private final String tokenUri;
   private final String profileUri;
+  private final String revokeUri;
 
   private final ObjectMapper objectMapper;
   private final MemberService memberService;
@@ -41,6 +42,7 @@ public class GoogleOauthClient {
       @Value("${google.client.redirect}") String redirectUri,
       @Value("${google.tokenUri}") String tokenUri,
       @Value("${google.profileUri}") String profileUri,
+      @Value("${google.revokeUri}") String revokeUri,
       ObjectMapper objectMapper,
       MemberService memberService, GoogleAccessTokenRepository googleAccessTokenRepository) {
     this.clientId = clientId;
@@ -48,6 +50,7 @@ public class GoogleOauthClient {
     this.redirectUri = redirectUri;
     this.tokenUri = tokenUri;
     this.profileUri = profileUri;
+    this.revokeUri = revokeUri;
 
     this.objectMapper = objectMapper;
     this.memberService = memberService;
@@ -66,12 +69,12 @@ public class GoogleOauthClient {
           GoogleProfileResult.class);
 
       googleAccessTokenRepository.save(
-          new GoogleAccessToken(accessToken, googleProfileResult.email()));
-
-      boolean joinCheck = memberService.existsMemberByEmail(googleProfileResult.email());
-      return ResponseEntity.ok(
-          new OauthResponse(accessToken, joinCheck, googleProfileResult.email(),
+          new GoogleAccessToken(accessToken, googleProfileResult.email(),
               googleProfileResult.picture()));
+
+      boolean wasSignedUp = memberService.existsMemberByEmail(googleProfileResult.email());
+      return ResponseEntity.ok(
+          new OauthResponse(accessToken, wasSignedUp, googleProfileResult.email()));
     } catch (JsonProcessingException exception) {
       throw new JsonProcessingCustomException();
     }
@@ -121,5 +124,17 @@ public class GoogleOauthClient {
         String.class
     );
     return req;
+  }
+
+  public ResponseEntity<Void> revokeToken(String accessToken) {
+    RestTemplate restTemplate = new RestTemplate();
+
+    HttpHeaders header = new HttpHeaders();
+    header.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+    MultiValueMap<String, String> param = new LinkedMultiValueMap<>();
+    param.add("token", accessToken);
+    return restTemplate.exchange(revokeUri, HttpMethod.POST, new HttpEntity<>(param, header),
+        Void.class);
   }
 }

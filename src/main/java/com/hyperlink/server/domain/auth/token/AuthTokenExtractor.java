@@ -1,11 +1,14 @@
 package com.hyperlink.server.domain.auth.token;
 
+import com.hyperlink.server.domain.auth.token.exception.TokenExpiredException;
 import com.hyperlink.server.domain.auth.token.exception.TokenInvalidFormatException;
 import com.hyperlink.server.domain.auth.token.exception.TokenNotExistsException;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import java.nio.charset.StandardCharsets;
+import java.util.Date;
 import java.util.Optional;
 import javax.crypto.SecretKey;
 import org.springframework.beans.factory.annotation.Value;
@@ -50,8 +53,21 @@ public class AuthTokenExtractor {
           .getBody()
           .getSubject();
       return Optional.of(Long.parseLong(memberId));
-
     } catch (final JwtException e) {
+      throw new TokenInvalidFormatException();
+    }
+  }
+
+  public void validateExpiredToken(final String accessToken) {
+    try {
+      Date expiration = Jwts.parserBuilder().setSigningKey(SECRET_KEY).build()
+          .parseClaimsJws(accessToken).getBody().getExpiration();
+      if (expiration.before(new Date())) {
+        throw new TokenExpiredException();
+      }
+    } catch (ExpiredJwtException e) {
+      throw new TokenExpiredException();
+    } catch (JwtException e) {
       throw new TokenInvalidFormatException();
     }
   }

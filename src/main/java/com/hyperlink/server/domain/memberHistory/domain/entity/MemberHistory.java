@@ -1,5 +1,6 @@
 package com.hyperlink.server.domain.memberHistory.domain.entity;
 
+import com.hyperlink.server.domain.common.BaseEntity;
 import com.hyperlink.server.domain.content.domain.entity.Content;
 import com.hyperlink.server.domain.member.domain.entity.Member;
 import javax.persistence.Column;
@@ -17,7 +18,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class MemberHistory {
+public class MemberHistory extends BaseEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,8 +33,12 @@ public class MemberHistory {
   @JoinColumn(name = "content_id")
   private Content content;
 
-  public MemberHistory(Member member, Content content) {
+  @Column(name = "is_search", nullable = false, columnDefinition = "TINYINT", length = 1)
+  private Boolean isSearch;
+
+  public MemberHistory(Member member, Content content, boolean isSearch) {
     this.member = member;
     this.content = content;
+    this.isSearch = isSearch;
   }
 }

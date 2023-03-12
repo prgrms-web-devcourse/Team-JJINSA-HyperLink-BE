@@ -55,11 +55,24 @@ public class Content extends BaseEntity {
   @ColumnDefault("0")
   private int likeCount = 0;
 
-  public Content(String title, String contentImgUrl, String link, Creator creator, Category category) {
+  public Content(String title, String contentImgUrl, String link, Creator creator,
+      Category category) {
     this.title = title;
     this.contentImgUrl = contentImgUrl;
     this.link = link;
     this.creator = creator;
     this.category = category;
+  }
+
+  public void makeViewable(boolean check) {
+    this.isViewable = check;
+  }
+
+  public int addLike() {
+    return ++this.likeCount;
+  }
+
+  public int subtractLike() {
+    return --this.likeCount;
   }
 }

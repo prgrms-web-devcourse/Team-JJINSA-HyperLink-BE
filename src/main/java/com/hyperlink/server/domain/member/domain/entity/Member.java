@@ -2,8 +2,12 @@ package com.hyperlink.server.domain.member.domain.entity;
 
 import com.hyperlink.server.domain.common.BaseEntity;
 import com.hyperlink.server.domain.company.domain.entity.Company;
+import com.hyperlink.server.domain.member.domain.Career;
+import com.hyperlink.server.domain.member.domain.CareerYear;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -32,10 +36,12 @@ public class Member extends BaseEntity {
   private String nickname;
 
   @Column(length = 30, nullable = false)
-  private String career;
+  @Enumerated(EnumType.STRING)
+  private Career career;
 
   @Column(length = 30, nullable = false)
-  private String careerYear;
+  @Enumerated(EnumType.STRING)
+  private CareerYear careerYear;
 
   @Column(nullable = false)
   private String profileImgUrl;
@@ -54,7 +60,7 @@ public class Member extends BaseEntity {
   @JoinColumn(name = "company_id")
   private Company company;
 
-  public Member(String email, String nickname, String career, String careerYear,
+  public Member(String email, String nickname, Career career, CareerYear careerYear,
       String profileImgUrl) {
     this.email = email;
     this.nickname = nickname;
@@ -63,7 +69,7 @@ public class Member extends BaseEntity {
     this.profileImgUrl = profileImgUrl;
   }
 
-  public Member(String email, String nickname, String career, String careerYear,
+  public Member(String email, String nickname, Career career, CareerYear careerYear,
       String profileImgUrl,
       Integer birthYear, String gender) {
     this.email = email;
@@ -73,5 +79,22 @@ public class Member extends BaseEntity {
     this.profileImgUrl = profileImgUrl;
     this.birthYear = birthYear;
     this.gender = gender;
+    this.isAdmin = false;
+  }
+
+  public Member changeMember(String nickname, Career career, CareerYear careerYear) {
+    this.nickname = nickname;
+    this.career = career;
+    this.careerYear = careerYear;
+
+    return this;
+  }
+
+  public void changeProfileImgUrl(String profileImgUrl) {
+    this.profileImgUrl = profileImgUrl;
+  }
+
+  public void changeCompany(Company company) {
+    this.company = company;
   }
 }

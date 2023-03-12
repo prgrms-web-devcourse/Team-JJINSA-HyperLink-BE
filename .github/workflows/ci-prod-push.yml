@@ -1,0 +1,85 @@
+# This is a basic workflow to help you get started with Actions
+name: hyperlink-production CI
+
+# Controls when the action will run. Triggers the workflow on push or pull request
+# events but only for the dev branch
+on:
+  push:
+    branches: main
+
+env:
+  DEPLOY_ZIP_FILE: hyperlink-prod-deploy.zip
+  S3_DEPLOY_BUCKET: hyperlink-deploy
+  DEPLOY_GROUP_NAME: hyperlink-prod-deploy-group
+  DEPLOY_APPLICATION_NAME: hyperlink-deploy
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build-prod:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v3
+
+      - name: JDK 17 설치
+        uses: actions/setup-java@v1
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Redis 설치
+        uses: shogo82148/actions-setup-redis@v1
+        with:
+          redis-version: '6.x'
+          run: redis-cli ping
+
+      - name: Start RabbitMQ
+        uses: namoshek/rabbitmq-github-action@v1
+        with:
+          version: '3.8.9'
+          ports: '5672:5672 15672:15672'
+
+      - name: application-prod.yml 생성
+        run: |
+          mkdir src/test/resources
+          touch src/main/resources/application.yml
+          touch src/test/resources/application.yml
+
+      - name: application-prod.yml 설정
+        run: echo "${{secrets.APPLICATIONPRODUCTION}}" | base64 --decode > src/main/resources/application.yml
+
+      - name: application-test.yml 설정
+        run: echo "${{secrets.APPLICATIONTEST}}" | base64 --decode > src/test/resources/application.yml
+
+      - name: ./gradlew 권한 설정
+        run: chmod +x ./gradlew
+
+      - name: 빌드
+        run: ./gradlew clean build -x jacocoTestReport -x jacocoTestCoverageVerification
+
+      - name: aws 세팅
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-northeast-2
+
+      - name: Zip 파일 생성
+        run: |
+          mkdir -p before-deploy/
+          cp appspec.yml before-deploy/
+          cp scripts/*.sh before-deploy/
+          cp build/libs/*.jar before-deploy/
+          cd before-deploy && zip -r before-deploy *
+          cd ../ && mkdir -p deploy
+          mv before-deploy/before-deploy.zip deploy/$DEPLOY_ZIP_FILE
+
+      - name: S3 업로드
+        run: aws s3 cp --region ap-northeast-2 ./deploy/$DEPLOY_ZIP_FILE s3://$S3_DEPLOY_BUCKET/server/build-prod.zip
+
+      - name: code deploy
+        run: aws deploy create-deployment --application-name $DEPLOY_APPLICATION_NAME --deployment-config-name CodeDeployDefault.OneAtATime --deployment-group-name $DEPLOY_GROUP_NAME --s3-location bucket=$S3_DEPLOY_BUCKET,bundleType=zip,key=server/build-prod.zip

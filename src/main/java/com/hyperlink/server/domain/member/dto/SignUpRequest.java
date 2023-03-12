@@ -1,6 +1,8 @@
 package com.hyperlink.server.domain.member.dto;
 
 
+import com.hyperlink.server.domain.member.domain.Career;
+import com.hyperlink.server.domain.member.domain.CareerYear;
 import com.hyperlink.server.domain.member.domain.entity.Member;
 import java.util.List;
 import javax.validation.constraints.NotBlank;
@@ -12,16 +14,15 @@ public record SignUpRequest(
     @NotBlank @Size(max = 30) String nickname,
     @NotBlank @Size(max = 30) String career,
     @NotBlank @Size(max = 30) String careerYear,
-    @NotBlank String profileUrl,
-    @NotNull Integer birthYear,
+    Integer birthYear,
     @NotNull List<String> attentionCategory,
-    @NotBlank String gender
+    String gender
 ) {
 
-  public static Member to(SignUpRequest signUpRequest) {
+  public static Member to(SignUpRequest signUpRequest, String profileUrl) {
     return new Member(signUpRequest.email, signUpRequest.nickname,
-        signUpRequest.career, signUpRequest.careerYear,
-        signUpRequest.profileUrl, signUpRequest.birthYear, signUpRequest.gender);
+        Career.selectCareer(signUpRequest.career),
+        CareerYear.selectCareerYear(signUpRequest.careerYear),
+        profileUrl, signUpRequest.birthYear, signUpRequest.gender);
   }
-
 }

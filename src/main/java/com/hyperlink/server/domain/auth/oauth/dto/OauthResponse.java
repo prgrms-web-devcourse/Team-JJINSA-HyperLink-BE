@@ -2,13 +2,11 @@ package com.hyperlink.server.domain.auth.oauth.dto;
 
 public record OauthResponse(
     String accessToken,
-    boolean joinCheck,
-    String email,
-    String profileUrl
+    boolean wasSignedUp,
+    String email
 ) {
 
-  public static OauthResponse from(String accessToken, boolean joinCheck, String email,
-      String profileUrl) {
-    return new OauthResponse(accessToken, joinCheck, email, email);
+  public static OauthResponse from(String accessToken, boolean wasSignedUp, String email) {
+    return new OauthResponse(accessToken, wasSignedUp, email);
   }
 }

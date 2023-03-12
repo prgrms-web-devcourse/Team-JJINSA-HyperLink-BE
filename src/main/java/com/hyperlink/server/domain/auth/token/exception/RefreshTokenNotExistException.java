@@ -8,7 +8,7 @@ public class RefreshTokenNotExistException extends BusinessException {
   private static final String MESSAGE = "RefreshToken이 존재하지 않습니다.";
   private static final HttpStatus status = HttpStatus.UNAUTHORIZED;
 
-  public RefreshTokenNotExistException(String message, HttpStatus status) {
-    super(message, status);
+  public RefreshTokenNotExistException() {
+    super(MESSAGE, status);
   }
 }

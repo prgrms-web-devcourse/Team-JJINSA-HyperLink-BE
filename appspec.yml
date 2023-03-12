@@ -13,5 +13,5 @@ permissions:
 hooks:
   AfterInstall:
     - location: deploy.sh
-      timeout: 300
+      timeout: 500
       runas: root
