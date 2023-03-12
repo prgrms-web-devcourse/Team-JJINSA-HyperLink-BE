@@ -84,10 +84,10 @@ public class AuthControllerMockTest extends AuthSetupForMock {
             .post("/members/login")
             .header(HttpHeaders.AUTHORIZATION,
                 "Bearer " + googleAccessToken.getGoogleAccessToken())
-            .contentType("application/json;charset=utf-8")
+            .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
-        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(content().contentType("application/json;charset=utf-8"))
         .andDo(print())
         .andDo(document("members/login",
             preprocessRequest(prettyPrint()),
