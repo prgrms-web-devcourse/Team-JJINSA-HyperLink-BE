@@ -6,7 +6,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import com.hyperlink.server.domain.admin.dto.CountingViewByCategoryDto;
 import com.hyperlink.server.domain.category.domain.CategoryRepository;
 import com.hyperlink.server.domain.category.domain.entity.Category;
-import com.hyperlink.server.domain.content.application.ContentService;
 import com.hyperlink.server.domain.content.domain.ContentRepository;
 import com.hyperlink.server.domain.content.domain.entity.Content;
 import com.hyperlink.server.domain.creator.domain.CreatorRepository;
@@ -27,11 +26,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.annotation.Transactional;
 
-@SpringBootTest
-@Transactional
+@DataJpaTest
 @AutoConfigureTestDatabase(replace = Replace.NONE)
 public class CategoryRepositoryTest {
 

@@ -15,11 +15,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.annotation.Transactional;
 
-@SpringBootTest
-@Transactional
+@DataJpaTest
 @AutoConfigureTestDatabase(replace = Replace.NONE)
 class ContentRepositoryTest {
 
@@ -30,22 +27,22 @@ class ContentRepositoryTest {
   @Autowired
   CategoryRepository categoryRepository;
 
-//  @Test
-//  @DisplayName("조회수 update 메소드를 실행하면 조회수가 +1 된다")
-//  void updateInquiryTest() {
-//    Category category = new Category("개발test");
-//    Creator creator = new Creator("name", "profile", "description", category);
-//    Content content = new Content("title", "contentImgUrl", "link", creator, category);
-//    int beforeInquiry = content.getViewCount();
-//    categoryRepository.save(category);
-//    creatorRepository.save(creator);
-//    contentRepository.save(content);
-//
-//    contentRepository.updateViewCount(content.getId());
-//
-//    Content findContent = contentRepository.findById(content.getId())
-//        .orElseThrow(ContentNotFoundException::new);
-//
-//    assertThat(findContent.getViewCount()).isEqualTo(beforeInquiry + 1);
-//  }
+  @Test
+  @DisplayName("조회수 update 메소드를 실행하면 조회수가 +1 된다")
+  void updateInquiryTest() {
+    Category category = new Category("개발test");
+    Creator creator = new Creator("name", "profile", "description", category);
+    Content content = new Content("title", "contentImgUrl", "link", creator, category);
+    int beforeInquiry = content.getViewCount();
+    categoryRepository.save(category);
+    creatorRepository.save(creator);
+    contentRepository.save(content);
+
+    contentRepository.updateViewCount(content.getId());
+
+    Content findContent = contentRepository.findById(content.getId())
+        .orElseThrow(ContentNotFoundException::new);
+
+    assertThat(findContent.getViewCount()).isEqualTo(beforeInquiry + 1);
+  }
 }
