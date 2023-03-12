@@ -34,7 +34,7 @@ public class MemberHistory extends BaseEntity {
   private Content content;
 
   @Column(name = "is_search", nullable = false, columnDefinition = "TINYINT", length = 1)
-  private boolean isSearch;
+  private Boolean isSearch;
 
   public MemberHistory(Member member, Content content, boolean isSearch) {
     this.member = member;
