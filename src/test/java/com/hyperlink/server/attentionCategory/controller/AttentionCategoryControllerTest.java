@@ -64,7 +64,7 @@ class AttentionCategoryControllerTest extends AuthSetupForMock {
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(attentionCategoryRequest)))
         .andExpect(status().isOk())
-        .andExpect(content().contentType("application/json;charset=utf-8"))
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andDo(print())
         .andDo(document("Attention-category/update",
             preprocessRequest(prettyPrint()),
@@ -88,7 +88,7 @@ class AttentionCategoryControllerTest extends AuthSetupForMock {
             .get("/attention-category")
             .header(HttpHeaders.AUTHORIZATION, authorizationHeader))
         .andExpect(status().isOk())
-        .andExpect(content().contentType("application/json;charset=utf-8"))
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andDo(print())
         .andDo(document("Attention-category/get",
             preprocessRequest(prettyPrint()),
