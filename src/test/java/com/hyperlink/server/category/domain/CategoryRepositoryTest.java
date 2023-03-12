@@ -82,9 +82,9 @@ public class CategoryRepositoryTest {
     Content content3 = contentRepository.save(
         new Content("제목3", "contentImgUrl", "link1", creatorBeauty, categoryBeauty));
 
-    memberHistoryRepository.save(new MemberHistory(member, content1));
-    memberHistoryRepository.save(new MemberHistory(member, content2));
-    memberHistoryRepository.save(new MemberHistory(member, content3));
+    memberHistoryRepository.save(new MemberHistory(member, content1, false));
+    memberHistoryRepository.save(new MemberHistory(member, content2, false));
+    memberHistoryRepository.save(new MemberHistory(member, content3, false));
 
     List<CountingViewByCategoryDto> countingViewByCategoryDtos = categoryRepository.countViewsByCategoryAndDate(
         date.toString());

@@ -114,7 +114,7 @@ public class ContentServiceIntegrationTest {
       contentRepository.save(content);
       int inquiryCountBeforeAdd = content.getViewCount();
 
-      contentService.addView(null, content.getId());
+      contentService.addView(null, content.getId(), false);
 
       int findInquiry = contentService.getViewCount(content.getId());
 
@@ -146,7 +146,7 @@ public class ContentServiceIntegrationTest {
         content = contentRepository.save(content);
         int beforeViewCount = content.getViewCount();
 
-        contentService.addView(memberId, content.getId());
+        contentService.addView(memberId, content.getId(), false);
 
         Content findContent = contentRepository.findById(content.getId())
             .orElseThrow(ContentNotFoundException::new);
@@ -168,9 +168,9 @@ public class ContentServiceIntegrationTest {
         Content content = new Content("title", "contentImgUrl", "link", creator, category);
         content = contentRepository.save(content);
 
-        contentService.addView(member.getId(), content.getId());
+        contentService.addView(member.getId(), content.getId(), false);
 
-        verify(memberHistoryService, times(1)).insertMemberHistory(any(), any());
+        verify(memberHistoryService, times(1)).insertMemberHistory(any(), any(), any());
       }
     }
 
@@ -236,7 +236,7 @@ public class ContentServiceIntegrationTest {
 
       @Override
       public void run() {
-        contentService.addView(null, contentId);
+        contentService.addView(null, contentId, false);
         countDownLatch.countDown();
       }
     }
@@ -466,8 +466,8 @@ public class ContentServiceIntegrationTest {
         @Test
         @DisplayName("인기순으로 조회할 수 있다.")
         void retrievePopular() {
-          contentService.addView(member.getId(), content3.getId());
-          contentService.addView(member.getId(), content3.getId());
+          contentService.addView(member.getId(), content3.getId(), false);
+          contentService.addView(member.getId(), content3.getId(), false);
 
           GetContentsCommonResponse getContentsCommonResponse = contentService.retrieveTrendContents(
               null, "개발10", "popular", PageRequest.of(0, 10));
@@ -518,12 +518,12 @@ public class ContentServiceIntegrationTest {
           @Test
           @DisplayName("카테고리 전체에 대해 인기순으로 조회할 수 있다.")
           public void retrieveForAttentionCategoryByPopular() throws Exception {
-            contentService.addView(member.getId(), content4.getId());
-            contentService.addView(member.getId(), content4.getId());
-            contentService.addView(member.getId(), content4.getId());
+            contentService.addView(member.getId(), content4.getId(), false);
+            contentService.addView(member.getId(), content4.getId(), false);
+            contentService.addView(member.getId(), content4.getId(), false);
 
-            contentService.addView(member.getId(), content3.getId());
-            contentService.addView(member.getId(), content3.getId());
+            contentService.addView(member.getId(), content3.getId(), false);
+            contentService.addView(member.getId(), content3.getId(), false);
 
             GetContentsCommonResponse getContentsCommonResponse = contentService.retrieveTrendAllCategoriesContents(
                 null, "popular", PageRequest.of(0, 10));
@@ -554,12 +554,12 @@ public class ContentServiceIntegrationTest {
           @Test
           @DisplayName("유저의 관심 카테고리 전체에 대해 인기순으로 조회할 수 있다.")
           public void retrieveForAttentionCategoryByPopular() throws Exception {
-            contentService.addView(member.getId(), content4.getId());
-            contentService.addView(member.getId(), content4.getId());
-            contentService.addView(member.getId(), content4.getId());
+            contentService.addView(member.getId(), content4.getId(), false);
+            contentService.addView(member.getId(), content4.getId(), false);
+            contentService.addView(member.getId(), content4.getId(), false);
 
-            contentService.addView(member.getId(), content3.getId());
-            contentService.addView(member.getId(), content3.getId());
+            contentService.addView(member.getId(), content3.getId(), false);
+            contentService.addView(member.getId(), content3.getId(), false);
 
             GetContentsCommonResponse getContentsCommonResponse = contentService.retrieveTrendAllCategoriesContents(
                 member.getId(), "popular", PageRequest.of(0, 10));
@@ -597,12 +597,12 @@ public class ContentServiceIntegrationTest {
         Member member = memberRepository.save(new Member("email", "nickname", Career.DEVELOP,
             CareerYear.LESS_THAN_ONE, "profileImgUrl"));
         memberRepository.save(member);
-        contentService.addView(member.getId(), content4.getId());
-        contentService.addView(member.getId(), content4.getId());
-        contentService.addView(member.getId(), content4.getId());
+        contentService.addView(member.getId(), content4.getId(), false);
+        contentService.addView(member.getId(), content4.getId(), false);
+        contentService.addView(member.getId(), content4.getId(), false);
 
-        contentService.addView(member.getId(), content3.getId());
-        contentService.addView(member.getId(), content3.getId());
+        contentService.addView(member.getId(), content3.getId(), false);
+        contentService.addView(member.getId(), content3.getId(), false);
 
         GetContentsCommonResponse getContentsCommonResponse = contentService.retrieveCreatorContents(
             null, creator.getId(), "popular", PageRequest.of(0, 10));
