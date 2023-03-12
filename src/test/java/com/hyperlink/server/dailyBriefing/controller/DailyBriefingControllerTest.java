@@ -105,13 +105,13 @@ public class DailyBriefingControllerTest extends AuthSetupForMock {
                             .description("통계 기준 시간"),
                         fieldWithPath("dailyBriefing").type(JsonFieldType.OBJECT)
                             .description("데일리브리핑 데이터"),
-                        fieldWithPath("dailyBriefing.memberStatistics.memberIncrease").type(JsonFieldType.NUMBER)
+                        fieldWithPath("dailyBriefing.memberStatistics.increase").type(JsonFieldType.NUMBER)
                             .description("24시간 동안 증가된 가입회원 수"),
-                        fieldWithPath("dailyBriefing.memberStatistics.totalMemberCount").type(JsonFieldType.NUMBER)
+                        fieldWithPath("dailyBriefing.memberStatistics.totalCount").type(JsonFieldType.NUMBER)
                             .description("전체 가입회원 수"),
-                        fieldWithPath("dailyBriefing.viewStatistics.viewIncrease").type(JsonFieldType.NUMBER)
+                        fieldWithPath("dailyBriefing.viewStatistics.increase").type(JsonFieldType.NUMBER)
                             .description("24시간 동안 집계된 총 조회수"),
-                        fieldWithPath("dailyBriefing.viewStatistics.totalViewCount").type(JsonFieldType.NUMBER)
+                        fieldWithPath("dailyBriefing.viewStatistics.totalCount").type(JsonFieldType.NUMBER)
                             .description("전체 조회수"),
                         fieldWithPath("dailyBriefing.viewByCategories").type(JsonFieldType.ARRAY)
                             .description("24시간 동안 집계된 카테고리별 조회수"),
