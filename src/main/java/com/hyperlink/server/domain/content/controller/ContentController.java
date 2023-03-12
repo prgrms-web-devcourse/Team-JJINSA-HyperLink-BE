@@ -37,9 +37,9 @@ public class ContentController {
   @PatchMapping("/contents/{contentId}/view")
   @ResponseStatus(HttpStatus.OK)
   public PatchInquiryResponse addViewOfContent(@LoginMemberId Optional<Long> optionalMemberId,
-      @PathVariable("contentId") long contentId) {
+      @PathVariable("contentId") long contentId, @RequestParam("search") boolean isSearch) {
     Long memberId = optionalMemberId.orElse(null);
-    contentService.addView(memberId, contentId);
+    contentService.addView(memberId, contentId, isSearch);
     int viewCount = contentService.getViewCount(contentId);
     return new PatchInquiryResponse(viewCount);
   }

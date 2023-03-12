@@ -25,12 +25,12 @@ public class MemberHistoryService {
   private final MemberRepository memberRepository;
   private final ContentRepository contentRepository;
 
-  public void insertMemberHistory(Long memberId, Long contentId) {
+  public void insertMemberHistory(Long memberId, Long contentId, boolean isSearch) {
     Member member = memberRepository.findById(memberId).orElseThrow(MemberNotFoundException::new);
     Content content = contentRepository.findById(contentId)
         .orElseThrow(ContentNotFoundException::new);
 
-    MemberHistory memberHistory = new MemberHistory(member, content);
+    MemberHistory memberHistory = new MemberHistory(member, content, isSearch);
     memberHistoryRepository.save(memberHistory);
   }
 
