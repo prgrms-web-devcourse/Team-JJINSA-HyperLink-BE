@@ -54,10 +54,10 @@ public class ContentService {
   }
 
   @Transactional
-  public void addView(Long memberId, Long contentId) {
+  public void addView(Long memberId, Long contentId, boolean isSearch) {
     contentRepository.updateViewCount(contentId);
     if (memberId != null) {
-      memberHistoryService.insertMemberHistory(memberId, contentId);
+      memberHistoryService.insertMemberHistory(memberId, contentId, isSearch);
     }
   }
 
