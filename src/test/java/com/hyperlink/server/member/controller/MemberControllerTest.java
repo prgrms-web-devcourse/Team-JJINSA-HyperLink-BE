@@ -30,6 +30,7 @@ import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDoc
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -74,7 +75,7 @@ public class MemberControllerTest {
             .get("/members/mypage")
             .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken))
         .andExpect(status().isOk())
-        .andExpect(content().contentType("application/json;charset=utf-8"))
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andDo(print())
         .andDo(document("members/mypage",
             preprocessRequest(prettyPrint()),
@@ -108,7 +109,7 @@ public class MemberControllerTest {
             .get("/members/mypage")
             .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken))
         .andExpect(status().isOk())
-        .andExpect(content().contentType("application/json;charset=utf-8"))
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andDo(print())
         .andDo(document("members/mypage",
             preprocessRequest(prettyPrint()),
@@ -132,7 +133,7 @@ public class MemberControllerTest {
             .get("/members/mypage")
             .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken))
         .andExpect(status().isNotFound())
-        .andExpect(content().contentType("application/json;charset=utf-8"))
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andDo(print());
   }
 }

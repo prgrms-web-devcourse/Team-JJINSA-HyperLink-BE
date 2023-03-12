@@ -87,7 +87,7 @@ public class AuthControllerMockTest extends AuthSetupForMock {
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
-        .andExpect(content().contentType("application/json;charset=utf-8"))
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andDo(print())
         .andDo(document("members/login",
             preprocessRequest(prettyPrint()),

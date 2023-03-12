@@ -43,7 +43,6 @@ public class AuthenticationFilter implements Filter {
     HttpServletRequest httpRequest = (HttpServletRequest) request;
     String requestURI = httpRequest.getRequestURI();
     HttpServletResponse httpResponse = (HttpServletResponse) response;
-    httpResponse.setCharacterEncoding("utf-8");
     String requestMethod = httpRequest.getMethod();
     if (!requestMethod.equals("OPTIONS") && isLoginCheckPath(requestURI)) {
       try {
@@ -72,6 +71,7 @@ public class AuthenticationFilter implements Filter {
   private void createAuthenticationErrorResponse(HttpServletResponse httpResponse, String message)
       throws IOException {
     String bodyResult = objectMapper.writeValueAsString(new ErrorResponse(message));
+    httpResponse.setContentType("application/json");
     httpResponse.setCharacterEncoding("utf-8");
     httpResponse.getWriter().write(bodyResult);
     httpResponse.setStatus(HttpStatus.UNAUTHORIZED.value());
