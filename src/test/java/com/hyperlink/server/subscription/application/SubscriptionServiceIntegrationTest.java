@@ -8,6 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import com.hyperlink.server.domain.category.domain.CategoryRepository;
 import com.hyperlink.server.domain.category.domain.entity.Category;
 import com.hyperlink.server.domain.category.exception.CategoryNotFoundException;
+import com.hyperlink.server.domain.content.application.ContentService;
 import com.hyperlink.server.domain.content.domain.ContentRepository;
 import com.hyperlink.server.domain.content.domain.entity.Content;
 import com.hyperlink.server.domain.content.dto.GetContentsCommonResponse;
@@ -47,6 +48,8 @@ public class SubscriptionServiceIntegrationTest {
   MemberRepository memberRepository;
   @Autowired
   ContentRepository contentRepository;
+  @Autowired
+  ContentService contentService;
 
 
   @Nested
@@ -183,6 +186,14 @@ public class SubscriptionServiceIntegrationTest {
       contentRepository.saveAll(
           List.of(developContent1, developContent2, developContent3, beautyContent1,
               beautyContent2, beautyContent3));
+
+      contentService.activateContent(developContent1.getId());
+      contentService.activateContent(developContent2.getId());
+      contentService.activateContent(developContent3.getId());
+      contentService.activateContent(beautyContent1.getId());
+      contentService.activateContent(beautyContent2.getId());
+      contentService.activateContent(beautyContent3.getId());
+
 
       subscriptionService.subscribeOrUnsubscribeCreator(member.getId(), creator1.getId());
       subscriptionService.subscribeOrUnsubscribeCreator(member.getId(), creator2.getId());
