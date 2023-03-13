@@ -16,6 +16,7 @@ import com.hyperlink.server.domain.member.exception.MemberNotFoundException;
 import com.hyperlink.server.domain.subscription.domain.SubscriptionRepository;
 import com.hyperlink.server.domain.subscription.domain.entity.Subscription;
 import com.hyperlink.server.domain.subscription.dto.SubscribeResponse;
+import java.util.Collections;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -61,6 +62,10 @@ public class SubscriptionService {
         .orElseThrow(CategoryNotFoundException::new);
 
     List<Long> creatorIds = subscriptionRepository.findCreatorIdByMemberId(loginMemberId);
+    if(creatorIds.isEmpty()) {
+      return contentDtoFactoryService.createContentResponses(loginMemberId, Collections.emptyList(),
+          false);
+    }
     Slice<Content> contents = contentRepositoryCustom.retrieveRecentContentsSubscribedCreatorsByCategoryId(
         creatorIds, category.getId(), pageable);
     return contentDtoFactoryService.createContentResponses(loginMemberId, contents.getContent(),
@@ -69,6 +74,10 @@ public class SubscriptionService {
 
   public GetContentsCommonResponse retrieveSubscribedCreatorsContentsForAllCategories(Long loginMemberId, Pageable pageable) {
     List<Long> creatorIds = subscriptionRepository.findCreatorIdByMemberId(loginMemberId);
+    if(creatorIds.isEmpty()) {
+      return contentDtoFactoryService.createContentResponses(loginMemberId, Collections.emptyList(),
+          false);
+    }
     Slice<Content> contents = contentRepositoryCustom.retrieveRecentContentsForAllSubscribedCreators(
         creatorIds, pageable);
     return contentDtoFactoryService.createContentResponses(loginMemberId, contents.getContent(),
