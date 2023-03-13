@@ -70,7 +70,7 @@ public class CompanyService {
 
     Company company = companyRepository.findByEmailAddress(mailAddress).orElse(
         companyRepository.save(
-            new Company(mailAddress, mailAuthVerifyRequest.logoImgUrl(),
+            new Company(mailAddress,
                 extractCompanyNameFromEmail(
                     mailAddress))));
 

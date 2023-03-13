@@ -5,8 +5,7 @@ import javax.validation.constraints.NotNull;
 
 public record MailAuthVerifyRequest(
     @NotBlank String companyEmail,
-    @NotNull Integer authNumber,
-    @NotBlank String logoImgUrl
+    @NotNull Integer authNumber
 ) {
 
 }

@@ -671,7 +671,7 @@ public class ContentServiceIntegrationTest {
             new MemberContent(member3.getId(), content1, MemberContentActionType.LIKE));
 
         Company kakao = companyRepository.save(
-            new Company("kakaoCorps.com", "cdn.logo.kakao.com", "카카오"));
+            new Company("kakaoCorps.com", "카카오"));
         kakao.changeIsUsingRecommend(true);
 
         member1.changeCompany(kakao);
