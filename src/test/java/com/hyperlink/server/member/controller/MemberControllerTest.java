@@ -62,7 +62,6 @@ public class MemberControllerTest {
   @Autowired
   private CompanyRepository companyRepository;
 
-
   @DisplayName("company 미인증인 경우 MyPageApi")
   @Test
   void myPageTestV1() throws Exception {
@@ -100,7 +99,7 @@ public class MemberControllerTest {
             "localhost", 1995, "man"));
 
     Company savedCompany = companyRepository.save(
-        new Company("rldnd1234@kakao.com", "logoImgUrl", "kakao"));
+        new Company("rldnd1234@kakao.com", "kakao"));
     String accessToken = jwtTokenProvider.createAccessToken(saveMember.getId());
 
     saveMember.changeCompany(savedCompany);

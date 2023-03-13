@@ -69,7 +69,7 @@ class CompanyServiceIntegrationTest {
   void findCompaniesForPageTest() {
     for (int i = 0; i < 6; i++) {
       companyRepository.save(
-          new Company("gmail.com" + i, "logImgUrl" + i, "gmail" + i));
+          new Company("gmail.com" + i, "gmail" + i));
     }
     CompanyPageResponse companyPageResponse1 = companyService.findCompaniesForPage(0, 2);
     CompanyPageResponse companyPageResponse2 = companyService.findCompaniesForPage(1, 2);
@@ -106,8 +106,7 @@ class CompanyServiceIntegrationTest {
     int authNumber = 123456;
     companyService.saveMailAuthNumber(new MailRequest(email), authNumber);
 
-    MailAuthVerifyRequest mailAuthVerifyRequest = new MailAuthVerifyRequest(email, authNumber,
-        "s3URL");
+    MailAuthVerifyRequest mailAuthVerifyRequest = new MailAuthVerifyRequest(email, authNumber);
 
     companyService.verifyAuthCompanyMail(saveMember.getId(), mailAuthVerifyRequest);
 
@@ -115,13 +114,14 @@ class CompanyServiceIntegrationTest {
 
     assertThat(company.getEmailAddress()).isEqualTo("naver.com");
     assertThat(company.getName()).isEqualTo("naver");
-    assertThat(company.getLogoImgUrl()).isEqualTo("s3URL");
+    assertThat(company.getLogoImgUrl()).isEqualTo(
+        "https://hyperlink-data.s3.ap-northeast-2.amazonaws.com/company_logo_image/logo_default.png");
   }
 
   @DisplayName("회사의 추천서비스 여부를 변경할 수 있다.")
   @Test
   void changeIsUsingRecommendTest() {
-    Company savedCompany = companyRepository.save(new Company("kakao.com", "logoURL", "kakao"));
+    Company savedCompany = companyRepository.save(new Company("kakao.com", "kakao"));
     boolean priorValue = savedCompany.getIsUsingRecommend();
 
     companyService.changeIsUsingRecommend(savedCompany.getId());
@@ -168,7 +168,7 @@ class CompanyServiceIntegrationTest {
   @Test
   void changeCompanyNameTest() {
 
-    Company savedCompany = companyRepository.save(new Company("kakao.com", "logoURL", "kakao"));
+    Company savedCompany = companyRepository.save(new Company("kakao.com", "kakao"));
     boolean priorValue = savedCompany.getIsUsingRecommend();
 
     String companyName = "newKakao";

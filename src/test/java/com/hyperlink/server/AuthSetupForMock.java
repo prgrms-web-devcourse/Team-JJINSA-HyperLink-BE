@@ -24,7 +24,7 @@ public class AuthSetupForMock {
 
   protected Long memberId = 1L;
 
-  protected String accessToken = "accessToken value";
+  protected String accessToken = "${ACCESS_TOKEN}}";
 
   Optional<Long> optionalId = Optional.of(memberId);
 

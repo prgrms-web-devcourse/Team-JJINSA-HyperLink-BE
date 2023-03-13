@@ -37,7 +37,7 @@ public class ContentRepositoryCustom {
 
     List<Content> contents = queryFactory
         .selectFrom(content)
-        .where(builder)
+        .where(builder, eqActiveContent())
         .offset(pageable.getOffset())
         .limit(pageable.getPageSize())
         .orderBy(content.createdAt.desc())
@@ -58,7 +58,7 @@ public class ContentRepositoryCustom {
   public Slice<Content> retrievePopularTrendContentsByCategory(Long categoryId, Pageable pageable) {
     List<Content> contents = queryFactory
         .selectFrom(content)
-        .where(eqCategoryId(categoryId), beforeNDays(PAST_DAYS), eqInactiveContent())
+        .where(eqCategoryId(categoryId), beforeNDays(PAST_DAYS), eqActiveContent())
         .orderBy(popularOrderType())
         .offset(pageable.getOffset())
         .limit(pageable.getPageSize() + 1)
@@ -70,7 +70,7 @@ public class ContentRepositoryCustom {
   public Slice<Content> retrieveRecentTrendContentsByCategory(Long categoryId, Pageable pageable) {
     List<Content> contents = queryFactory
         .selectFrom(content)
-        .where(eqCategoryId(categoryId), eqInactiveContent())
+        .where(eqCategoryId(categoryId), eqActiveContent())
         .orderBy(recentOrderType())
         .offset(pageable.getOffset())
         .limit(pageable.getPageSize() + 1)
@@ -88,7 +88,7 @@ public class ContentRepositoryCustom {
 
     List<Content> contents = queryFactory
         .selectFrom(content)
-        .where(categoryConditionBuilder, beforeNDays(PAST_DAYS), eqInactiveContent())
+        .where(categoryConditionBuilder, beforeNDays(PAST_DAYS), eqActiveContent())
         .orderBy(popularOrderType())
         .offset(pageable.getOffset())
         .limit(pageable.getPageSize() + 1)
@@ -106,7 +106,7 @@ public class ContentRepositoryCustom {
 
     List<Content> contents = queryFactory
         .selectFrom(content)
-        .where(categoryConditionBuilder, eqInactiveContent())
+        .where(categoryConditionBuilder, eqActiveContent())
         .orderBy(recentOrderType())
         .offset(pageable.getOffset())
         .limit(pageable.getPageSize() + 1)
@@ -118,7 +118,7 @@ public class ContentRepositoryCustom {
   public Slice<Content> retrievePopularContentsByCreator(Long creatorId, Pageable pageable) {
     List<Content> contents = queryFactory
         .selectFrom(content)
-        .where(eqCreatorId(creatorId), eqInactiveContent())
+        .where(eqCreatorId(creatorId), eqActiveContent())
         .orderBy(popularOrderType())
         .offset(pageable.getOffset())
         .limit(pageable.getPageSize() + 1)
@@ -130,7 +130,7 @@ public class ContentRepositoryCustom {
   public Slice<Content> retrieveRecentContentsByCreator(Long creatorId, Pageable pageable) {
     List<Content> contents = queryFactory
         .selectFrom(content)
-        .where(eqCreatorId(creatorId), eqInactiveContent())
+        .where(eqCreatorId(creatorId), eqActiveContent())
         .orderBy(recentOrderType())
         .offset(pageable.getOffset())
         .limit(pageable.getPageSize() + 1)
@@ -148,7 +148,7 @@ public class ContentRepositoryCustom {
 
     List<Content> contents = queryFactory
         .selectFrom(content)
-        .where(subscribedCreatorConditionBuilder, eqCategoryId(categoryId))
+        .where(subscribedCreatorConditionBuilder, eqCategoryId(categoryId), eqActiveContent())
         .orderBy(recentOrderType())
         .offset(pageable.getOffset())
         .limit(pageable.getPageSize() + 1)
@@ -166,7 +166,7 @@ public class ContentRepositoryCustom {
 
     List<Content> contents = queryFactory
         .selectFrom(content)
-        .where(subscribedCreatorConditionBuilder)
+        .where(subscribedCreatorConditionBuilder, eqActiveContent())
         .orderBy(recentOrderType())
         .offset(pageable.getOffset())
         .limit(pageable.getPageSize() + 1)
@@ -205,7 +205,7 @@ public class ContentRepositoryCustom {
     return content.createdAt.after(LocalDateTime.now().minusDays(day));
   }
 
-  private BooleanExpression eqInactiveContent() {
+  private BooleanExpression eqActiveContent() {
     return content.isViewable.eq(true);
   }
 }

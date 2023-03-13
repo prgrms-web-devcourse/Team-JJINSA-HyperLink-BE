@@ -45,6 +45,14 @@ operation::members/signup[snippets='http-request,http-response,response-fields']
 
 operation::members/login[snippets='http-request,http-response,response-fields']
 
+=== 로그아웃
+
+operation::members/logout[snippets='http-request,http-response,response-fields']
+
+=== AccessToken 재발급
+
+operation::members/access-token[snippets='http-request,http-response,response-fields']
+
 === 내정보 조회
 
 operation::members/mypage[snippets='http-request,http-response,response-fields']
@@ -74,6 +82,7 @@ operation::CreatorControllerTest/retrieveCreatorDetail[snippets='http-request,ht
 operation::CreatorControllerTest/retrieveCreator[snippets='http-request,http-response']
 
 === 유저 맞춤 추천 크리에이터 조회
+
 operation::CreatorControllerTest/getRecommendCreators[snippets='http-request,http-response']
 
 == Subscription

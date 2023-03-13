@@ -164,7 +164,7 @@ jacocoTestReport {
                     "com/hyperlink/server/domain/auth/oauth/dto/OauthResponse.*",
                     "com/hyperlink/server/domain/auth/oauth/GoogleAccessToken.*",
                     "com/hyperlink/server/domain/auth/oauth/GoogleOauthClient.*",
-                    "com/hyperlink/server/domain/auth/oauth/JsonProcessingCustomException.*",
+                    "com/hyperlink/server/domain/auth/oauth/exception/JsonProcessingCustomException.*",
 
                     //유효기간 관련 예외 및 로직
                     "com/hyperlink/server/domain/member/exception/SignUpTimeOutException.*",
@@ -209,13 +209,13 @@ jacocoTestCoverageVerification {
                     '*.ErrorReportRequest*',
                     "*.GlobalExceptionHandler*",
                     //oauth
+                    '*.JsonProcessingCustomException*',
                     '*.GoogleAccessToken*',
                     '*.GoogleAccessTokenRepository*',
                     '*.GoogleOauthClient*',
                     '*.GoogleProfileResult*',
                     '*.GoogleToken*',
                     '*.OauthResponse*',
-                    '*.JsonProcessingCustomException*',
                     //시간초과
                     '*.TokenExpiredException*',
                     '*.SignUpTimeOutException*',

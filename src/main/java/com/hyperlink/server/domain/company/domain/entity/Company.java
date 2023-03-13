@@ -34,10 +34,17 @@ public class Company extends BaseEntity {
   @ColumnDefault("0")
   private Boolean isUsingRecommend;
 
-  public Company(String emailAddress, String logoImgUrl, String name) {
+  public Company(String emailAddress, String name) {
     this.emailAddress = emailAddress;
     this.name = name;
+    this.logoImgUrl = "https://hyperlink-data.s3.ap-northeast-2.amazonaws.com/company_logo_image/logo_default.png";
+    this.isUsingRecommend = false;
+  }
+
+  public Company(String emailAddress, String logoImgUrl, String name) {
+    this.emailAddress = emailAddress;
     this.logoImgUrl = logoImgUrl;
+    this.name = name;
     this.isUsingRecommend = false;
   }
 
