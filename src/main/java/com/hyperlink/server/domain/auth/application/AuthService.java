@@ -14,8 +14,10 @@ import com.hyperlink.server.domain.member.domain.MemberRepository;
 import com.hyperlink.server.domain.member.domain.entity.Member;
 import com.hyperlink.server.domain.member.exception.MemberNotFoundException;
 import java.util.UUID;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 public class AuthService {
 
@@ -36,6 +38,7 @@ public class AuthService {
   }
 
   public String extractToken(final String authorizationHeader) {
+    log.info("####### AuthService.extractToken()");
     return authTokenExtractor.extractToken(authorizationHeader);
   }
 
