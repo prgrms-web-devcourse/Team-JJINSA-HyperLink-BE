@@ -35,12 +35,11 @@ public class MemberHistoryService {
   }
 
   public GetContentsCommonResponse getAllHistory(Long memberId, Pageable pageable) {
-    Slice<MemberHistory> findMemberHistory = memberHistoryRepository.findSliceByMemberId(memberId,
-        pageable);
-    List<Content> contents = findMemberHistory.get().map(MemberHistory::getContent)
-        .toList();
+    Slice<Content> findMemberHistoryContents = memberHistoryRepository.findDistinctByContentIdSliceByMemberId(
+        memberId, pageable);
+    List<Content> contents = findMemberHistoryContents.get().toList();
 
     return contentDtoFactoryService.createContentResponses(memberId, contents,
-        findMemberHistory.hasNext());
+        findMemberHistoryContents.hasNext());
   }
 }
