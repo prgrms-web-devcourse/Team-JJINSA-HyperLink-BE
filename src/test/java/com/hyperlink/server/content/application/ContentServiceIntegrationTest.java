@@ -442,6 +442,12 @@ public class ContentServiceIntegrationTest {
       Thread.sleep(1000);
       content4 = contentRepository.save(
           new Content("제목4", "contentImgUrl4", "link4", creator2, category2));
+
+      contentService.activateContent(content1.getId());
+      contentService.activateContent(content2.getId());
+      contentService.activateContent(content3.getId());
+      contentService.activateContent(content4.getId());
+
       member = new Member("memberEmail", "nickname", Career.DEVELOP,
           CareerYear.LESS_THAN_ONE,
           "profileImgUrl");
