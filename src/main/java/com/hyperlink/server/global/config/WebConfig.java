@@ -20,6 +20,7 @@ public class WebConfig implements WebMvcConfigurer {
   private static final String CORS_ALLOWED_METHODS = "GET,POST,HEAD,PUT,PATCH,DELETE,TRACE,OPTIONS";
   private static final String FRONT_DOMAIN = "https://hyperlink-five.vercel.app";
   private static final String FRONTEND_LOCALHOST = "http://localhost:5173";
+  private static final String FRONTEND_TEMPORARY_DOMAIN = "https://hyper-link.netlify.app";
 
   private final AuthTokenExtractor authTokenExtractor;
   private final MemberService memberService;
@@ -64,7 +65,7 @@ public class WebConfig implements WebMvcConfigurer {
   public void addCorsMappings(final CorsRegistry registry) {
     registry.addMapping("/**")
         .allowedMethods(CORS_ALLOWED_METHODS.split(","))
-        .allowedOrigins(FRONT_DOMAIN, FRONTEND_LOCALHOST)
+        .allowedOrigins(FRONT_DOMAIN, FRONTEND_LOCALHOST, FRONTEND_TEMPORARY_DOMAIN)
         .allowedHeaders("*")
         .allowCredentials(true)
         .exposedHeaders(HttpHeaders.LOCATION, HttpHeaders.SET_COOKIE);
