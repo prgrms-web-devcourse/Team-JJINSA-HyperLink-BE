@@ -26,13 +26,11 @@ public class MemberHistoryController {
 
   @GetMapping("/history")
   @ResponseStatus(HttpStatus.OK)
-  public GetContentsCommonResponse getAllHistory(@LoginMemberId Optional<Long> memberId,
+  public GetContentsCommonResponse getAllHistory(@LoginMemberId Optional<Long> optionalMemberId,
       @RequestParam("page") @NotNull int page,
       @RequestParam("size") @NotNull int size) {
-    if (memberId.isEmpty()) {
-      throw new TokenNotExistsException();
-    }
+    Long memberId = optionalMemberId.orElseThrow(TokenNotExistsException::new);
     Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
-    return memberHistoryService.getAllHistory(memberId.get(), pageable);
+    return memberHistoryService.getAllHistory(memberId, pageable);
   }
 }
