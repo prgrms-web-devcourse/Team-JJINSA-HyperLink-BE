@@ -47,6 +47,7 @@ public class AuthorizationFilter implements Filter {
       if (!memberService.isAdmin(memberId)) {
         httpResponse.setStatus(HttpStatus.FORBIDDEN.value());
         String bodyResult = objectMapper.writeValueAsString(new ErrorResponse("권한이 없는 유저입니다."));
+        httpResponse.setContentType("application/json");
         httpResponse.setCharacterEncoding("utf-8");
         httpResponse.getWriter().write(bodyResult);
         return;
