@@ -126,7 +126,7 @@ class CompanyControllerTest extends AdminAuthSetupForMock {
 
     String email = "rldnd2637@naver.com";
 
-    MailAuthVerifyRequest mailAuthVerifyRequest = new MailAuthVerifyRequest(email, 1234, "s3URL");
+    MailAuthVerifyRequest mailAuthVerifyRequest = new MailAuthVerifyRequest(email, 1234);
 
     mockMvc.perform(MockMvcRequestBuilders
             .post("/companies/verification")
@@ -141,8 +141,7 @@ class CompanyControllerTest extends AdminAuthSetupForMock {
             requestHeaders(headerWithName(HttpHeaders.AUTHORIZATION).description("AccessToken")),
             requestFields(
                 fieldWithPath("companyEmail").type(JsonFieldType.STRING).description("회사 이메일"),
-                fieldWithPath("authNumber").type(JsonFieldType.NUMBER).description("인증 번호"),
-                fieldWithPath("logoImgUrl").type(JsonFieldType.STRING)
+                fieldWithPath("authNumber").type(JsonFieldType.NUMBER).description("인증 번호")
                     .description("회사 로고 이미지 url"))));
   }
 

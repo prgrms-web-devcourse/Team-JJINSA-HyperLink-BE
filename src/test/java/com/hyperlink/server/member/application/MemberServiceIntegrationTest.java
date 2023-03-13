@@ -102,7 +102,7 @@ class MemberServiceIntegrationTest {
         new Member("rldnd1234@naver.com", "Chocho", Career.DEVELOP, CareerYear.MORE_THAN_TEN,
             "localhost", 1995, "man"));
     Company savedCompany = companyRepository.save(
-        new Company("rldnd1234@kakao.com", "logoImgUrl", "kakao"));
+        new Company("rldnd1234@kakao.com", "kakao"));
 
     saveMember.changeCompany(savedCompany);
 
