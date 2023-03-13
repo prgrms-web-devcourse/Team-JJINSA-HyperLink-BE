@@ -58,7 +58,7 @@ public class ContentRepositoryCustom {
   public Slice<Content> retrievePopularTrendContentsByCategory(Long categoryId, Pageable pageable) {
     List<Content> contents = queryFactory
         .selectFrom(content)
-        .where(eqCategoryId(categoryId), beforeNDays(PAST_DAYS))
+        .where(eqCategoryId(categoryId), beforeNDays(PAST_DAYS), eqInactiveContent())
         .orderBy(popularOrderType())
         .offset(pageable.getOffset())
         .limit(pageable.getPageSize() + 1)
@@ -70,7 +70,7 @@ public class ContentRepositoryCustom {
   public Slice<Content> retrieveRecentTrendContentsByCategory(Long categoryId, Pageable pageable) {
     List<Content> contents = queryFactory
         .selectFrom(content)
-        .where(eqCategoryId(categoryId))
+        .where(eqCategoryId(categoryId), eqInactiveContent())
         .orderBy(recentOrderType())
         .offset(pageable.getOffset())
         .limit(pageable.getPageSize() + 1)
@@ -88,7 +88,7 @@ public class ContentRepositoryCustom {
 
     List<Content> contents = queryFactory
         .selectFrom(content)
-        .where(categoryConditionBuilder, beforeNDays(PAST_DAYS))
+        .where(categoryConditionBuilder, beforeNDays(PAST_DAYS), eqInactiveContent())
         .orderBy(popularOrderType())
         .offset(pageable.getOffset())
         .limit(pageable.getPageSize() + 1)
@@ -106,7 +106,7 @@ public class ContentRepositoryCustom {
 
     List<Content> contents = queryFactory
         .selectFrom(content)
-        .where(categoryConditionBuilder)
+        .where(categoryConditionBuilder, eqInactiveContent())
         .orderBy(recentOrderType())
         .offset(pageable.getOffset())
         .limit(pageable.getPageSize() + 1)
@@ -118,7 +118,7 @@ public class ContentRepositoryCustom {
   public Slice<Content> retrievePopularContentsByCreator(Long creatorId, Pageable pageable) {
     List<Content> contents = queryFactory
         .selectFrom(content)
-        .where(eqCreatorId(creatorId))
+        .where(eqCreatorId(creatorId), eqInactiveContent())
         .orderBy(popularOrderType())
         .offset(pageable.getOffset())
         .limit(pageable.getPageSize() + 1)
@@ -130,7 +130,7 @@ public class ContentRepositoryCustom {
   public Slice<Content> retrieveRecentContentsByCreator(Long creatorId, Pageable pageable) {
     List<Content> contents = queryFactory
         .selectFrom(content)
-        .where(eqCreatorId(creatorId))
+        .where(eqCreatorId(creatorId), eqInactiveContent())
         .orderBy(recentOrderType())
         .offset(pageable.getOffset())
         .limit(pageable.getPageSize() + 1)
@@ -203,5 +203,9 @@ public class ContentRepositoryCustom {
 
   private BooleanExpression beforeNDays(long day) {
     return content.createdAt.after(LocalDateTime.now().minusDays(day));
+  }
+
+  private BooleanExpression eqInactiveContent() {
+    return content.isViewable.eq(false);
   }
 }
