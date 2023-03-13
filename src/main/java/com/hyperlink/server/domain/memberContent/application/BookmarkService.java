@@ -73,9 +73,9 @@ public class BookmarkService {
     List<ContentResponse> contents = memberContents.stream()
         .map(memberContent -> {
           boolean isLiked = memberContentRepository.existsMemberContentByMemberIdAndContentIdAndType(
-              memberId, memberContent.getId(), LIKE.getTypeNumber());
+              memberId, memberContent.getContent().getId(), LIKE.getTypeNumber());
           Content content = memberContent.getContent();
-          
+
           List<ContentViewerRecommendationResponse> recommendations = contentViewerRecommenderFactory.getContentViewerRecommender(
                   content.getCategory().getName())
               .getContentViewerRecommendationResponse(content.getId());
