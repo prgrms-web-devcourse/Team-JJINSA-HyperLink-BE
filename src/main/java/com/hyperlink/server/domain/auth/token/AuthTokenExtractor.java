@@ -11,9 +11,11 @@ import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.Optional;
 import javax.crypto.SecretKey;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+@Slf4j
 @Component
 public class AuthTokenExtractor {
 
@@ -36,6 +38,8 @@ public class AuthTokenExtractor {
     if (splitHeaders.length != TOKEN_FORMAT_LENGTH
         || !splitHeaders[TOKEN_TYPE_INDEX].equalsIgnoreCase(
         TOKEN_TYPE)) {
+      log.info(
+          "##### extractToken() if(splitHeaders.length != TOKEN_FORMAT_LENGTH || !splitHeaders[TOKEN_TYPE_INDEX].equalsIgnoreCase(TOKEN_TYPE))!");
       throw new TokenInvalidFormatException();
     }
     return splitHeaders[TOKEN_VALUE_INDEX];
@@ -54,7 +58,9 @@ public class AuthTokenExtractor {
           .getSubject();
       return Optional.of(Long.parseLong(memberId));
     } catch (final JwtException e) {
-      throw new TokenInvalidFormatException();
+      log.info("###### 토큰이 존재하지만 parsing에서 문제발생!");
+      return Optional.empty();
+//      throw new TokenInvalidFormatException();
     }
   }
 
