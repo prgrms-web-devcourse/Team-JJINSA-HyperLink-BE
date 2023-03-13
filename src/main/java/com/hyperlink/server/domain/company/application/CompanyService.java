@@ -68,13 +68,18 @@ public class CompanyService {
     }
     String mailAddress = extractCompanyEmail(mailAuthVerifyRequest.companyEmail());
 
-    Company company = companyRepository.findByEmailAddress(mailAddress).orElse(
-        companyRepository.save(
-            new Company(mailAddress,
-                extractCompanyNameFromEmail(
-                    mailAddress))));
+    if (!companyRepository.existsByEmailAddress(mailAddress)) {
+      Company savedCompany = companyRepository.save(
+          new Company(mailAddress,
+              extractCompanyNameFromEmail(
+                  mailAddress)));
+      memberService.putCompanyAfterVerification(memberId, savedCompany);
+      return;
+    }
+    Company foundCompany = companyRepository.findByEmailAddress(mailAddress)
+        .orElseThrow(CompanyNotFoundException::new);
 
-    memberService.putCompanyAfterVerification(memberId, company);
+    memberService.putCompanyAfterVerification(memberId, foundCompany);
   }
 
   private String extractCompanyEmail(String companyEmail) {
