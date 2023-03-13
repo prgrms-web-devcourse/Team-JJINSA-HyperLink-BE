@@ -70,7 +70,7 @@ class MemberHistoryIntegrationTest {
     Content content = new Content("title", "contentImgUrl", "link", creator, category);
     content = contentRepository.save(content);
 
-    memberHistoryService.insertMemberHistory(member.getId(), content.getId());
+    memberHistoryService.insertMemberHistory(member.getId(), content.getId(), false);
 
     List<MemberHistory> findMemberHistory = memberHistoryRepository.findAllByMemberId(
         member.getId());
@@ -90,7 +90,6 @@ class MemberHistoryIntegrationTest {
       member = new Member("email", "nickname", Career.DEVELOP, CareerYear.THREE, "profileImgUrl");
       memberRepository.save(member);
 
-      LocalDateTime now = LocalDateTime.now();
       contents.add(new Content("개발", "ImgUrl", "link", creator, category));
       contents.add(new Content("개발짱", "ImgUrl", "link", creator, category));
       contents.add(new Content("짱개발짱", "ImgUrl", "link", creator, category));
@@ -101,7 +100,7 @@ class MemberHistoryIntegrationTest {
       contentRepository.saveAll(contents);
 
       for (Content content : contents) {
-        MemberHistory memberHistory = new MemberHistory(member, content);
+        MemberHistory memberHistory = new MemberHistory(member, content, false);
         memberHistoryRepository.save(memberHistory);
       }
     }

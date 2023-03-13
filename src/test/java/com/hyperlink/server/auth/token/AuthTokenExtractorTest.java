@@ -62,8 +62,8 @@ class AuthTokenExtractorTest {
   @DisplayName("accessToken이 있지만, 잘못된 값이라면, TokenInvalidFormatException을 던진다.")
   @Test
   void extractMemberIdInCorrectTestV2() {
-    Assertions.assertThatThrownBy(() -> authTokenExtractor.extractMemberId("111"))
-        .isInstanceOf(TokenInvalidFormatException.class);
+    Assertions.assertThat(authTokenExtractor.extractMemberId("111"))
+        .isEqualTo(Optional.empty());
   }
 
 }

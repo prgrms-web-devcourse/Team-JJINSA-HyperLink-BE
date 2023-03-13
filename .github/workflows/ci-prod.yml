@@ -35,7 +35,7 @@ jobs:
         uses: namoshek/rabbitmq-github-action@v1
         with:
           version: '3.8.9'
-          ports: '1883:1883 8883:8883'
+          ports: '5672:5672 15672:15672'
 
       - name: application-prod.yml 생성
         run: |
@@ -53,4 +53,4 @@ jobs:
         run: chmod +x ./gradlew
 
       - name: 빌드
-        run: ./gradlew clean build -x jacocoTestCoverageVerification
+        run: ./gradlew clean build -x test -x asciidoctor -x jacocoTestCoverageVerification

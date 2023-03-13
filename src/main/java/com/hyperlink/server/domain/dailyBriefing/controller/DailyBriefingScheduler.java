@@ -5,6 +5,7 @@ import com.hyperlink.server.domain.dailyBriefing.domain.ContentStatisticsReposit
 import com.hyperlink.server.domain.dailyBriefing.domain.vo.ContentStatistics;
 import com.hyperlink.server.domain.dailyBriefing.dto.GetDailyBriefingResponse;
 import java.time.LocalDateTime;
+import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -23,10 +24,12 @@ public class DailyBriefingScheduler {
   @Scheduled(cron = "0 0 0-23 * * *", zone = "Asia/Seoul")
   void createDailyBriefing() {
     log.info("데일리브리핑 스케쥴러 실행");
-    GetDailyBriefingResponse dailyBriefing = dailyBriefingService.createDailyBriefing(
-        LocalDateTime.now());
+    LocalDateTime now = LocalDateTime.now();
+    String todayDate = now.toLocalDate().toString();
+    GetDailyBriefingResponse dailyBriefing = dailyBriefingService.createDailyBriefing(now);
 
-    redisTemplate.opsForHash().put("daily-briefing", dailyBriefing.standardTime(), dailyBriefing);
+    redisTemplate.opsForHash().put("daily-briefing" + todayDate, dailyBriefing.standardTime(), dailyBriefing);
+    redisTemplate.expire("daily-briefing" + todayDate, 2, TimeUnit.DAYS);
     log.info("데일리브리핑 스케쥴러 완료");
   }
 

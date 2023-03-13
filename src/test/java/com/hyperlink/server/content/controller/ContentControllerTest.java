@@ -1,5 +1,6 @@
 package com.hyperlink.server.content.controller;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
@@ -21,15 +22,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.hyperlink.server.AuthSetupForMock;
 import com.hyperlink.server.AdminAuthSetupForMock;
 import com.hyperlink.server.domain.content.application.ContentService;
 import com.hyperlink.server.domain.content.controller.ContentController;
 import com.hyperlink.server.domain.content.dto.ContentAdminResponse;
 import com.hyperlink.server.domain.content.dto.ContentAdminResponses;
 import com.hyperlink.server.domain.content.dto.ContentResponse;
-import com.hyperlink.server.domain.content.dto.GetContentsCommonResponse;
 import com.hyperlink.server.domain.content.dto.ContentViewerRecommendationResponse;
+import com.hyperlink.server.domain.content.dto.GetContentsCommonResponse;
 import com.hyperlink.server.domain.content.dto.SearchResponse;
 import com.hyperlink.server.domain.content.exception.CategoryAndCreatorIdConstraintViolationException;
 import com.hyperlink.server.domain.content.exception.ContentNotFoundException;
@@ -79,17 +79,39 @@ public class ContentControllerTest extends AdminAuthSetupForMock {
   @DisplayName("조회수 추가 API는")
   class AddInquiryOfContent {
 
+    Long contentId = 1L;
+
+    @Nested
+    @DisplayName("is_search param이 null이면")
+    class Fail {
+      @Test
+      @DisplayName("BadRequest를 응답한다")
+      void isSearchIsNull() throws Exception {
+        authSetup();
+
+        String isSearch = null;
+
+        mockMvc.perform(
+                patch("/contents/" + contentId + "/view")
+                    .param("search", isSearch)
+                    .header(HttpHeaders.AUTHORIZATION, authorizationHeader)
+            )
+            .andExpect(status().isBadRequest())
+            .andExpect(response -> assertTrue(
+                response.getResolvedException() instanceof MissingServletRequestParameterException));
+      }
+    }
+
     @Nested
     @DisplayName("유효한 요청값이 들어오면")
     class Success {
-
-      Long contentId = 1L;
 
       @Test
       @DisplayName("조회수 추가에 성공하고 OK와 최종 조회수를 응답한다")
       void addInquiryOfContentTest() throws Exception {
         mockMvc.perform(
                 patch("/contents/" + contentId + "/view")
+                    .param("search", "0")
                     .header(HttpHeaders.AUTHORIZATION, authorizationHeader)
             )
             .andExpect(status().isOk())

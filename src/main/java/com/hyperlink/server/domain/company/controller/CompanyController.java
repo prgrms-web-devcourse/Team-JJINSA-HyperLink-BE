@@ -58,7 +58,7 @@ public class CompanyController {
   @PostMapping("/companies/verification")
   @ResponseStatus(HttpStatus.OK)
   public void EmailVerification(@LoginMemberId Optional<Long> optionalMemberId,
-      @RequestBody @Valid MailAuthVerifyRequest mailAuthVerifyRequest) {
+      @RequestBody MailAuthVerifyRequest mailAuthVerifyRequest) {
     Long memberId = optionalMemberId.orElseThrow(MemberNotFoundException::new);
     companyService.verifyAuthCompanyMail(memberId, mailAuthVerifyRequest);
   }

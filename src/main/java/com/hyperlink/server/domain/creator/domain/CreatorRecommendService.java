@@ -15,6 +15,7 @@ import com.hyperlink.server.domain.notRecommendCreator.domain.NotRecommendCreato
 import com.hyperlink.server.domain.subscription.domain.SubscriptionRepository;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -30,7 +31,7 @@ import org.springframework.stereotype.Service;
 public class CreatorRecommendService {
 
   private static final int FIRST_INDEX = 0;
-  private static final int LAST_INDEX = 29;
+  private static final int LAST_INDEX = 19;
   private Map<Long, CreatorScore> creatorScoreMap;
 
   private final CreatorRepository creatorRepository;
@@ -58,9 +59,14 @@ public class CreatorRecommendService {
     List<GetCreatorRecommendResponse> getCreatorRecommendResponses = new ArrayList<>();
 
     Random random = new Random();
-    for (int i = 0; i < 4; i++) {
+    Set<Integer> randomIndexes = new HashSet<>();
+    while (randomIndexes.size() < 4) {
       int randomIndex = random.nextInt(randomIntRange);
-      Long creatorId = recommendedPoolCreatorIds.get(randomIndex);
+      randomIndexes.add(randomIndex);
+    }
+
+    randomIndexes.forEach(randomCreatorId -> {
+      Long creatorId = recommendedPoolCreatorIds.get(randomCreatorId);
 
       CreatorAndSubscriptionCountMapper creatorAndSubscriptionCount = creatorRepository.findCreatorAndSubscriptionCount(
           creatorId);
@@ -70,7 +76,7 @@ public class CreatorRecommendService {
           creatorAndSubscriptionCount.getDescription(),
           creatorAndSubscriptionCount.getSubscriberAmount());
       getCreatorRecommendResponses.add(getCreatorRecommendResponse);
-    }
+    });
 
     return getCreatorRecommendResponses;
   }

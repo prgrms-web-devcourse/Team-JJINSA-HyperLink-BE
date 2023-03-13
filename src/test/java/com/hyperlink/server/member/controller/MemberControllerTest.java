@@ -61,7 +61,7 @@ public class MemberControllerTest {
   ObjectMapper objectMapper;
   @Autowired
   private CompanyRepository companyRepository;
-
+  
   @DisplayName("company 미인증인 경우 MyPageApi")
   @Test
   void myPageTestV1() throws Exception {
