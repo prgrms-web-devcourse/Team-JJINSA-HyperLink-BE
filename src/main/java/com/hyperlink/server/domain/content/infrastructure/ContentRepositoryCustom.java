@@ -206,6 +206,6 @@ public class ContentRepositoryCustom {
   }
 
   private BooleanExpression eqInactiveContent() {
-    return content.isViewable.eq(false);
+    return content.isViewable.eq(true);
   }
 }
