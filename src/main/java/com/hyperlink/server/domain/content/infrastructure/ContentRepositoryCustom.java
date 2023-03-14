@@ -1,11 +1,14 @@
 package com.hyperlink.server.domain.content.infrastructure;
 
 import static com.hyperlink.server.domain.content.domain.entity.QContent.content;
+import static com.hyperlink.server.domain.memberHistory.domain.entity.QMemberHistory.memberHistory;
 
 import com.hyperlink.server.domain.content.domain.entity.Content;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.CaseBuilder;
+import com.querydsl.core.types.dsl.NumberExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -25,7 +28,6 @@ public class ContentRepositoryCustom {
   private static final int LIKE_COUNT_WEIGHT = 3;
   private static final int PAST_DAYS = 5;
 
-
   private final JPAQueryFactory queryFactory;
 
   public Page<Content> searchByTitleContainingOrderByLatest(List<String> keywords,
@@ -36,11 +38,13 @@ public class ContentRepositoryCustom {
     }
 
     List<Content> contents = queryFactory
-        .selectFrom(content)
+        .select(content).distinct()
+        .from(content)
+        .leftJoin(memberHistory).on(content.id.eq(memberHistory.content.id))
         .where(builder, eqActiveContent())
         .offset(pageable.getOffset())
         .limit(pageable.getPageSize())
-        .orderBy(content.createdAt.desc())
+        .orderBy(recentOrderType(), orderSearch())
         .fetch();
 
     Long size = queryFactory.select(content.count())
@@ -195,6 +199,21 @@ public class ContentRepositoryCustom {
 
   private OrderSpecifier<LocalDateTime> recentOrderType() {
     return content.createdAt.desc();
+  }
+
+  private OrderSpecifier<Integer> orderSearch() {
+    return content.viewCount.multiply(VIEW_COUNT_WEIGHT)
+        .add(caseWhenIsSearch()).desc();
+  }
+
+  private NumberExpression<Integer> caseWhenIsSearch() {
+    return new CaseBuilder()
+        .when(isSearchByHistory()).then(content.viewCount.multiply(0.25))
+        .otherwise(0);
+  }
+
+  private BooleanExpression isSearchByHistory() {
+    return memberHistory.isSearch.eq(true);
   }
 
   private BooleanExpression eqCreatorId(Long creatorId) {
