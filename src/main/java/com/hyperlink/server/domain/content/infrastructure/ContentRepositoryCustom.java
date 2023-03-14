@@ -59,7 +59,7 @@ public class ContentRepositoryCustom {
     List<Content> contents = queryFactory
         .selectFrom(content)
         .where(eqCategoryId(categoryId), beforeNDays(PAST_DAYS), eqActiveContent())
-        .orderBy(popularOrderType())
+        .orderBy(popularOrderType(), orderByContentId())
         .offset(pageable.getOffset())
         .limit(pageable.getPageSize() + 1)
         .fetch();
@@ -71,7 +71,7 @@ public class ContentRepositoryCustom {
     List<Content> contents = queryFactory
         .selectFrom(content)
         .where(eqCategoryId(categoryId), eqActiveContent())
-        .orderBy(recentOrderType())
+        .orderBy(recentOrderType(), orderByContentId())
         .offset(pageable.getOffset())
         .limit(pageable.getPageSize() + 1)
         .fetch();
@@ -89,7 +89,7 @@ public class ContentRepositoryCustom {
     List<Content> contents = queryFactory
         .selectFrom(content)
         .where(categoryConditionBuilder, beforeNDays(PAST_DAYS), eqActiveContent())
-        .orderBy(popularOrderType())
+        .orderBy(popularOrderType(), orderByContentId())
         .offset(pageable.getOffset())
         .limit(pageable.getPageSize() + 1)
         .fetch();
@@ -107,7 +107,7 @@ public class ContentRepositoryCustom {
     List<Content> contents = queryFactory
         .selectFrom(content)
         .where(categoryConditionBuilder, eqActiveContent())
-        .orderBy(recentOrderType())
+        .orderBy(recentOrderType(), orderByContentId())
         .offset(pageable.getOffset())
         .limit(pageable.getPageSize() + 1)
         .fetch();
@@ -119,7 +119,7 @@ public class ContentRepositoryCustom {
     List<Content> contents = queryFactory
         .selectFrom(content)
         .where(eqCreatorId(creatorId), eqActiveContent())
-        .orderBy(popularOrderType())
+        .orderBy(popularOrderType(), orderByContentId())
         .offset(pageable.getOffset())
         .limit(pageable.getPageSize() + 1)
         .fetch();
@@ -131,7 +131,7 @@ public class ContentRepositoryCustom {
     List<Content> contents = queryFactory
         .selectFrom(content)
         .where(eqCreatorId(creatorId), eqActiveContent())
-        .orderBy(recentOrderType())
+        .orderBy(recentOrderType(), orderByContentId())
         .offset(pageable.getOffset())
         .limit(pageable.getPageSize() + 1)
         .fetch();
@@ -149,7 +149,7 @@ public class ContentRepositoryCustom {
     List<Content> contents = queryFactory
         .selectFrom(content)
         .where(subscribedCreatorConditionBuilder, eqCategoryId(categoryId), eqActiveContent())
-        .orderBy(recentOrderType())
+        .orderBy(recentOrderType(), orderByContentId())
         .offset(pageable.getOffset())
         .limit(pageable.getPageSize() + 1)
         .fetch();
@@ -167,7 +167,7 @@ public class ContentRepositoryCustom {
     List<Content> contents = queryFactory
         .selectFrom(content)
         .where(subscribedCreatorConditionBuilder, eqActiveContent())
-        .orderBy(recentOrderType())
+        .orderBy(recentOrderType(), orderByContentId())
         .offset(pageable.getOffset())
         .limit(pageable.getPageSize() + 1)
         .fetch();
@@ -182,6 +182,10 @@ public class ContentRepositoryCustom {
       hasNext = true;
     }
     return new SliceImpl<>(contents, pageable, hasNext);
+  }
+
+  private OrderSpecifier<Long> orderByContentId() {
+    return content.id.asc();
   }
 
   private OrderSpecifier<Integer> popularOrderType() {
