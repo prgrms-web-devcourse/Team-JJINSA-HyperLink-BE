@@ -47,12 +47,13 @@ public class DailyBriefingService {
     String todayDate = now.toLocalDate().toString();
     final long whenResponseIsNullRetryPastStandardTime = 1L;
     String standardTime = now.format(DateTimeFormatter.ofPattern(STANDARD_TIME_PATTERN));
+    String redisHashKey = "daily-briefing" + todayDate;
     GetDailyBriefingResponse getDailyBriefingResponse = (GetDailyBriefingResponse) redisTemplate.opsForHash()
-        .get("daily-briefing" + todayDate, standardTime);
+        .get(redisHashKey, standardTime);
 
     if (getDailyBriefingResponse == null) {
       getDailyBriefingResponse = getPastDailyBriefingResponse(now,
-          whenResponseIsNullRetryPastStandardTime);
+          whenResponseIsNullRetryPastStandardTime, redisHashKey);
     }
 
     List<ContentStatistics> contentStatisticsList = getContentStatisticsListForPastSixDays();
@@ -65,11 +66,11 @@ public class DailyBriefingService {
   }
 
   public GetDailyBriefingResponse getPastDailyBriefingResponse(LocalDateTime now,
-      long pastStandardTime) {
+      long pastStandardTime, String redisHashKey) {
     String pastStandardTimePattern = now.minusHours(pastStandardTime)
         .format(DateTimeFormatter.ofPattern(STANDARD_TIME_PATTERN));
     return (GetDailyBriefingResponse) redisTemplate.opsForHash()
-        .get("daily-briefing", pastStandardTimePattern);
+        .get(redisHashKey, pastStandardTimePattern);
   }
 
   public List<ContentStatistics> getContentStatisticsListForPastSixDays() {
