@@ -1,5 +1,5 @@
 # Team-JJINSA-HyperLink-BE
-> 세상의 모든 정보를 한눈에!
+> 트렌디하고 신뢰성 있는 정보를 한눈에!
 
 🔗 [HyperLink](https://hyperlink-five.vercel.app/)
 
@@ -35,7 +35,7 @@ https://github.com/prgrms-web-devcourse/Team-JJINSA-HyperLink-FE
 
 
 # <img width="30" alt="logo" src="https://user-images.githubusercontent.com/86194303/224930186-0d03b71b-4463-4fac-b74f-f632890667e7.png"> 기술 스택
-<img src="https://img.shields.io/badge/Java 11-007396?style=flat-square&logo=Java17&logoColor=white"/> <img src="https://img.shields.io/badge/Springboot 2.7.8-6DB33F?style=flat-square&logo=Springboot&logoColor=white"/> <img src="https://img.shields.io/badge/Gradle-02303A?style=flat&logo=Gradle&logoColor=white"/> <img src="https://img.shields.io/badge/JUnit5-25A162?style=flat&logo=JUnit5&logoColor=white"/>
+<img src="https://img.shields.io/badge/Java 17-007396?style=flat-square&logo=Java17&logoColor=white"/> <img src="https://img.shields.io/badge/Springboot 2.7.8-6DB33F?style=flat-square&logo=Springboot&logoColor=white"/> <img src="https://img.shields.io/badge/Gradle-02303A?style=flat&logo=Gradle&logoColor=white"/> <img src="https://img.shields.io/badge/JUnit5-25A162?style=flat&logo=JUnit5&logoColor=white"/>
 
 <img src="https://img.shields.io/badge/MySQL-4479A1?style=flat&logo=MySQL&logoColor=white"/> <img src="https://img.shields.io/badge/Redis-DC382D?style=flat&logo=Redis&logoColor=white"/> <img src="https://img.shields.io/badge/Flyway-CC0200?style=flat&logo=Flyway&logoColor=white"/> 
 
