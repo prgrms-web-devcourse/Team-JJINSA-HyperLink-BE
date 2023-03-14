@@ -7,7 +7,7 @@ import org.springframework.data.redis.core.RedisHash;
 
 @Getter
 @NoArgsConstructor
-@RedisHash(value = "contentStatistics", timeToLive = 691200)
+@RedisHash(value = "contentStatistics", timeToLive = 691200)    // TTL : 8일
 public class ContentStatistics {
 
   @Id

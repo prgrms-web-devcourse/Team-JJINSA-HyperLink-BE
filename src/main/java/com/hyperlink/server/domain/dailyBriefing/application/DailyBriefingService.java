@@ -15,6 +15,7 @@ import com.hyperlink.server.domain.dailyBriefing.dto.StatisticsByCategoryRespons
 import com.hyperlink.server.domain.dailyBriefing.infrastructure.DailyBriefingRepositoryCustom;
 import com.hyperlink.server.domain.member.domain.MemberRepository;
 import com.hyperlink.server.domain.memberHistory.domain.MemberHistoryRepository;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -83,7 +84,7 @@ public class DailyBriefingService {
       contentStatisticsRepository.findById(
           standardDatePattern).ifPresentOrElse(contentStatisticsList::add, () -> {
         log.info("{} 컨텐츠 증가분 데이터 redis에서 찾지 못함", standardDatePattern);
-        int contentCountByDate = findContentCountByDate(standardDate);
+        int contentCountByDate = findContentCountByDate(standardDate.toLocalDate());
         ContentStatistics contentStatistics = new ContentStatistics(standardDatePattern,
             contentCountByDate);
         contentStatisticsList.add(contentStatistics);
@@ -198,13 +199,14 @@ public class DailyBriefingService {
 
   public ContentStatistics createYesterdayContentStatistics() {
     LocalDateTime yesterday = LocalDateTime.now().minusDays(1);
+    LocalDate yesterdayDate = yesterday.toLocalDate();
     String standardDate = yesterday.format(DateTimeFormatter.ofPattern(
         STANDARD_DATE_PATTERN));
-    int contentIncrease = findContentCountByDate(yesterday);
+    int contentIncrease = findContentCountByDate(yesterdayDate);
     return new ContentStatistics(standardDate, contentIncrease);
   }
 
-  private int findContentCountByDate(LocalDateTime date) {
+  private int findContentCountByDate(LocalDate date) {
     return contentRepository.countByDate(date.toString());
   }
 }
