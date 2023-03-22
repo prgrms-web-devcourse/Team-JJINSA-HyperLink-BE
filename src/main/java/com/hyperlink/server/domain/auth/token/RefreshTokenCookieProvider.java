@@ -12,11 +12,11 @@ public class RefreshTokenCookieProvider {
   protected static final String REFRESH_TOKEN = "refreshToken";
   private static final int REMOVE_MAX_AGE = 0;
 
-  private final Long expiredTimeMillis = 360000L;
+  private final Long expiredTimeMillis = 20160L;
 
   public ResponseCookie createCookie(final String refreshToken) {
     return createTokenCookieBuilder(refreshToken)
-        .maxAge(Duration.ofMillis(expiredTimeMillis))
+        .maxAge(Duration.ofMinutes(expiredTimeMillis))
         .build();
   }
 
