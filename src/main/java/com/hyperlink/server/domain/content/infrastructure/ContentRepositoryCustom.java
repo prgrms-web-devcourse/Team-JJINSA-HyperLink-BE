@@ -49,7 +49,7 @@ public class ContentRepositoryCustom {
 
     Long size = queryFactory.select(content.count())
         .from(content)
-        .where(builder)
+        .where(builder, eqActiveContent())
         .fetchOne();
 
     if (size == null) {
